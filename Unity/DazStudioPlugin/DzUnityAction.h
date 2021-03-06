@@ -24,4 +24,5 @@ protected:
 
 	 bool CopyFile(QFile *file, QString *dst, bool replace = true, bool compareFiles = true);
 	 QString GetMD5(const QString &path);
+	 QString appendPath(const QString &path1, const QString &path2);
 };

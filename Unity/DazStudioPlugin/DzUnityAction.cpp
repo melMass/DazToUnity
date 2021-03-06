@@ -59,13 +59,14 @@ void DzUnityAction::executeAction()
 	 {
 		  //Create Daz3D folder if it doesn't exist
 		  QDir dir;
-		  ImportFolder = dlg->assetsFolderEdit->text() + "\\Daz3D";
+		  //ImportFolder = dlg->assetsFolderEdit->text() + "\\Daz3D";
+		  ImportFolder = appendPath(dlg->assetsFolderEdit->text(),"Daz3D");
 		  dir.mkpath(ImportFolder);
 
 		  // Collect the values from the dialog fields
 		  CharacterName = dlg->assetNameEdit->text();
-		  CharacterFolder = ImportFolder + "\\" + CharacterName + "\\";
-		  CharacterFBX = CharacterFolder + CharacterName + ".fbx";
+		  CharacterFolder = appendPath(ImportFolder,CharacterName);
+		  CharacterFBX = appendPath(CharacterFolder, CharacterName + ".fbx");
 		  AssetType = dlg->assetTypeCombo->currentText().replace(" ", "");
 		  MorphString = dlg->GetMorphString();
 		  ExportMorphs = dlg->morphsEnabledCheckBox->isChecked();
@@ -85,8 +86,8 @@ void DzUnityAction::executeAction()
 		  Export();
 
 		  //Rename the textures folder
-		  QDir textureDir(CharacterFolder + "\\" + CharacterName + ".images");
-		  textureDir.rename(CharacterFolder + "\\" + CharacterName + ".images", CharacterFolder + "\\Textures");
+		  QDir textureDir(appendPath(CharacterFolder , CharacterName + ".images"));
+		  textureDir.rename(appendPath(CharacterFolder , CharacterName + ".images"), appendPath(CharacterFolder, "Textures"));
 	 }
 }
 
@@ -115,6 +116,12 @@ QString DzUnityAction::GetMD5(const QString &path)
         return QString(hash.result().toHex());
     }
     return QString();
+}
+
+QString DzUnityAction::appendPath(const QString &path1, const QString &path2)
+{
+	return QDir::cleanPath(path1 + QDir::separator() + path2);
+	//return path1 + QDir::separator() + path2;
 }
 
 bool DzUnityAction::CopyFile(QFile *file, QString *dst, bool replace, bool compareFiles)
@@ -167,91 +174,91 @@ void DzUnityAction::CreateUnityFiles(bool replace)
 
 	 //Create shader folder if it doesn't exist
 	 QDir dir;
-	 QString scriptsFolder = ImportFolder + "\\Scripts";
+	 QString scriptsFolder = appendPath(ImportFolder, "Scripts");
 	 dir.mkpath(scriptsFolder);
 
 	 QStringList scripts = QDir(":/Scripts/").entryList();
 	 for (int i = 0; i < scripts.size(); i++)
 	 {
-		  QString script = scriptsFolder + "\\" + scripts[i];
+		  QString script = appendPath(scriptsFolder, scripts[i]);
 		  QFile file(":/Scripts/" + scripts[i]);
 		  CopyFile(&file, &script, replace);
 		  file.close();
 	 }
 
 	 //Create editor folder if it doesn't exist
-	 QString editorFolder = ImportFolder + "\\Scripts\\Editor";
+	 QString editorFolder = appendPath(appendPath(ImportFolder, "Scripts"), "Editor");
 	 dir.mkpath(editorFolder);
 
 	 QStringList editorScripts = QDir(":/Editor/").entryList();
 	 for (int i = 0; i < editorScripts.size(); i++)
 	 {
-		  QString script = editorFolder + "\\" + editorScripts[i];
+		  QString script = appendPath(editorFolder, editorScripts[i]);
 		  QFile file(":/Editor/" + editorScripts[i]);
 		  CopyFile(&file, &script, replace);
 		  file.close();
 	 }
 
 	 //Create shader folder if it doesn't exist
-	 QString shaderFolder = ImportFolder + "\\Shaders";
+	 QString shaderFolder = appendPath(ImportFolder, "Shaders");
 	 dir.mkpath(shaderFolder);
 
 	 QStringList shaders = QDir(":/Shaders/").entryList();
 	 for (int i = 0; i < shaders.size(); i++)
 	 {
-		  QString shader = shaderFolder + "\\" + shaders[i];
+		  QString shader = appendPath(shaderFolder, shaders[i]);
 		  QFile file(":/Shaders/" + shaders[i]);
 		  CopyFile(&file, &shader, replace);
 		  file.close();
 	 }
 	 
 	 //Create shader helpers folder if it doesn't exist
-	 QString shaderHelperFolder = ImportFolder + "\\Shaders\\Helpers";
+	 QString shaderHelperFolder = appendPath(appendPath(ImportFolder, "Shaders"), "Helpers");
 	 dir.mkpath(shaderHelperFolder);
 
 	 QStringList shaderHelpers = QDir(":/ShaderHelpers/").entryList();
 	 for (int i = 0; i < shaderHelpers.size(); i++)
 	 {
-		  QString shaderHelper = shaderHelperFolder + "\\" + shaderHelpers[i];
+		  QString shaderHelper = appendPath(shaderHelperFolder, shaderHelpers[i]);
 		  QFile file(":/ShaderHelpers/" + shaderHelpers[i]);
 		  CopyFile(&file, &shaderHelper, replace);
 		  file.close();
 	 }
 
 	 //Create vendors folder if it doesn't exist
-	 QString vendorsFolder = ImportFolder + "\\Vendors";
+	 QString vendorsFolder = appendPath(ImportFolder,"Vendors");
 	 dir.mkpath(vendorsFolder);
 
 	 QStringList vendors = QDir(":/Vendors/").entryList();
 	 for (int i = 0; i < vendors.size(); i++)
 	 {
-		  QString vendor = vendorsFolder + "\\" + vendors[i];
+		  QString vendor = appendPath(vendorsFolder, vendors[i]);
 		  QFile file(":/Vendors/" + vendors[i]);
 		  CopyFile(&file, &vendor, replace);
 		  file.close();
 	 }
 
 	 //Create DiffusionProfiles folder if it doesn't exist
-	 QString profilesFolder = ImportFolder + "\\DiffusionProfiles";
+	 QString profilesFolder = appendPath(ImportFolder,"DiffusionProfiles");
 	 dir.mkpath(profilesFolder);
 
 	 QStringList profiles = QDir(":/DiffusionProfiles/").entryList();
 	 for (int i = 0; i < profiles.size(); i++)
 	 {
-		  QString profile = profilesFolder + "\\" + profiles[i];
+		  QString profile = appendPath(profilesFolder , profiles[i]);
 		  QFile file(":/DiffusionProfiles/" + profiles[i]);
 		  CopyFile(&file, &profile, replace);
 		  file.close();
 	 }
 	 
 	 //Create Resources folder if it doesn't exist
-	 QString resourcesFolder = ImportFolder + "\\Resources";
+	 QString resourcesFolder = appendPath(ImportFolder, "Resources");
 	 dir.mkpath(resourcesFolder);
 
 	 QStringList resources = QDir(":/Resources/").entryList();
 	 for (int i = 0; i < resources.size(); i++)
 	 {
-		  QString resource = resourcesFolder + "\\" + resources[i];
+		  QString resource = appendPath(resourcesFolder, resources[i]);
 		  QFile file(":/Resources/" + resources[i]);
 		  CopyFile(&file, &resource, replace);
 		  file.close();
@@ -260,7 +267,7 @@ void DzUnityAction::CreateUnityFiles(bool replace)
 
 void DzUnityAction::WriteConfiguration()
 {
-	 QString DTUfilename = CharacterFolder + CharacterName + ".dtu";
+	 QString DTUfilename = appendPath(CharacterFolder, CharacterName + ".dtu");
 	 QFile DTUfile(DTUfilename);
 	 DTUfile.open(QIODevice::WriteOnly);
 	 DzJsonWriter writer(&DTUfile);
