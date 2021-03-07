@@ -24,6 +24,7 @@
 #include "dzactionmgr.h"
 #include "dzaction.h"
 #include "dzskeleton.h"
+#include "dzfigure.h"
 #include "dzobject.h"
 #include "dzshape.h"
 #include "dzmodifier.h"
@@ -187,6 +188,22 @@ QSize DzUnityMorphSelectionDialog::minimumSizeHint() const
 void DzUnityMorphSelectionDialog::PrepareDialog()
 {
 	DzNode* Selection = dzScene->getPrimarySelection();
+
+	// For items like clothing, create the morph list from the character
+	DzNode* ParentFigureNode = Selection;
+	while (ParentFigureNode->getNodeParent())
+	{
+		ParentFigureNode = ParentFigureNode->getNodeParent();
+		if (DzSkeleton* Skeleton = ParentFigureNode->getSkeleton())
+		{
+			if (DzFigure* Figure = qobject_cast<DzFigure*>(Skeleton))
+			{
+				Selection = ParentFigureNode;
+				break;
+			}
+		}
+	}
+
 	morphs.clear();
 	morphList = GetAvailableMorphs(Selection);
 	for (int ChildIndex = 0; ChildIndex < Selection->getNumNodeChildren(); ChildIndex++)
