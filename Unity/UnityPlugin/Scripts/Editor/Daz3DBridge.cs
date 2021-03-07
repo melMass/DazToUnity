@@ -1,13 +1,8 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System;
-
-
-
+﻿using UnityEditor;
+using UnityEngine;
 
 namespace Daz3D
 {
-
     using record = Daz3DDTUImporter.ImportEventRecord;
 
     /// <summary>
@@ -16,10 +11,12 @@ namespace Daz3D
     public class Daz3DBridge : EditorWindow
     {
         private Vector2 _scrollPos;
+
         //Tuple<UnityEngine.Object, Texture> thumbnail = null;
         public static readonly Color ThemedColor = new Color(.7f, 1f, .8f);
 
-        Texture masthead = null;
+        Texture masthead;
+
         public enum ToolbarMode
         {
             History,
@@ -27,26 +24,34 @@ namespace Daz3D
             Options,
             Commands
         }
+
         public static ToolbarMode CurrentToolbarMode = ToolbarMode.ReadMe;
-        private bool _needsRepaint = false;
+        private bool _needsRepaint;
 
         Vector2 readMePos = Vector2.zero;
         private static float _progress;
+
         public static float Progress
         {
             get { return _progress; }
-            set { _progress = value; _instance?.Repaint(); }
+            set
+            {
+                _progress = value;
+                _instance?.Repaint();
+            }
         }
 
         private static Daz3DBridge _instance;
+
         [MenuItem("Daz3D/Open Daz3DBridge window")]
         public static void ShowWindow()
         {
             ObtainInstance();
         }
-        private static void ObtainInstance() 
-        {  
-            _instance = (Daz3DBridge)GetWindow(typeof(Daz3DBridge));
+
+        private static void ObtainInstance()
+        {
+            _instance = (Daz3DBridge) GetWindow(typeof(Daz3DBridge));
             _instance.titleContent = new GUIContent("Daz to Unity Bridge");
         }
 
@@ -59,21 +64,18 @@ namespace Daz3D
                 Repaint();
             }
 
-            if (!_instance == null)
-                ObtainInstance();
+            // if (_instance == null)
+            //     ObtainInstance();
         }
-
 
 
         private void DrawProgressBar()
         {
-            if (Progress > 0)
-            {
-                //float progress = Mathf.Abs(DateTime.Now.Millisecond * .001f);
+            if (!(Progress > 0)) return;
+            //float progress = Mathf.Abs(DateTime.Now.Millisecond * .001f);
 
-                GUI.backgroundColor = new Color(1, .2f, .1f);
-                GUILayout.Button("", GUILayout.Width(position.width * Progress), GUILayout.Height(12));
-            }
+            GUI.backgroundColor = new Color(1, .2f, .1f);
+            GUILayout.Button("", GUILayout.Width(position.width * Progress), GUILayout.Height(12));
         }
 
 
@@ -102,8 +104,8 @@ namespace Daz3D
             GUIStyle myStyle = new GUIStyle(GUI.skin.label);
             myStyle.margin = new RectOffset(0, 0, 0, 0);
 
-            var labels = new string[] { "History", "Read Me", "Options", "Commands" };
-            CurrentToolbarMode = (ToolbarMode)GUILayout.Toolbar((int)CurrentToolbarMode, labels);
+            var labels = new[] {"History", "Read Me", "Options", "Commands"};
+            CurrentToolbarMode = (ToolbarMode) GUILayout.Toolbar((int) CurrentToolbarMode, labels);
 
             switch (CurrentToolbarMode)
             {
@@ -119,11 +121,9 @@ namespace Daz3D
                 case ToolbarMode.Commands:
                     DrawCommands();
                     break;
-
             }
 
             GUI.backgroundColor = temp;
-
         }
 
 
@@ -190,11 +190,16 @@ namespace Daz3D
             GUILayout.BeginVertical();
             GUILayout.Space(12);
 
-            Daz3DDTUImporter.AutoImportDTUChanges = GUILayout.Toggle(Daz3DDTUImporter.AutoImportDTUChanges, "Automatically import when DTU changes are detected", bigStyle);
-            Daz3DDTUImporter.GenerateUnityPrefab = GUILayout.Toggle(Daz3DDTUImporter.GenerateUnityPrefab, "Generate a Unity Prefab based on FBX and DTU", bigStyle);
-            Daz3DDTUImporter.ReplaceSceneInstances = GUILayout.Toggle(Daz3DDTUImporter.ReplaceSceneInstances, "Replace instances of Unity Prefab in active scene(s)", bigStyle);
-            Daz3DDTUImporter.AutomateMecanimAvatarMappings = GUILayout.Toggle(Daz3DDTUImporter.AutomateMecanimAvatarMappings, "Automatically setup the Mecanim Avatar", bigStyle);
-            Daz3DDTUImporter.ReplaceMaterials = GUILayout.Toggle(Daz3DDTUImporter.ReplaceMaterials, "Replace FBX materials with high quality Daz-shader materials", bigStyle);
+            Daz3DDTUImporter.AutoImportDTUChanges = GUILayout.Toggle(Daz3DDTUImporter.AutoImportDTUChanges,
+                "Automatically import when DTU changes are detected", bigStyle);
+            Daz3DDTUImporter.GenerateUnityPrefab = GUILayout.Toggle(Daz3DDTUImporter.GenerateUnityPrefab,
+                "Generate a Unity Prefab based on FBX and DTU", bigStyle);
+            Daz3DDTUImporter.ReplaceSceneInstances = GUILayout.Toggle(Daz3DDTUImporter.ReplaceSceneInstances,
+                "Replace instances of Unity Prefab in active scene(s)", bigStyle);
+            Daz3DDTUImporter.AutomateMecanimAvatarMappings = GUILayout.Toggle(
+                Daz3DDTUImporter.AutomateMecanimAvatarMappings, "Automatically setup the Mecanim Avatar", bigStyle);
+            Daz3DDTUImporter.ReplaceMaterials = GUILayout.Toggle(Daz3DDTUImporter.ReplaceMaterials,
+                "Replace FBX materials with high quality Daz-shader materials", bigStyle);
 
             GUILayout.Space(12);
             if (GUILayout.Button("Reset All", GUILayout.Width(100)))
@@ -225,7 +230,6 @@ namespace Daz3D
 
             foreach (var record in Daz3DDTUImporter.EventQueue)
             {
-
                 GUILayout.BeginVertical(GUI.skin.box);
                 record.Unfold = EditorGUILayout.Foldout(record.Unfold, "Import Event: " + record.Timestamp);
 
@@ -233,9 +237,9 @@ namespace Daz3D
 
                 if (record.Unfold)
                 {
-                    GUILayout.Space(4);//lead
+                    GUILayout.Space(4); //lead
                     GUILayout.BeginHorizontal();
-                    GUILayout.Space(16);//indent
+                    GUILayout.Space(16); //indent
 
                     //foreach (var word in words)
                     foreach (var token in record.Tokens)
@@ -248,7 +252,6 @@ namespace Daz3D
                                 Selection.activeObject = token.Selectable;
 
                             GUI.contentColor = Color.white;
-
                         }
                         else
                         {
@@ -260,9 +263,8 @@ namespace Daz3D
                             GUILayout.FlexibleSpace();
                             GUILayout.EndHorizontal();
                             GUILayout.BeginHorizontal();
-                            GUILayout.Space(16);//indent
+                            GUILayout.Space(16); //indent
                         }
-
                     }
 
                     GUILayout.FlexibleSpace();
@@ -272,10 +274,7 @@ namespace Daz3D
                 GUILayout.EndVertical();
 
                 //GUILayout.Space(8);
-
             }
-
-
 
 
             EditorGUILayout.EndScrollView();
@@ -292,7 +291,6 @@ namespace Daz3D
             }
             else
                 GUILayout.Label("ReadMe text not loaded");
-
         }
     }
 
@@ -300,15 +298,14 @@ namespace Daz3D
     [InitializeOnLoad]
     public static class OrnamenfftDTUFileInProjectWindow
     {
-
         static OrnamenfftDTUFileInProjectWindow()
         {
             EditorApplication.projectWindowItemOnGUI += DrawAssetDetails;
-
         }
+
         private static void DrawAssetDetails(string guid, Rect rect)
         {
-            if (Application.isPlaying || Event.current.type != EventType.Repaint )
+            if (Application.isPlaying || Event.current.type != EventType.Repaint)
                 return;
 
             var assetPath = AssetDatabase.GUIDToAssetPath(guid);
@@ -359,5 +356,4 @@ namespace Daz3D
             return rect.height <= 20;
         }
     }
-
 }

@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 
 namespace Daz3D
 {
@@ -46,7 +43,6 @@ namespace Daz3D
     //    }
 
 
-
     //}
     public static class DazJSONHelper
     {
@@ -67,7 +63,8 @@ namespace Daz3D
 
         public static string BuildUnityPath(string path, string subDir)
         {
-            var result = Path.Combine(path, subDir).Replace("\\", "/"); //unity likes forward slashes in asset database paths;
+            var result =
+                Path.Combine(path, subDir).Replace("\\", "/"); //unity likes forward slashes in asset database paths;
 
             return result;
         }
@@ -99,5 +96,3 @@ namespace Daz3D
         //    //    }
     }
 }
-
-

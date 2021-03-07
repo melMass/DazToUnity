@@ -1,24 +1,25 @@
-﻿using UnityEditor;
-using UnityEditor.Experimental.AssetImporters;
-using System.Collections.Generic;
-using System;
+﻿using System;
 using System.Collections;
-using UnityEngine;
+using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
+using System.Reflection;
+using UnityEditor;
+using UnityEditor.AssetImporters;
+using UnityEngine;
+using UnityEngine.Rendering;
+using Object = UnityEngine.Object;
 
 namespace Daz3D
 {
-
     [ScriptedImporter(1, "dtu", 0x7FFFFFFF)]
     public class Daz3DDTUImporter : ScriptedImporter
     {
-
         public static bool AutoImportDTUChanges = true;
         public static bool GenerateUnityPrefab = true;
         public static bool ReplaceSceneInstances = true;
         public static bool AutomateMecanimAvatarMappings = true;
         public static bool ReplaceMaterials = true;
+
         public static void ResetOptions()
         {
             AutoImportDTUChanges = true;
@@ -29,15 +30,15 @@ namespace Daz3D
         }
 
 
-
         [Serializable]
         public class ImportEventRecord
         {
             public DateTime Timestamp = DateTime.Now;
+
             public struct Token
             {
                 public string Text;
-                public UnityEngine.Object Selectable;
+                public Object Selectable;
                 public bool EndLine;
             }
 
@@ -45,18 +46,18 @@ namespace Daz3D
 
             public bool Unfold = true;
 
-            internal void AddToken(string str, UnityEngine.Object obj = null, bool endline = false)
+            internal void AddToken(string str, Object obj = null, bool endline = false)
             {
-                Tokens.Add(new Token() { Text = str, Selectable = obj, EndLine = endline });
+                Tokens.Add(new Token {Text = str, Selectable = obj, EndLine = endline});
             }
         }
 
 
         public static Queue<ImportEventRecord> EventQueue = new Queue<ImportEventRecord>();
         private static Dictionary<string, Material> s_StandardMaterialCollection = new Dictionary<string, Material>();
-        private static MaterialMap _map = null;
+        private static MaterialMap _map;
         private const bool ENDLINE = true;
-        
+
         public static void EmptyEventQueue()
         {
             EventQueue = new Queue<ImportEventRecord>();
@@ -104,8 +105,7 @@ namespace Daz3D
             var dtuPath = AssetDatabase.GetAssetPath(activeObject);
             var fbxPath = dtuPath.Replace(".dtu", ".fbx");
 
-            Import(dtuPath, fbxPath); 
-
+            Import(dtuPath, fbxPath);
         }
 
         [MenuItem("Daz3D/Extract materials from selected DTU", true)]
@@ -130,15 +130,15 @@ namespace Daz3D
                 Path = path;
             }
 
-            public void AddMaterial(UnityEngine.Material material)
+            public void AddMaterial(Material material)
             {
                 if (material && !Map.ContainsKey(material.name))
                     Map.Add(material.name, material);
             }
-            public string Path { get; set; }
-            public Dictionary<string, UnityEngine.Material> Map = new Dictionary<string, UnityEngine.Material>();
-        }
 
+            public string Path { get; set; }
+            public Dictionary<string, Material> Map = new Dictionary<string, Material>();
+        }
 
 
         public static void Import(string dtuPath, string fbxPath)
@@ -147,15 +147,13 @@ namespace Daz3D
         }
 
 
-
-
         private static IEnumerator ImportRoutine(string dtuPath, string fbxPath)
         {
-            Daz3DBridge.CurrentToolbarMode = Daz3DBridge.ToolbarMode.History;//force into history mode during import
+            Daz3DBridge.CurrentToolbarMode = Daz3DBridge.ToolbarMode.History; //force into history mode during import
 
             Daz3DBridge.Progress = .03f;
-                yield return new WaitForEndOfFrame();
-    
+            yield return new WaitForEndOfFrame();
+
             _map = new MaterialMap(dtuPath);
 
             while (!IrayShadersReady())
@@ -171,33 +169,30 @@ namespace Daz3D
             DazFigurePlatform platform = DiscoverFigurePlatform(dtu);
 
             Daz3DBridge.Progress = .9f;
-                yield return new WaitForEndOfFrame();
+            yield return new WaitForEndOfFrame();
 
             if (GenerateUnityPrefab)
                 GeneratePrefabFromFBX(fbxPath, platform);
 
             Daz3DBridge.Progress = 1f;
-                yield return new WaitForEndOfFrame();
+            yield return new WaitForEndOfFrame();
 
             _map = null;
 
             Daz3DBridge.Progress = 0;
-
-            
-            yield break;
         }
 
         private static DazFigurePlatform DiscoverFigurePlatform(DTU dtu)
         {
             var token = dtu.AssetID.ToLower();
 
-            foreach(DazFigurePlatform dfp in Enum.GetValues(typeof (DazFigurePlatform)))
+            foreach (DazFigurePlatform dfp in Enum.GetValues(typeof(DazFigurePlatform)))
             {
                 if (token.Contains(dfp.ToString().ToLower()))
                     return dfp;
             }
 
-            return DazFigurePlatform.Genesis8;//default
+            return DazFigurePlatform.Genesis8; //default
         }
 
         private static bool IrayShadersReady()
@@ -209,7 +204,8 @@ namespace Daz3D
                 Shader.Find(DTU_Constants.shaderNameHair) == null ||
                 Shader.Find(DTU_Constants.shaderNameWet) == null ||
                 Shader.Find(DTU_Constants.shaderNameInvisible) == null
-            ) {
+            )
+            {
                 return false;
             }
 
@@ -228,7 +224,7 @@ namespace Daz3D
 
             var dtu = DTUConverter.ParseDTUFile(path);
 
-            var dtuObject = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
+            var dtuObject = AssetDatabase.LoadAssetAtPath<Object>(path);
 
             record.AddToken("Imported DTU file: " + path);
             record.AddToken(dtuObject.name, dtuObject, ENDLINE);
@@ -243,6 +239,7 @@ namespace Daz3D
 
                 record.AddToken(material.name, material);
             }
+
             record.AddToken(" based on DTU file.", null, ENDLINE);
 
 
@@ -250,7 +247,7 @@ namespace Daz3D
             if (bridge == null)
             {
                 var consoleType = Type.GetType("ConsoleWindow,UnityEditor.dll");
-                bridge = EditorWindow.CreateWindow<Daz3DBridge>(new[] { consoleType });
+                bridge = EditorWindow.CreateWindow<Daz3DBridge>(consoleType);
             }
 
             bridge?.Focus();
@@ -260,11 +257,9 @@ namespace Daz3D
             {
                 EventQueue.Dequeue();
             }
-
         }
 
 
-        
         public static IEnumerator ImportDTURoutine(string path, Action<DTU> dtuOut, float progressLimit)
         {
             Debug.Log("ImportDTU for " + path);
@@ -277,7 +272,7 @@ namespace Daz3D
             var dtu = DTUConverter.ParseDTUFile(path);
             dtuOut(dtu);
 
-            var dtuObject = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
+            var dtuObject = AssetDatabase.LoadAssetAtPath<Object>(path);
 
             record.AddToken("Imported DTU file: " + path);
             record.AddToken(dtuObject.name, dtuObject, ENDLINE);
@@ -299,8 +294,8 @@ namespace Daz3D
                 Daz3DBridge.Progress = Mathf.MoveTowards(Daz3DBridge.Progress, progressLimit, progressIncrement);
 
                 yield return new WaitForEndOfFrame();
-
             }
+
             record.AddToken(" based on DTU file.", null, ENDLINE);
 
 
@@ -308,7 +303,7 @@ namespace Daz3D
             if (bridge == null)
             {
                 var consoleType = Type.GetType("ConsoleWindow,UnityEditor.dll");
-                bridge = EditorWindow.CreateWindow<Daz3DBridge>(new[] { consoleType });
+                bridge = EditorWindow.CreateWindow<Daz3DBridge>(consoleType);
             }
 
             bridge?.Focus();
@@ -318,8 +313,6 @@ namespace Daz3D
             {
                 EventQueue.Dequeue();
             }
-
-            yield break;
         }
 
 
@@ -371,16 +364,15 @@ namespace Daz3D
                 return;
             }
 
-           
 
-            System.Reflection.MethodInfo resetPose = null;
-            System.Reflection.MethodInfo xferPose = null;
+            MethodInfo resetPose = null;
+            MethodInfo xferPose = null;
 
             var avatarInstance = Instantiate(fbxPrefab);
             avatarInstance.name = "AvatarInstance";
 
             if (AutomateMecanimAvatarMappings)
-            { 
+            {
                 var record = new ImportEventRecord();
 
                 ModelImporter importer = GetAtPath(fbxPath) as ModelImporter;
@@ -393,7 +385,7 @@ namespace Daz3D
                     importer.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
 
                     // Genesis 8 is modeled in A-pose, so we correct to T-pose before configuring avatar joints
-                    //using Unity's internal MakePoseValid method, which does a perfect job
+                    // using Unity's internal MakePoseValid method, which does a perfect job
                     if (platform == DazFigurePlatform.Genesis8 && false)
                     {
                         //use reflection to access AvatarSetupTool;
@@ -409,18 +401,21 @@ namespace Daz3D
                                 existingMappings[human[i].humanName] = human[i].boneName;
 
                             var getModelBones = setupToolType.GetMethod("GetModelBones");
-                            var getHumanBones = setupToolType.GetMethod("GetHumanBones", new[] { typeof(Dictionary<string, string>), typeof(Dictionary<Transform, bool>) });
+                            var getHumanBones = setupToolType.GetMethod("GetHumanBones",
+                                new[] {typeof(Dictionary<string, string>), typeof(Dictionary<Transform, bool>)});
                             var makePoseValid = setupToolType.GetMethod("MakePoseValid");
                             resetPose = setupToolType.GetMethod("CopyPose");
                             xferPose = setupToolType.GetMethod("TransferPoseToDescription");
 
                             if (getModelBones != null && getHumanBones != null && makePoseValid != null)
-                            { 
-                                record.AddToken("Corrected Avatar Setup T-pose for Genesis8 figure: ", null);
+                            {
+                                record.AddToken("Corrected Avatar Setup T-pose for Genesis8 figure: ");
                                 record.AddToken(fbxPrefab.name, fbxPrefab, ENDLINE);
 
-                                var modelBones = (Dictionary<Transform, bool>)getModelBones.Invoke(null, new object[] { avatarInstance.transform, false, null });
-                                var humanBones = (ICollection<object>)getHumanBones.Invoke(null, new object[] { existingMappings, modelBones });
+                                var modelBones = (Dictionary<Transform, bool>) getModelBones.Invoke(null,
+                                    new object[] {avatarInstance.transform, false, null});
+                                var humanBones = (ICollection<object>) getHumanBones.Invoke(null,
+                                    new object[] {existingMappings, modelBones});
 
                                 // a little dance to populate array of Unity's internal BoneWrapper type 
                                 var humanBonesArray = new object[humanBones.Count];
@@ -429,7 +424,7 @@ namespace Daz3D
                                 Array.Copy(humanBonesArray, destinationArray, humanBones.Count);
 
                                 //This mutates the transforms (modelBones) via Bonewrapper class
-                                makePoseValid.Invoke(null, new[] { destinationArray });
+                                makePoseValid.Invoke(null, new[] {destinationArray});
                             }
                         }
                     }
@@ -446,10 +441,9 @@ namespace Daz3D
 
                         if (skeleton != null)
                         {
-                            resetPose.Invoke(null, new object[] { avatarInstance, fbxPrefab });
+                            resetPose.Invoke(null, new object[] {avatarInstance, fbxPrefab});
                             //xferPose.Invoke(null, new object[] { skeleton, avatarInstance.transform });
                         }
-
                     }
 
                     DestroyImmediate(avatarInstance);
@@ -464,8 +458,11 @@ namespace Daz3D
                 }
                 else
                 {
-                    Debug.LogWarning("Could not acquire importer for " + fbxPath + " ...could not automatically configure humanoid avatar.");
-                    record.AddToken("Could not acquire importer for " + fbxPath + " ...could not automatically configure humanoid avatar.", null, ENDLINE);
+                    Debug.LogWarning("Could not acquire importer for " + fbxPath +
+                                     " ...could not automatically configure humanoid avatar.");
+                    record.AddToken(
+                        "Could not acquire importer for " + fbxPath +
+                        " ...could not automatically configure humanoid avatar.", null, ENDLINE);
                 }
 
                 EventQueue.Enqueue(record);
@@ -492,18 +489,19 @@ namespace Daz3D
                     var dict = new Dictionary<Material, Material>();
 
                     if (renderer.name.ToLower().Contains("eyelashes"))
-                        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                        renderer.shadowCastingMode = ShadowCastingMode.Off;
                     foreach (var keyMat in renderer.sharedMaterials)
                     {
                         var key = keyMat.name;
 
-                        key = Daz3D.Utilities.ScrubKey(key);
+                        key = Utilities.ScrubKey(key);
 
                         Material nuMat = null;
 
                         if (_map != null && _map.Map.ContainsKey(key))
                         {
-                            nuMat = _map.Map[key];// the preferred uber/iRay based material generated by the DTUConverter
+                            nuMat = _map
+                                .Map[key]; // the preferred uber/iRay based material generated by the DTUConverter
                         }
                         else if (s_StandardMaterialCollection.ContainsKey(key))
                         {
@@ -536,11 +534,9 @@ namespace Daz3D
 
                             //Debug.Log("obj path " + path);
                             AssetDatabase.CreateAsset(nuMat, matPath + "/Daz3D_" + keyMat.name + ".mat");
-
                         }
 
                         dict.Add(keyMat, nuMat);
-
                     }
 
                     //remap the meshes in the fbx prefab to the value materials in dict
@@ -550,11 +546,10 @@ namespace Daz3D
                     {
                         var key = renderer.sharedMaterials[i];
                         //Debug.Log("remapping: " + renderer.sharedMaterials[i].name + " to " + dict[key].name);
-                        copy[i] = dict[key];//fill copy
+                        copy[i] = dict[key]; //fill copy
                     }
 
-                    renderer.sharedMaterials = copy;//overwrite sharedMaterials, because set indexer assigns to a copy
-
+                    renderer.sharedMaterials = copy; //overwrite sharedMaterials, because set indexer assigns to a copy
                 }
             }
 
@@ -573,7 +568,8 @@ namespace Daz3D
             component.SourceFBX = fbxPrefab;
 
             // Create the new Prefab.
-            var prefab = PrefabUtility.SaveAsPrefabAssetAndConnect(workingInstance, nuPrefabPathPath, InteractionMode.AutomatedAction);
+            var prefab = PrefabUtility.SaveAsPrefabAssetAndConnect(workingInstance, nuPrefabPathPath,
+                InteractionMode.AutomatedAction);
             Selection.activeGameObject = prefab;
 
             //now, seek other instance(s) in the scene having been sourced from this fbx asset
@@ -586,9 +582,9 @@ namespace Daz3D
             {
                 foreach (var otherInstance in otherInstances)
                 {
-                    if (otherInstance == component)//ignore this working instance
+                    if (otherInstance == component) //ignore this working instance
                         continue;
-                    if (otherInstance.SourceFBX != fbxPrefab)//ignore instances of other assets
+                    if (otherInstance.SourceFBX != fbxPrefab) //ignore instances of other assets
                         continue;
 
 
@@ -627,7 +623,6 @@ namespace Daz3D
         }
 
 
-
         private static void DescribeHumanJointsForFigure(ref HumanDescription description, DazFigurePlatform figure)
         {
             var map = GetJointMapForFigure(figure);
@@ -662,7 +657,7 @@ namespace Daz3D
                     break;
 
                 case DazFigurePlatform.Genesis2:
-                    ConfigureGenesisMapStandard(map);//todo account for Gen2 variances
+                    ConfigureGenesisMapStandard(map); //todo account for Gen2 variances
                     break;
 
                 case DazFigurePlatform.Victoria:
@@ -678,10 +673,9 @@ namespace Daz3D
                 default:
                     //do nothing, let unity's excellent guesser handle it
                     break;
-
             }
 
-            return map; 
+            return map;
         }
 
         private static void ConfigureGenesisMapStandard(Dictionary<string, string> map)
@@ -760,7 +754,7 @@ namespace Daz3D
             map["Right Little Distal"] = "rPinky3";
         }
 
-        private void FixupStandardBasedMaterial(ref Material nuMat, GameObject fbxPrefab, string key/*, DTUData data*/)
+        private void FixupStandardBasedMaterial(ref Material nuMat, GameObject fbxPrefab, string key /*, DTUData data*/)
         {
             ////todo need fixup missing textures from the json
             //Debug.LogWarning("dtuData has " + data.Materials.Count + " materials ");
@@ -877,7 +871,7 @@ namespace Daz3D
             if (texture != null)
             {
                 var texPath = AssetDatabase.GetAssetPath(texture);
-                TextureImporter importer = (TextureImporter)AssetImporter.GetAtPath(texPath);
+                TextureImporter importer = (TextureImporter) GetAtPath(texPath);
                 if (importer != null)
                 {
                     if (alphaIsTransparent && importer.DoesSourceTextureHaveAlpha())
@@ -890,7 +884,6 @@ namespace Daz3D
                 }
                 else
                     Debug.LogWarning("texture " + texture.name + " is not a project asset.");
-
             }
             else
                 Debug.LogWarning("null texture");
@@ -903,19 +896,18 @@ namespace Daz3D
                 return false;
 
             var nmPath = AssetDatabase.GetAssetPath(normalMap);
-            TextureImporter importer = (TextureImporter)AssetImporter.GetAtPath(nmPath);
+            TextureImporter importer = (TextureImporter) GetAtPath(nmPath);
             if (importer != null)
             {
                 var settings = new TextureImporterSettings();
                 importer.ReadTextureSettings(settings);
                 return settings.textureType == TextureImporterType.NormalMap;
             }
-            else
-                Debug.LogWarning("texture " + normalMap.name + " is not a project asset.");
+
+            Debug.LogWarning("texture " + normalMap.name + " is not a project asset.");
 
             return true;
         }
-
 
 
         // Validated menu item.
@@ -937,7 +929,7 @@ namespace Daz3D
         //    return ValidateDTUSelected();
         //}
 
-        private static void CreateDTUPrefab(UnityEngine.Object activeObject)
+        private static void CreateDTUPrefab(Object activeObject)
         {
             if (activeObject)
             {
@@ -947,8 +939,5 @@ namespace Daz3D
                 Import(dtuPath, fbxPath);
             }
         }
-
-
     }
-
 }

@@ -12,7 +12,7 @@ namespace Daz3D
     public static class DazCoroutine
     {
         private static List<IEnumerator> s_activeCoroutines = new List<IEnumerator>();
-        private static int s_activeCoroutineIndex = 0;
+        private static int s_activeCoroutineIndex;
 
         static DazCoroutine()
         {
@@ -50,5 +50,4 @@ namespace Daz3D
             return Array.Exists(list, element => element.Method.Name == "ExecuteCoroutines");
         }
     }
-
 }
