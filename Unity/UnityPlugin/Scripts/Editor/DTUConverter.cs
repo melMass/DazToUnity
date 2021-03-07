@@ -662,7 +662,7 @@ namespace Daz3D
                 mat.SetColor("_Diffuse", diffuseColor.Color);
                 mat.SetTexture("_DiffuseMap", ImportTextureFromPath(diffuseColor.Texture, materialDir, record));
                 mat.SetTexture("_NormalMap", ImportTextureFromPath(normalMap.Texture, materialDir, record, true));
-                mat.SetFloat("_NormalStrength", normalMap.Float);
+                mat.SetFloat("_NormalStrength", !string.IsNullOrEmpty(normalMap.Texture) ? 0 : normalMap.Float);
                 mat.SetFloat("_Height", bumpStrength.Float);
                 mat.SetTexture("_HeightMap",
                     ImportTextureFromPath(bumpStrength.Texture, materialDir, record, false, true));
@@ -700,7 +700,7 @@ namespace Daz3D
                 mat.SetFloat("_IndexOfRefraction", refractionIndex.Float);
                 //TODO: we can pull data from the existing object, but for now these values work well
                 mat.SetFloat("_Smoothness", 0.97f);
-                mat.SetFloat("_Normal", normalMap.Float);
+                mat.SetFloat("_Normal", !string.IsNullOrEmpty(normalMap.Texture) ? 0 : normalMap.Float);
                 mat.SetTexture("_NormalMap", ImportTextureFromPath(normalMap.Texture, materialDir, record, true));
                 mat.SetFloat("_Height", bumpStrength.Float);
                 mat.SetTexture("_HeightMap",
@@ -955,7 +955,7 @@ namespace Daz3D
                 mat.SetTexture("_HeightMap",
                     ImportTextureFromPath(bumpStrength.Texture, materialDir, record, false, true));
 
-                mat.SetFloat("_Normal", normalMap.Float);
+                mat.SetFloat("_Normal", !string.IsNullOrEmpty(normalMap.Texture) ? 0 : normalMap.Float);
                 mat.SetTexture("_NormalMap", ImportTextureFromPath(normalMap.Texture, materialDir, record, true));
 
                 //right now we're ignoring top coats
@@ -1135,7 +1135,7 @@ namespace Daz3D
                 mat.SetFloat("_IndexOfRefraction", indexOfRefraction.Float);
                 //TODO: we can pull data from the existing object, but for now these values work well
                 mat.SetFloat("_Smoothness", 0.97f);
-                mat.SetFloat("_Normal", normalMap.Float);
+                mat.SetFloat("_Normal", !string.IsNullOrEmpty(normalMap.Texture) ? 0 : normalMap.Float);
                 mat.SetTexture("_NormalMap", ImportTextureFromPath(normalMap.Texture, materialDir, record, true));
                 mat.SetFloat("_Height", bumpStrength.Float);
                 mat.SetTexture("_HeightMap",
@@ -1151,7 +1151,7 @@ namespace Daz3D
                 mat.SetFloat("_Roughness", 1.0f);
 
                 mat.SetTexture("_NormalMap", ImportTextureFromPath(normalMap.Texture, materialDir, record, true));
-                mat.SetFloat("_NormalStrength", normalMap.Float);
+                mat.SetFloat("_NormalStrength", !string.IsNullOrEmpty(normalMap.Texture) ? 0 : normalMap.Float);
                 mat.SetFloat("_Height", bumpStrength.Float);
                 mat.SetTexture("_HeightMap",
                     ImportTextureFromPath(bumpStrength.Texture, materialDir, record, false, true));
@@ -1305,7 +1305,7 @@ namespace Daz3D
             mat.SetTexture("_DiffuseMap", ImportTextureFromPath(diffuseColor.Texture, materialDir, record));
 
             mat.SetTexture("_NormalMap", ImportTextureFromPath(normalMap.Texture, materialDir, record, true));
-            mat.SetFloat("_NormalStrength", normalMap.Float);
+            mat.SetFloat("_NormalStrength", !string.IsNullOrEmpty(normalMap.Texture) ? 0 : normalMap.Float);
             mat.SetFloat("_Height", bumpStrength.Float);
             mat.SetTexture("_HeightMap", ImportTextureFromPath(bumpStrength.Texture, materialDir, record, false, true));
             mat.SetFloat("_HeightOffset", 0.25f);
@@ -1517,7 +1517,7 @@ namespace Daz3D
                 mat.SetColor("_Diffuse", diffuseColor.Color);
                 mat.SetTexture("_DiffuseMap", ImportTextureFromPath(diffuseColor.Texture, materialDir, record));
                 mat.SetTexture("_NormalMap", ImportTextureFromPath(normalMap.Texture, materialDir, record, true));
-                mat.SetFloat("_NormalStrength", normalMap.Float);
+                mat.SetFloat("_NormalStrength", !string.IsNullOrEmpty(normalMap.Texture) ? 0 : normalMap.Float);
                 mat.SetFloat("_Height", bumpStrength.Float);
                 mat.SetTexture("_HeightMap",
                     ImportTextureFromPath(bumpStrength.Texture, materialDir, record, false, true));
@@ -1547,7 +1547,7 @@ namespace Daz3D
                 mat.SetFloat("_IndexOfRefraction", indexOfRefraction.Float);
                 //TODO: we can pull data from the existing object, but for now these values work well
                 mat.SetFloat("_Smoothness", 0.97f);
-                mat.SetFloat("_Normal", normalMap.Float);
+                mat.SetFloat("_Normal", !string.IsNullOrEmpty(normalMap.Texture) ? 0 : normalMap.Float);
                 mat.SetTexture("_NormalMap", ImportTextureFromPath(normalMap.Texture, materialDir, record, true));
                 mat.SetFloat("_Height", bumpStrength.Float);
                 mat.SetTexture("_HeightMap",
@@ -1572,7 +1572,7 @@ namespace Daz3D
 
 
                 mat.SetTexture("_NormalMap", ImportTextureFromPath(normalMap.Texture, materialDir, record, true));
-                mat.SetFloat("_Normal", normalMap.Float);
+                mat.SetFloat("_Normal", !string.IsNullOrEmpty(normalMap.Texture) ? 0 : normalMap.Float);
 
                 if (bumpActive.Float > 0f)
                 {
@@ -1706,7 +1706,7 @@ namespace Daz3D
             {
                 //normal map
                 mat.SetTexture("_NormalMap", ImportTextureFromPath(bumpStrength.Texture, materialDir, record, true));
-                mat.SetFloat("_NormalStrength", bumpStrength.Float);
+                mat.SetFloat("_NormalStrength", !string.IsNullOrEmpty(bumpStrength.Texture) ? 0 : bumpStrength.Float);
             }
 
             mat.SetTexture("_CutoutOpacityMap",
@@ -1835,7 +1835,7 @@ namespace Daz3D
             mat.SetColor("_Diffuse", diffuseColor.Color);
             mat.SetTexture("_DiffuseMap", ImportTextureFromPath(diffuseColor.Texture, materialDir, record));
             mat.SetTexture("_NormalMap", ImportTextureFromPath(normalMap.Texture, materialDir, record, true));
-            mat.SetFloat("_NormalStrength", normalMap.Float);
+            mat.SetFloat("_NormalStrength", !string.IsNullOrEmpty(normalMap.Texture) ? 0 : normalMap.Float);
             mat.SetFloat("_Height", bumpStrength.Float);
             mat.SetTexture("_HeightMap", ImportTextureFromPath(bumpStrength.Texture, materialDir, record, false, true));
             mat.SetFloat("_HeightOffset", 0.25f);
