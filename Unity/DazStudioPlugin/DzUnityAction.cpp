@@ -59,7 +59,6 @@ void DzUnityAction::executeAction()
 	 {
 		  //Create Daz3D folder if it doesn't exist
 		  QDir dir;
-		  //ImportFolder = dlg->assetsFolderEdit->text() + "\\Daz3D";
 		  ImportFolder = appendPath(dlg->assetsFolderEdit->text(),"Daz3D");
 		  dir.mkpath(ImportFolder);
 
@@ -311,9 +310,11 @@ void DzUnityAction::SetExportOptions(DzFileIOSettings& ExportOptions)
 	 ExportOptions.setBoolValue("doSelected", true);
 	 ExportOptions.setBoolValue("doLights", true);
 	 ExportOptions.setBoolValue("doCameras", true);
-	 ExportOptions.setBoolValue("doAnims", false);
 
-	 if (AssetType == "SkeletalMesh" && ExportMorphs && MorphString != "")
+	 ExportOptions.setBoolValue("doAnims", AssetType == "Animation");
+
+
+	 if ((AssetType == "SkeletalMesh" || AssetType == "Animation") && ExportMorphs && MorphString != "")
 	 {
 		  ExportOptions.setBoolValue("doMorphs", true);
 		  ExportOptions.setStringValue("rules", MorphString);

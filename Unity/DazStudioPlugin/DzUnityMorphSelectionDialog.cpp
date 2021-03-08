@@ -131,7 +131,7 @@ DzUnityMorphSelectionDialog::DzUnityMorphSelectionDialog(QWidget *parent) :
 	((QGridLayout*)JCMGroupBox->layout())->addWidget(ArmsJCMButton, 0, 0);
 	((QGridLayout*)JCMGroupBox->layout())->addWidget(LegsJCMButton, 0, 1);
 	((QGridLayout*)JCMGroupBox->layout())->addWidget(TorsoJCMButton, 0, 2);
-	((QGridLayout *)JCMGroupBox->layout())->addWidget(ARKit81Button, 1, 0);
+	((QGridLayout*)JCMGroupBox->layout())->addWidget(ARKit81Button, 1, 0);
 
 	connect(ArmsJCMButton, SIGNAL(released()), this, SLOT(HandleArmJCMMorphsButton()));
 	connect(LegsJCMButton, SIGNAL(released()), this, SLOT(HandleLegJCMMorphsButton()));

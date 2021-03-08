@@ -75,8 +75,8 @@ void DzRuntimePluginAction::Export()
 		  ExportOptions.setBoolValue("doLights", false);
 		  ExportOptions.setBoolValue("doCameras", false);
 		  ExportOptions.setBoolValue("doAnims", true);
-		  if (AssetType == "SkeletalMesh" && ExportMorphs && MorphString != "")
-		  {
+			if ((AssetType == "Animation" || AssetType == "SkeletalMesh") && ExportMorphs && MorphString != "")
+			{
 				ExportOptions.setBoolValue("doMorphs", true);
 				ExportOptions.setStringValue("rules", MorphString);
 		  }
