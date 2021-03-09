@@ -29,6 +29,7 @@ public:
 	QCheckBox* morphsEnabledCheckBox;
 	QPushButton* subdivisionButton;
 	QCheckBox* subdivisionEnabledCheckBox;
+	QPushButton* textureButton;
 	QGroupBox* advancedSettingsGroupBox;
 #ifdef FBXOPTIONS
 	QCheckBox* showFbxDialogCheckBox;
@@ -45,6 +46,7 @@ public:
 private slots:
 	void HandleSelectAssetsFolderButton();
 	void HandleChooseMorphsButton();
+	void HandleChooseTexturesButton();
 	void HandleMorphsCheckBoxChange(int state);
 	void HandleChooseSubdivisionsButton();
 	void HandleSubdivisionCheckBoxChange(int state);

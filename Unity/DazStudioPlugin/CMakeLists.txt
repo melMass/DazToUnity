@@ -47,13 +47,15 @@ add_library( ${DZ_PLUGIN_TGT_NAME} SHARED
 	pluginmain.cpp
 	DzUnitySubdivisionDialog.cpp
 	DzUnitySubdivisionDialog.h
+	DzUnityTexturesDialog.cpp
+	DzUnityTexturesDialog.h
 	version.h
 	Resources/resources.qrc
 #	${DPC_IMAGES_CPP}
 	${OS_SOURCES}
 )
 
-target_include_directories(common PUBLIC ${COMMON_LIB_INCLUDE_DIR})
+target_include_directories(${DZ_PLUGIN_TGT_NAME} PUBLIC ${COMMON_LIB_INCLUDE_DIR})
 
 target_link_libraries(${DZ_PLUGIN_TGT_NAME}
 	PRIVATE 

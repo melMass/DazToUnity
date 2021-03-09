@@ -6,7 +6,11 @@ set(COMMON_LIB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(COMMON_LIB_INCLUDE_DIR ${COMMON_LIB_INCLUDE_DIR} PARENT_SCOPE)
 
 include_directories(${COMMON_LIB_INCLUDE_DIR})
-set(LIB_SRCS "DzRuntimePluginAction.cpp")
+set(LIB_SRCS 
+	"DzRuntimePluginAction.cpp"
+	"DzThread.cpp"
+	"debug.cpp"
+)
 
 add_library(common STATIC ${LIB_SRCS})
 

@@ -27,6 +27,9 @@
 #include "DzUnityDialog.h"
 #include "DzUnityMorphSelectionDialog.h"
 #include "DzUnitySubdivisionDialog.h"
+#include "DzUnityTexturesDialog.h"
+
+#include "errorhandler.h"
 
 /*****************************
 Local definitions
@@ -37,17 +40,21 @@ Local definitions
 DzUnityDialog::DzUnityDialog(QWidget* parent) :
 	 DzBasicDialog(parent, DAZ_TO_UNITY_PLUGIN_NAME)
 {
-	 assetNameEdit = NULL;
-	 projectEdit = NULL;
-	 projectButton = NULL;
-	 assetTypeCombo = NULL;
-	 assetsFolderEdit = NULL;
-	 assetsFolderButton = NULL;
-	 morphsButton = NULL;
-	 morphsEnabledCheckBox = NULL;
-	 subdivisionButton = NULL;
-	 subdivisionEnabledCheckBox = NULL;
-	 advancedSettingsGroupBox = NULL;
+
+	qInstallMsgHandler(errorHandler);
+
+	assetNameEdit = NULL;
+	projectEdit = NULL;
+	projectButton = NULL;
+	assetTypeCombo = NULL;
+	assetsFolderEdit = NULL;
+	assetsFolderButton = NULL;
+	morphsButton = NULL;
+	morphsEnabledCheckBox = NULL;
+	subdivisionButton = NULL;
+	subdivisionEnabledCheckBox = NULL;
+	textureButton = NULL;
+	advancedSettingsGroupBox = NULL;
 #ifdef FBXOPTIONS
 	 showFbxDialogCheckBox = NULL;
 #endif
@@ -64,14 +71,14 @@ DzUnityDialog::DzUnityDialog(QWidget* parent) :
 	 setWindowTitle(tr("Daz To Unity"));
 
 	 QFormLayout* mainLayout = new QFormLayout(this);
-	 QFormLayout* advancedLayout = new QFormLayout(this);
+	 QFormLayout* advancedLayout = new QFormLayout();
 
 	 // Asset Name
 	 assetNameEdit = new QLineEdit(this);
 	 assetNameEdit->setValidator(new QRegExpValidator(QRegExp("[A-Za-z0-9_]*"), this));
 
 	 // Intermediate Folder
-	 QHBoxLayout* assetsFolderLayout = new QHBoxLayout(this);
+	 QHBoxLayout* assetsFolderLayout = new QHBoxLayout();
 	 assetsFolderEdit = new QLineEdit(this);
 	 assetsFolderButton = new QPushButton("...", this);
 	 connect(assetsFolderButton, SIGNAL(released()), this, SLOT(HandleSelectAssetsFolderButton()));
@@ -80,14 +87,14 @@ DzUnityDialog::DzUnityDialog(QWidget* parent) :
 	 assetsFolderLayout->addWidget(assetsFolderButton);
 
 	 // Asset Transfer Type
-	 assetTypeCombo = new QComboBox(this);
+	 assetTypeCombo = new QComboBox();
 	 assetTypeCombo->addItem("Skeletal Mesh");
 	 assetTypeCombo->addItem("Static Mesh");
 	 assetTypeCombo->addItem("Animation");
 	 //assetTypeCombo->addItem("Pose");
 
 	 // Morphs
-	 QHBoxLayout* morphsLayout = new QHBoxLayout(this);
+	 QHBoxLayout* morphsLayout = new QHBoxLayout();
 	 morphsButton = new QPushButton("Choose Morphs", this);
 	 connect(morphsButton, SIGNAL(released()), this, SLOT(HandleChooseMorphsButton()));
 	 morphsEnabledCheckBox = new QCheckBox("", this);
@@ -97,7 +104,7 @@ DzUnityDialog::DzUnityDialog(QWidget* parent) :
 	 connect(morphsEnabledCheckBox, SIGNAL(stateChanged(int)), this, SLOT(HandleMorphsCheckBoxChange(int)));
 
 	 // Subdivision
-	 QHBoxLayout* subdivisionLayout = new QHBoxLayout(this);
+	 QHBoxLayout* subdivisionLayout = new QHBoxLayout();
 	 subdivisionButton = new QPushButton("Choose Subdivisions", this);
 	 connect(subdivisionButton, SIGNAL(released()), this, SLOT(HandleChooseSubdivisionsButton()));
 	 subdivisionEnabledCheckBox = new QCheckBox("", this);
@@ -105,6 +112,12 @@ DzUnityDialog::DzUnityDialog(QWidget* parent) :
 	 subdivisionLayout->addWidget(subdivisionEnabledCheckBox);
 	 subdivisionLayout->addWidget(subdivisionButton);
 	 connect(subdivisionEnabledCheckBox, SIGNAL(stateChanged(int)), this, SLOT(HandleSubdivisionCheckBoxChange(int)));
+
+	 // Textures
+	 QHBoxLayout* textureLayout = new QHBoxLayout();
+	 textureButton = new QPushButton("Choose textures", this);
+	 connect(textureButton, SIGNAL(released()), this, SLOT(HandleChooseTexturesButton()));
+	 textureLayout->addWidget(textureButton);
 
 	 // Show FBX Dialog option
 	 installUnityFilesCheckBox = new QCheckBox("", this);
@@ -114,6 +127,7 @@ DzUnityDialog::DzUnityDialog(QWidget* parent) :
 	 mainLayout->addRow("Asset Type", assetTypeCombo);
 	 mainLayout->addRow("Enable Morphs", morphsLayout);
 	 mainLayout->addRow("Enable Subdivision", subdivisionLayout);
+	 mainLayout->addRow("Textures", textureLayout);
 	 mainLayout->addRow("Unity Assets Folder", assetsFolderLayout);
 	 mainLayout->addRow("Install Unity Files", installUnityFilesCheckBox);
 	 connect(installUnityFilesCheckBox, SIGNAL(stateChanged(int)), this, SLOT(HandleInstallUnityFilesCheckBoxChange(int)));
@@ -244,6 +258,11 @@ void DzUnityDialog::HandleChooseMorphsButton()
 void DzUnityDialog::HandleChooseSubdivisionsButton()
 {
 	 DzUnitySubdivisionDialog* dlg = DzUnitySubdivisionDialog::Get(this);
+	 dlg->exec();
+}
+void DzUnityDialog::HandleChooseTexturesButton()
+{
+	 DzUnityTexturesDialog* dlg = DzUnityTexturesDialog::Get(this);
 	 dlg->exec();
 }
 
