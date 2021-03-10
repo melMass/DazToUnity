@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace Daz3D
 {
-    using record = Daz3DDTUImporter.ImportEventRecord;
+    using record = ImportEventRecord;
 
     /// <summary>
     /// An editor window where unity user can monitor the progress and history and details of DTU import activity 
     /// </summary>
-    public class Daz3DBridge : EditorWindow
+    public class Bridge : EditorWindow
     {
         private Vector2 _scrollPos;
 
@@ -41,7 +41,7 @@ namespace Daz3D
             }
         }
 
-        private static Daz3DBridge _instance;
+        private static Bridge _instance;
 
         [MenuItem("Daz3D/Open Daz3DBridge window")]
         public static void ShowWindow()
@@ -51,7 +51,7 @@ namespace Daz3D
 
         private static void ObtainInstance()
         {
-            _instance = (Daz3DBridge) GetWindow(typeof(Daz3DBridge));
+            _instance = (Bridge) GetWindow(typeof(Bridge));
             _instance.titleContent = new GUIContent("Daz to Unity Bridge");
         }
 
@@ -129,7 +129,7 @@ namespace Daz3D
 
         void OnSelectionChange()
         {
-            if (Daz3DDTUImporter.ValidateDTUSelected())
+            if (DTUImporter.ValidateDTUSelected())
                 CurrentToolbarMode = ToolbarMode.Commands;
             _needsRepaint = true;
         }
@@ -143,22 +143,24 @@ namespace Daz3D
             bigStyle.margin = new RectOffset(12, 12, 12, 12);
 
             if (CommandButton("Clear History", bigStyle))
-                Daz3DDTUImporter.EmptyEventQueue();
+                DTUImporter.EmptyEventQueue();
 
-            if (Daz3DDTUImporter.ValidateDTUSelected())
+            if (DTUImporter.ValidateDTUSelected())
             {
                 var dtu = Selection.activeObject;
 
                 //the button
-                if (CommandButton("Create Unity Prefab from '" + dtu.name + ".dtu'", bigStyle))
-                {
-                    var dtuPath = AssetDatabase.GetAssetPath(dtu);
-                    var fbxPath = dtuPath.Replace(".dtu", ".fbx");
-                    Daz3DDTUImporter.Import(dtuPath, fbxPath);
-                }
+                // if (CommandButton("Create Unity Prefab from '" + dtu.name + ".dtu'", bigStyle))
+                // {
+                //     var dtuPath = AssetDatabase.GetAssetPath(dtu);
+                //     var fbxPath = dtuPath.Replace(".dtu", ".fbx");
+                //     DTUImporter.Import(dtuPath, fbxPath);
+                // }
 
-                if (CommandButton("Extract Materials from '" + dtu.name + ".dtu'", bigStyle))
-                    DTUConverter.MenuItemConvert();
+                if (dtu is DTUFile d)
+                    if (CommandButton("Extract Materials from '" + dtu.name + ".dtu'", bigStyle))
+                        d.ExtractMaterials();
+                            
             }
             else
             {
@@ -190,20 +192,22 @@ namespace Daz3D
             GUILayout.BeginVertical();
             GUILayout.Space(12);
 
-            Daz3DDTUImporter.AutoImportDTUChanges = GUILayout.Toggle(Daz3DDTUImporter.AutoImportDTUChanges,
-                "Automatically import when DTU changes are detected", bigStyle);
-            Daz3DDTUImporter.GenerateUnityPrefab = GUILayout.Toggle(Daz3DDTUImporter.GenerateUnityPrefab,
-                "Generate a Unity Prefab based on FBX and DTU", bigStyle);
-            Daz3DDTUImporter.ReplaceSceneInstances = GUILayout.Toggle(Daz3DDTUImporter.ReplaceSceneInstances,
-                "Replace instances of Unity Prefab in active scene(s)", bigStyle);
-            Daz3DDTUImporter.AutomateMecanimAvatarMappings = GUILayout.Toggle(
-                Daz3DDTUImporter.AutomateMecanimAvatarMappings, "Automatically setup the Mecanim Avatar", bigStyle);
-            Daz3DDTUImporter.ReplaceMaterials = GUILayout.Toggle(Daz3DDTUImporter.ReplaceMaterials,
-                "Replace FBX materials with high quality Daz-shader materials", bigStyle);
+            // DTUImporter.AutoImportDTUChanges = GUILayout.Toggle(DTUImporter.AutoImportDTUChanges,
+            //     "Automatically import when DTU changes are detected", bigStyle);
+            // DTUImporter.GenerateUnityPrefab = GUILayout.Toggle(DTUImporter.GenerateUnityPrefab,
+            //     "Generate a Unity Prefab based on FBX and DTU", bigStyle);
+            // DTUImporter.ReplaceSceneInstances = GUILayout.Toggle(DTUImporter.ReplaceSceneInstances,
+            //     "Replace instances of Unity Prefab in active scene(s)", bigStyle);
+            // DTUImporter.AutomateMecanimAvatarMappings = GUILayout.Toggle(
+            //     DTUImporter.AutomateMecanimAvatarMappings, "Automatically setup the Mecanim Avatar", bigStyle);
+            // DTUImporter.ReplaceMaterials = GUILayout.Toggle(DTUImporter.ReplaceMaterials,
+            //     "Replace FBX materials with high quality Daz-shader materials", bigStyle);
+            // DTUImporter.UseHighQualityTextures = GUILayout.Toggle(
+            //     DTUImporter.UseHighQualityTextures, "Use Highest Quality for Textures", bigStyle);
 
-            GUILayout.Space(12);
-            if (GUILayout.Button("Reset All", GUILayout.Width(100)))
-                Daz3DDTUImporter.ResetOptions();
+            // GUILayout.Space(12);
+            // if (GUILayout.Button("Reset All", GUILayout.Width(100)))
+            //     DTUImporter.ResetOptions();
 
             GUILayout.EndVertical();
 
@@ -213,7 +217,7 @@ namespace Daz3D
 
         private void DrawHistory(GUIStyle myStyle)
         {
-            if (Daz3DDTUImporter.EventQueue.Count > 0)
+            if (DTUImporter.EventQueue.Count > 0)
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("*Click the ", myStyle);
@@ -228,7 +232,7 @@ namespace Daz3D
 
             _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
 
-            foreach (var record in Daz3DDTUImporter.EventQueue)
+            foreach (var record in DTUImporter.EventQueue)
             {
                 GUILayout.BeginVertical(GUI.skin.box);
                 record.Unfold = EditorGUILayout.Foldout(record.Unfold, "Import Event: " + record.Timestamp);
@@ -295,65 +299,65 @@ namespace Daz3D
     }
 
 
-    [InitializeOnLoad]
-    public static class OrnamenfftDTUFileInProjectWindow
-    {
-        static OrnamenfftDTUFileInProjectWindow()
-        {
-            EditorApplication.projectWindowItemOnGUI += DrawAssetDetails;
-        }
-
-        private static void DrawAssetDetails(string guid, Rect rect)
-        {
-            if (Application.isPlaying || Event.current.type != EventType.Repaint)
-                return;
-
-            var assetPath = AssetDatabase.GUIDToAssetPath(guid);
-            if (!assetPath.ToLower().EndsWith(".dtu"))
-                return;
-
-
-            if (IsMainListAsset(rect))
-                rect.x += 5;
-            else
-            {
-                rect.x += 32;
-                rect.y -= 12;
-            }
-
-            //rect.width = rect.height;
-
-
-            GUI.color = new Color(.5f, 1, .5f);
-            GUI.Label(rect, "■");
-
-            rect.x -= 3;
-            rect.y += 4;
-
-            GUI.color = Color.yellow;
-            GUI.Label(rect, "◢");
-
-            rect.x -= 6;
-            rect.y -= 4;
-
-            GUI.color = new Color(1f, .3f, .2f);
-            GUI.Label(rect, "◀");
-
-            //rect.x --;
-            //rect.y -= 2;
-            GUI.color = Color.cyan;
-            GUI.Label(rect, "◤");
-
-            GUI.color = Daz3DBridge.ThemedColor * .7f;
-            rect.x -= 30;
-            GUI.Label(rect, "DTU");
-
-            GUI.color = Color.white;
-        }
-
-        private static bool IsMainListAsset(Rect rect)
-        {
-            return rect.height <= 20;
-        }
-    }
+    // [InitializeOnLoad]
+    // public static class OrnamenfftDTUFileInProjectWindow
+    // {
+    //     static OrnamenfftDTUFileInProjectWindow()
+    //     {
+    //         EditorApplication.projectWindowItemOnGUI += DrawAssetDetails;
+    //     }
+    //
+    //     private static void DrawAssetDetails(string guid, Rect rect)
+    //     {
+    //         if (Application.isPlaying || Event.current.type != EventType.Repaint)
+    //             return;
+    //
+    //         var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+    //         if (!assetPath.ToLower().EndsWith(".dtu"))
+    //             return;
+    //
+    //
+    //         if (IsMainListAsset(rect))
+    //             rect.x += 5;
+    //         else
+    //         {
+    //             rect.x += 32;
+    //             rect.y -= 12;
+    //         }
+    //
+    //         //rect.width = rect.height;
+    //
+    //
+    //         GUI.color = new Color(.5f, 1, .5f);
+    //         GUI.Label(rect, "■");
+    //
+    //         rect.x -= 3;
+    //         rect.y += 4;
+    //
+    //         GUI.color = Color.yellow;
+    //         GUI.Label(rect, "◢");
+    //
+    //         rect.x -= 6;
+    //         rect.y -= 4;
+    //
+    //         GUI.color = new Color(1f, .3f, .2f);
+    //         GUI.Label(rect, "◀");
+    //
+    //         //rect.x --;
+    //         //rect.y -= 2;
+    //         GUI.color = Color.cyan;
+    //         GUI.Label(rect, "◤");
+    //
+    //         GUI.color = Bridge.ThemedColor * .7f;
+    //         rect.x -= 30;
+    //         GUI.Label(rect, "DTU");
+    //
+    //         GUI.color = Color.white;
+    //     }
+    //
+    //     private static bool IsMainListAsset(Rect rect)
+    //     {
+    //         return rect.height <= 20;
+    //     }
+    // }
 }

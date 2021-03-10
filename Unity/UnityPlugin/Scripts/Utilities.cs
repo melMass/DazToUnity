@@ -46,5 +46,10 @@ namespace Daz3D
         {
             return color.grayscale;
         }
+
+        public static void Log(object message)
+        {
+            Debug.Log($"<color=yellow><b>DAZ 3D:</b></color> {message}");
+        }
     }
 }
