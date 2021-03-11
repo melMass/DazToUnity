@@ -81,8 +81,8 @@ namespace Daz3D
 
                 if (GUILayout.Button("ApplySubdivisions"))
                 {
-                    DazFBXUtils.ApplySubdivisions(importer.dtuFile.FBXFile,
-                        importer.dtuFile.Subdivisions.ToArray());
+                    DazCoroutine.StartCoroutine(DazFBXUtils.ApplySubdivisions(importer.dtuFile.FBXFile,
+                        importer.dtuFile.Subdivisions.ToArray()));
                 }
 
                 if (GUILayout.Button("Print DTU Informations"))

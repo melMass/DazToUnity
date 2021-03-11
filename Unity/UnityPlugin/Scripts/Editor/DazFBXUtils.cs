@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -114,7 +115,7 @@ namespace Daz3D
         }
 
 
-        public static void ApplySubdivisions(string fbxPath, DTUSubdivision[] subdivisions)
+        public static IEnumerator ApplySubdivisions(string fbxPath, DTUSubdivision[] subdivisions)
         {
             Log($"Logging information from {fbxPath}");
             //var fbxFile = AssetDatabase.LoadAssetAtPath<GameObject>(fbxPath);
@@ -132,7 +133,7 @@ namespace Daz3D
             {
                 Log("Call to FbxImporter::Initialize() failed.\n");
                 Log($"Error returned: {lImporter.GetStatus().GetErrorString()}\n\n");
-                return;
+                yield break;
             }
 
             // Create a new scene so that it can be populated by the imported file.
@@ -162,13 +163,14 @@ namespace Daz3D
 
             Log($"Subdivisions Array Size: {subdivisions.Length}");
 
+            yield return new WaitForEndOfFrame();
+
             foreach (var subd in subdivisions)
             {
                 var name = subd.AssetName;
-                if (subd.Value <= 0) return;
+                if (subd.Value <= 0) continue;
 
                 var currentNode = childs.First(m => m.GetName() == name);
-                
                 Utilities.Log($"Found node with subdivisions: {currentNode.GetName()}");
                 var mesh = currentNode.GetMesh();
                 var deformerCount = mesh.GetDeformerCount();
@@ -176,12 +178,9 @@ namespace Daz3D
                 for (int DeformerIndex = 0; DeformerIndex < deformerCount; ++DeformerIndex)
                 {
                     var deformer = mesh.GetDeformer(DeformerIndex);
-                    
                     Utilities.Log($"Deformer {DeformerIndex}: {deformer.GetName()} - {deformer.GetDeformerType()} ");
-                    
                     if (deformer.GetDeformerType() != FbxDeformer.EDeformerType.eSkin) continue;
                     var skin = deformer.AsSkin();
-                    
                     Utilities.Log("Found a skin deformer");
                     HashSet<int> NoWeights = new HashSet<int>();
                     HashSet<int> HasWeights = new HashSet<int>();
@@ -193,6 +192,8 @@ namespace Daz3D
                     {
                         VertexLocations[c] = mesh.GetControlPointAt(c);
                     }
+
+                    Utilities.Log("Iterating over all the polygons");
 
                     // iterate the polygons
                     for (int PolygonIndex = 0;
@@ -221,7 +222,14 @@ namespace Daz3D
                         }
                     }
 
-                    for (int ClusterIndex = 0; ClusterIndex < skin.GetClusterCount(); ++ClusterIndex)
+
+                    var clusterCount = skin.GetClusterCount();
+
+                    Utilities.Log($"Iterating over all the found cluster (found {clusterCount} clusters)");
+
+                    yield return new WaitForEndOfFrame();
+
+                    for (int ClusterIndex = 0; ClusterIndex < clusterCount; ++ClusterIndex)
                     {
                         FbxCluster Cluster = skin.GetCluster(ClusterIndex);
 
@@ -237,6 +245,11 @@ namespace Daz3D
                             }
                         }
                     }
+
+                    Utilities.Log($"Found {NoWeights.Count} vertices with missing weights");
+
+
+                    yield return new WaitForEndOfFrame();
 
                     if (HasWeights.Count > 0 && NoWeights.Count > 0)
                     {
@@ -265,6 +278,7 @@ namespace Daz3D
                                     //ClusterVertex.Add(ClusterVertexIndex, WeightVertex);
                                 }
 
+
                                 Dictionary<int, double> WeightsToAdd = new Dictionary<int, double>();
                                 // TMap<int, double> 
                                 for (int ClusterVertexIndex = 0;
@@ -289,6 +303,7 @@ namespace Daz3D
                                                     }
                                                 }
                                             }*/
+
 
                                         foreach (int NeedWeightVertex in NeedWeights)
                                         {
@@ -346,7 +361,7 @@ namespace Daz3D
                                             {
                                                 if (!WeightsToAdd.Keys.Contains(NeedWeightVertex))
                                                     WeightsToAdd.Add(NeedWeightVertex, Weight / (double) WeightCount);
-                                                    //Cluster->AddControlPointIndex(NeedWeightVertex, Weight / (double)WeightCount);
+                                                //Cluster->AddControlPointIndex(NeedWeightVertex, Weight / (double)WeightCount);
                                             }
                                         }
                                     }
@@ -361,25 +376,33 @@ namespace Daz3D
                     }
                     else
                     {
-                         Utilities.Log("Something went wrong");
+                        Utilities.Log("Something went wrong");
                     }
                 }
+
+                Utilities.Log($"Initializing the exporter.");
+
+                yield return new WaitForEndOfFrame();
+
 
                 // Create an exporter.
                 FbxExporter Exporter = FbxExporter.Create(manager, "");
                 // Initialize the exporter by providing a filename.
-                if (!Exporter.Initialize(Path.Combine(Path.GetDirectoryName(fbxPath), name + "_Updated.fbx"), -1,
+                var outPath = Path.Combine(Path.GetDirectoryName(fbxPath), name + "_Updated.fbx");
+                if (!Exporter.Initialize(outPath, -1,
                     manager.GetIOSettings()))
                 {
-                    return;
+                    yield break;
                 }
+
+                Utilities.Log($"Exported {outPath}");
 
                 // Set compatibility to 2014
                 Exporter.SetFileExportVersion("FBX201400");
                 // Export the scene.
                 bool Status = Exporter.Export(lScene);
-                 // Destroy the exporter.
-	            Exporter.Destroy();
+                // Destroy the exporter.
+                Exporter.Destroy();
             }
 
             // Destroy the SDK manager and all the other objects it was handling.
