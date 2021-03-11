@@ -415,7 +415,7 @@ namespace Daz3D
                     for (int i = 0; i < count; i++)
                     {
                         var key = renderer.sharedMaterials[i];
-                        Utilities.Log("remapping: " + renderer.sharedMaterials[i].name + " to " + dict[key].name);
+                        // Utilities.Log("remapping: " + renderer.sharedMaterials[i].name + " to " + dict[key].name);
                         copy[i] = dict[key]; //fill copy
                     }
 

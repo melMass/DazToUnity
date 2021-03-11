@@ -138,7 +138,6 @@ namespace Daz3D
             foreach (var propKVP in properties)
             {
                 var dtuMatProp = DTUMaterialProperty.FromJSON(propKVP.Value);
-                Utilities.Log(dtuMatProp.Name);
                 dtuMat.Properties.Add(dtuMatProp);
             }
 

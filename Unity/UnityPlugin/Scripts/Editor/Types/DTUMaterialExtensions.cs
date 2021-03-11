@@ -2481,7 +2481,7 @@ namespace Daz3D
             {
                 mat.DisableKeyword("IRAYUBER_GLOSSYCOLORACTIVE");
             }
-            Utilities.Log($"Properties properly toggled for {matNameLower}");
+            // Utilities.Log($"Properties properly toggled for {matNameLower}");
         }
 
 

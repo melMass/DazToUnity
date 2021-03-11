@@ -81,7 +81,7 @@ namespace Daz3D
 
                 if (GUILayout.Button("ApplySubdivisions"))
                 {
-                    DazFBXUtils.ApplySubdivisions(importer.path.Replace(".dtu", ".fbx"),
+                    DazFBXUtils.ApplySubdivisions(importer.dtuFile.FBXFile,
                         importer.dtuFile.Subdivisions.ToArray());
                 }
 
