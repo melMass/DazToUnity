@@ -10,6 +10,7 @@ set(LIB_SRCS
 	"DzRuntimePluginAction.cpp"
 	"DzThread.cpp"
 	"debug.cpp"
+	"DzFbxUtils.cpp"
 )
 
 add_library(common STATIC ${LIB_SRCS})
