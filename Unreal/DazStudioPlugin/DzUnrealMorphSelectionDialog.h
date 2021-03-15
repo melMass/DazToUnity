@@ -5,6 +5,8 @@
 #include <QtCore/qsettings.h>
 #include "dznode.h"
 
+#include "DzUtils.h"
+
 class QListWidget;
 class QListWidgetItem;
 class QTreeWidget;
@@ -12,29 +14,6 @@ class QTreeWidgetItem;
 class QLineEdit;
 class QComboBox;
 
-struct MorphInfo {
-	 QString Name;
-	 QString Label;
-	 QString Type;
-	 QString Path;
-
-	 inline bool operator==(MorphInfo other)
-	 {
-		  if (Name == other.Name)
-		  {
-				return true;
-		  }
-		  return false;
-	 }
-
-	 MorphInfo()
-	 {
-		  Name = QString();
-		  Label = QString();
-		  Type = QString();
-		  Path = QString();
-	 }
-};
 
 class DzUnrealMorphSelectionDialog : public DzBasicDialog {
 	 Q_OBJECT

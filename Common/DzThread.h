@@ -1,3 +1,6 @@
+#ifndef DZTHREAD_H
+#define DZTHREAD_H
+
 #include <QtCore>
 #include <QImage>
 
@@ -25,3 +28,4 @@ public slots:
   void loadImage(const QString &fichier);
   
 };
+#endif

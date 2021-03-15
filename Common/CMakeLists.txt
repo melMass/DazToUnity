@@ -11,6 +11,7 @@ set(LIB_SRCS
 	"DzThread.cpp"
 	"debug.cpp"
 	"DzFbxUtils.cpp"
+	"DzUtils.cpp"
 )
 
 add_library(common STATIC ${LIB_SRCS})

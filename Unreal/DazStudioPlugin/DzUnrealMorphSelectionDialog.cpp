@@ -47,19 +47,6 @@ Local definitions
 
 DzUnrealMorphSelectionDialog* DzUnrealMorphSelectionDialog::singleton = nullptr;
 
-// For sorting the lists
-class SortingListItem : public QListWidgetItem {
-
-public:
-	virtual bool operator< (const QListWidgetItem &otherItem) const
-	{
-		if (this->checkState() != otherItem.checkState())
-		{
-			return (this->checkState() == Qt::Checked);
-		}
-		return QListWidgetItem::operator<(otherItem);
-	}
-};
 
 DzUnrealMorphSelectionDialog::DzUnrealMorphSelectionDialog(QWidget *parent) :
 	DzBasicDialog(parent, DAZ_TO_UNREAL_PLUGIN_NAME)

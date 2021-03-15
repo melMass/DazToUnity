@@ -48,19 +48,7 @@ Local definitions
 
 DzUnityMorphSelectionDialog* DzUnityMorphSelectionDialog::singleton = nullptr;
 
-// For sorting the lists
-class SortingListItem : public QListWidgetItem {
 
-public:
-	virtual bool operator< (const QListWidgetItem &otherItem) const
-	{
-		if (this->checkState() != otherItem.checkState())
-		{
-			return (this->checkState() == Qt::Checked);
-		}
-		return QListWidgetItem::operator<(otherItem);
-	}
-};
 
 DzUnityMorphSelectionDialog::DzUnityMorphSelectionDialog(QWidget *parent) :
 	DzBasicDialog(parent, DAZ_TO_UNITY_PLUGIN_NAME)
@@ -83,26 +71,26 @@ DzUnityMorphSelectionDialog::DzUnityMorphSelectionDialog(QWidget *parent) :
 	QVBoxLayout* mainLayout = new QVBoxLayout(this);
 
 	// Left tree with morph structure
-	morphTreeWidget = new QTreeWidget(this);
+	morphTreeWidget = new QTreeWidget();
 	morphTreeWidget->setHeaderHidden(true);
 
 	// Center list showing morhps for selected tree items
-	morphListWidget = new QListWidget(this);
+	morphListWidget = new QListWidget();
 	morphListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
 	// Right list showing morphs that will export
-	morphExportListWidget = new QListWidget(this);
+	morphExportListWidget = new QListWidget();
 	morphExportListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
 	// Quick filter box
-	QHBoxLayout* filterLayout = new QHBoxLayout(this);
+	QHBoxLayout* filterLayout = new QHBoxLayout();
 	filterLayout->addWidget(new QLabel("filter"));
 	filterEdit = new QLineEdit();
 	connect(filterEdit, SIGNAL(textChanged(const QString &)), this, SLOT(FilterChanged(const QString &)));
 	filterLayout->addWidget(filterEdit);
 
 	// Presets
-	QHBoxLayout* settingsLayout = new QHBoxLayout(this);
+	QHBoxLayout* settingsLayout = new QHBoxLayout();
 	presetCombo = new QComboBox(this);
 	QPushButton* savePresetButton = new QPushButton("Save Preset", this);
 	connect(savePresetButton, SIGNAL(released()), this, SLOT(HandleSavePreset()));
@@ -112,17 +100,17 @@ DzUnityMorphSelectionDialog::DzUnityMorphSelectionDialog(QWidget *parent) :
 	settingsLayout->addStretch();
 
 	// All Morphs
-	QHBoxLayout* morphsLayout = new QHBoxLayout(this);
+	QHBoxLayout* morphsLayout = new QHBoxLayout();
 
 	// Left Tree
-	QVBoxLayout* treeLayout = new QVBoxLayout(this);
+	QVBoxLayout* treeLayout = new QVBoxLayout();
 	treeLayout->addWidget(new QLabel("Morph Groups"));
 	treeLayout->addWidget(new QLabel("Select to see available morphs"));
 	treeLayout->addWidget(morphTreeWidget);
 
 	// Buttons for quickly adding certain JCMs
 	QGroupBox* JCMGroupBox = new QGroupBox("Add JCMs", this);
-	JCMGroupBox->setLayout(new QGridLayout(this));
+	JCMGroupBox->setLayout(new QGridLayout());
 	QPushButton* ArmsJCMButton = new QPushButton("Arms");
 	QPushButton* LegsJCMButton = new QPushButton("Legs");
 	QPushButton* TorsoJCMButton = new QPushButton("Torso");
@@ -143,7 +131,7 @@ DzUnityMorphSelectionDialog::DzUnityMorphSelectionDialog(QWidget *parent) :
 
 
 	// Center List of morphs based on tree selection
-	QVBoxLayout* morphListLayout = new QVBoxLayout(this);
+	QVBoxLayout* morphListLayout = new QVBoxLayout();
 	morphListLayout->addWidget(new QLabel("Morphs in Group"));
 	morphListLayout->addWidget(new QLabel("Select and click Add for Export"));
 	morphListLayout->addLayout(filterLayout);
@@ -156,7 +144,7 @@ DzUnityMorphSelectionDialog::DzUnityMorphSelectionDialog(QWidget *parent) :
 	morphsLayout->addLayout(morphListLayout);
 
 	// Right List of morphs that will export
-	QVBoxLayout* selectedListLayout = new QVBoxLayout(this);
+	QVBoxLayout* selectedListLayout = new QVBoxLayout();
 	selectedListLayout->addWidget(new QLabel("Morphs to Export"));
 	selectedListLayout->addWidget(morphExportListWidget);
 

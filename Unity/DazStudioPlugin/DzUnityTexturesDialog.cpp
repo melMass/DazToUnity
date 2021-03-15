@@ -42,6 +42,8 @@
 
 #include <QtCore/QDebug.h>
 
+#include "DzUtils.h"
+
 #include <set>
 
 /*****************************
@@ -51,20 +53,6 @@ Local definitions
 
 DzUnityTexturesDialog *DzUnityTexturesDialog::singleton = nullptr;
 
-// For sorting the lists
-class SortingListItem : public QListWidgetItem
-{
-
-public:
-  virtual bool operator<(const QListWidgetItem &otherItem) const
-  {
-    if (this->checkState() != otherItem.checkState())
-    {
-      return (this->checkState() == Qt::Checked);
-    }
-    return QListWidgetItem::operator<(otherItem);
-  }
-};
 
 
     DzUnityTexturesDialog::DzUnityTexturesDialog(QWidget *parent) : DzBasicDialog(parent, DAZ_TO_UNITY_PLUGIN_NAME)
