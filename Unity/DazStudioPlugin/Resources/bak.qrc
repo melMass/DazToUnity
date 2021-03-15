@@ -1,0 +1,50 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+	<qresource prefix="/Images">
+		<file alias="icon">Images/Icon.png</file>
+	</qresource>
+	<qresource prefix="/Scripts">
+		<file alias="Utilities.cs">../../UnityPlugin/Scripts/Utilities.cs</file>
+		<file alias="Daz3DInstance.cs">../../UnityPlugin/Scripts/Daz3DInstance.cs</file>
+	</qresource>
+	<qresource prefix="/Editor">
+		<file alias="Daz3DBridge.cs">../../UnityPlugin/Scripts/Editor/Daz3DBridge.cs</file>
+		<file alias="Daz3DDTUImporter.cs">../../UnityPlugin/Scripts/Editor/Daz3DDTUImporter.cs</file>
+		<file alias="DazCoroutine.cs">../../UnityPlugin/Scripts/Editor/DazCoroutine.cs</file>
+		<file alias="DTUConverter.cs">../../UnityPlugin/Scripts/Editor/DTUConverter.cs</file>
+		<file alias="DazJSONHelper.cs">../../UnityPlugin/Scripts/Editor/DazJSONHelper.cs</file>
+	</qresource>
+	<qresource prefix="/Shaders">
+		<file alias="IrayUberMetal.shadergraph">../../UnityPlugin/Shaders/IrayUberMetal.shadergraph</file>
+		<file alias="IrayUberMetal.shadergraph.meta">../../UnityPlugin/Shaders/IrayUberMetal.shadergraph.meta</file>
+		<file alias="IrayUberSpec.shadergraph">../../UnityPlugin/Shaders/IrayUberSpec.shadergraph</file>
+		<file alias="IrayUberSpec.shadergraph.meta">../../UnityPlugin/Shaders/IrayUberSpec.shadergraph.meta</file>
+		<file alias="IrayUberSkin.shadergraph">../../UnityPlugin/Shaders/IrayUberSkin.shadergraph</file>
+		<file alias="IrayUberSkin.shadergraph.meta">../../UnityPlugin/Shaders/IrayUberSkin.shadergraph.meta</file>
+		<file alias="Hair.shadergraph">../../UnityPlugin/Shaders/Hair.shadergraph</file>
+		<file alias="Hair.shadergraph.meta">../../UnityPlugin/Shaders/Hair.shadergraph.meta</file>
+		<file alias="Wet.shadergraph">../../UnityPlugin/Shaders/Wet.shadergraph</file>
+		<file alias="Wet.shadergraph.meta">../../UnityPlugin/Shaders/Wet.shadergraph.meta</file>
+		<file alias="Invisible.shader">../../UnityPlugin/Shaders/Invisible.shader</file>
+		<file alias="Invisible.shader.meta">../../UnityPlugin/Shaders/Invisible.shader.meta</file>
+	</qresource>
+	<qresource prefix="/ShaderHelpers">
+		<file alias="GetLighDirection.hlsl">../../UnityPlugin/Shaders/Helpers/GetLightDirection.hlsl</file>
+		<file alias="GetLighDirection.hlsl.meta">../../UnityPlugin/Shaders/Helpers/GetLightDirection.hlsl.meta</file>
+		<file alias="LightDirection.shadersubgraph">../../UnityPlugin/Shaders/Helpers/LightDirection.shadersubgraph</file>
+		<file alias="LightDirection.shadersubgraph.meta">../../UnityPlugin/Shaders/Helpers/LightDirection.shadersubgraph.meta</file>
+	</qresource>
+	<qresource prefix="/Vendors">
+		<file alias="SimpleJSON.cs">../../UnityPlugin/Vendors/SimpleJSON.cs</file>
+	</qresource>
+	<qresource prefix="/DiffusionProfiles">
+		<file alias="IrayUberSkinDiffusionProfile.asset">../../UnityPlugin/DiffusionProfiles/IrayUberSkinDiffusionProfile.asset</file>
+		<file alias="IrayUberSkinDiffusionProfile.asset.meta">../../UnityPlugin/DiffusionProfiles/GenericDiffusionProfile.asset.meta</file>
+	</qresource>
+	<qresource prefix="/Resources">
+		<file alias="Daz_Combined_Small.png">../../UnityPlugin/Resources/Daz_Combined_Small.png</file>
+		<file alias="Daz_Combined_Small.png.meta">../../UnityPlugin/Resources/Daz_Combined_Small.png.meta</file>
+		<file alias="ReadMe.txt">../../UnityPlugin/Resources/ReadMe.txt</file>
+		<file alias="ReadMe.txt.meta">../../UnityPlugin/Resources/ReadMe.txt.meta</file> 
+	</qresource>
+</RCC>
