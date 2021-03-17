@@ -19,25 +19,32 @@ public:
 		Port = 32345;
 		ImportDirectory.Path = TEXT("/Game/DazToUnreal");
 		AnimationImportDirectory.Path = TEXT("/Game/DazToUnreal/Animation");
+		PoseImportDirectory.Path = TEXT("/Game/DazToUnreal/Pose");
 		ShowFBXImportDialog = false;
 		FrameZeroIsReferencePose = false;
+		FixBoneRotationsOnImport = false;
+		ZeroRootRotationOnImport = false;
+
 		Genesis1Skeleton = FSoftObjectPath(TEXT("/DazToUnreal/Genesis1BaseSkeleton.Genesis1BaseSkeleton"));
 		Genesis3Skeleton = FSoftObjectPath(TEXT("/DazToUnreal/Genesis3BaseSkeleton.Genesis3BaseSkeleton"));
 		Genesis8Skeleton = FSoftObjectPath(TEXT("/DazToUnreal/Genesis8BaseSkeleton.Genesis8BaseSkeleton"));
+		OtherSkeletons.Add(TEXT("Genesis8_1Male"), FSoftObjectPath(TEXT("/DazToUnreal/Genesis8BaseSkeleton.Genesis8BaseSkeleton")));
+		OtherSkeletons.Add(TEXT("Genesis8_1Female"), FSoftObjectPath(TEXT("/DazToUnreal/Genesis8BaseSkeleton.Genesis8BaseSkeleton")));
 
-		Genesis1PostProcessAnimation = FSoftClassPath(TEXT("/DazToUnreal/Genesis1JCMPostProcess.Genesis1JCMPostProcess_C"));
-		Genesis3PostProcessAnimation = FSoftClassPath(TEXT("/DazToUnreal/Genesis3JCMPostProcess.Genesis3JCMPostProcess_C"));
-		Genesis8PostProcessAnimation = FSoftClassPath(TEXT("/DazToUnreal/Genesis8JCMPostProcess.Genesis8JCMPostProcess_C"));
+		SkeletonPostProcessAnimation.Add(FSoftObjectPath(TEXT("/DazToUnreal/Genesis3BaseSkeleton.Genesis3BaseSkeleton")), FSoftClassPath(TEXT("/DazToUnreal/Genesis3JCMPostProcess.Genesis3JCMPostProcess_C")));
+		SkeletonPostProcessAnimation.Add(FSoftObjectPath(TEXT("/DazToUnreal/Genesis8BaseSkeleton.Genesis8BaseSkeleton")), FSoftClassPath(TEXT("/DazToUnreal/Genesis8JCMPostProcess.Genesis8JCMPostProcess_C")));
 
 		BaseShaderMaterials.Add(TEXT("Daz Studio Default"), FSoftObjectPath(TEXT("/DazToUnreal/DSDBaseMaterial.DSDBaseMaterial")));
 		BaseShaderMaterials.Add(TEXT("omUberSurface"), FSoftObjectPath(TEXT("/DazToUnreal/omUberBaseMaterial.omUberBaseMaterial")));
 		BaseShaderMaterials.Add(TEXT("AoA_Subsurface"), FSoftObjectPath(TEXT("/DazToUnreal/AoASubsurfaceBaseMaterial.AoASubsurfaceBaseMaterial")));
 		BaseShaderMaterials.Add(TEXT("Iray Uber"), FSoftObjectPath(TEXT("/DazToUnreal/IrayUberBaseMaterial.IrayUberBaseMaterial")));
+		BaseShaderMaterials.Add(TEXT("PBRSkin"), FSoftObjectPath(TEXT("/DazToUnreal/BasePBRSkinMaterial.BasePBRSkinMaterial")));
 
 		SkinShaderMaterials.Add(TEXT("Daz Studio Default"), FSoftObjectPath(TEXT("/DazToUnreal/DSDBaseMaterial.DSDBaseMaterial")));
 		SkinShaderMaterials.Add(TEXT("omUberSurface"), FSoftObjectPath(TEXT("/DazToUnreal/omUberSkinMaterial.omUberSkinMaterial")));
 		SkinShaderMaterials.Add(TEXT("AoA_Subsurface"), FSoftObjectPath(TEXT("/DazToUnreal/AoASubsurfaceSkinMaterial.AoASubsurfaceSkinMaterial")));
 		SkinShaderMaterials.Add(TEXT("Iray Uber"), FSoftObjectPath(TEXT("/DazToUnreal/IrayUberSkinMaterial.IrayUberSkinMaterial")));
+		SkinShaderMaterials.Add(TEXT("PBRSkin"), FSoftObjectPath(TEXT("/DazToUnreal/BasePBRSkinMaterial.BasePBRSkinMaterial")));
 
 		BaseMaterial = FSoftObjectPath(TEXT("/DazToUnreal/BaseMaterial.BaseMaterial"));
 		BaseAlphaMaterial = FSoftObjectPath(TEXT("/DazToUnreal/BaseAlphaMaterial.BaseAlphaMaterial"));
@@ -48,6 +55,8 @@ public:
 		BaseEyeMoistureMaterial = FSoftObjectPath(TEXT("/DazToUnreal/BaseAlphaMaterial.BaseAlphaMaterial"));
 		BaseCorneaMaterial = FSoftObjectPath(TEXT("/DazToUnreal/BaseAlphaMaterial.BaseAlphaMaterial"));
 		NoDrawMaterial = FSoftObjectPath(TEXT("/DazToUnreal/NoDrawMaterial.NoDrawMaterial"));
+
+		UseInternalMorphName = false;
 
 		ArmsSubSurfaceOpacityGenesis1Texture = FSoftObjectPath(TEXT("/Engine/EngineResources/WhiteSquareTexture.WhiteSquareTexture"));
 		FaceSubSurfaceOpacityGenesis1Texture = FSoftObjectPath(TEXT("/Engine/EngineResources/WhiteSquareTexture.WhiteSquareTexture"));
@@ -78,6 +87,9 @@ public:
 		MaterialPropertyMapping.Add(TEXT("Specular Strength"), TEXT("Glossy Layered Weight"));
 		MaterialPropertyMapping.Add(TEXT("Specular Strength Texture"), TEXT("Glossy Layered Weight Texture"));
 		MaterialPropertyMapping.Add(TEXT("Specular Strength Texture Active"), TEXT("Glossy Layered Weight Texture Active"));
+
+		DefaultSkinDiffuseSubsurfaceColorWeight = 0.5f;
+		DefaultEyeMoistureOpacity = 0.04f;
 	}
 
 	virtual FName GetCategoryName() const { return FName(TEXT("Plugins")); }
@@ -94,6 +106,10 @@ public:
 	UPROPERTY(config, EditAnywhere, Category = PluginSettings, meta = (RelativeToGameContentDir, LongPackageName))
 		FDirectoryPath AnimationImportDirectory;
 
+	/** Directory PoseAssets will be imported to */
+	UPROPERTY(config, EditAnywhere, Category = PluginSettings, meta = (RelativeToGameContentDir, LongPackageName))
+		FDirectoryPath PoseImportDirectory;
+
 	/** Show the FBX Import dialog when importing the udpated FBX file */
 	UPROPERTY(config, EditAnywhere, Category = PluginSettings, meta = (RelativeToGameContentDir, LongPackageName))
 		bool ShowFBXImportDialog;
@@ -101,6 +117,14 @@ public:
 	/** Set the default pose for the character to match frame 0 */
 	UPROPERTY(config, EditAnywhere, Category = PluginSettings)
 		bool FrameZeroIsReferencePose;
+
+	/** Updates the bones to use a locale rotation.  This currently breaks animations coming from Daz Studio. */
+	UPROPERTY(config, EditAnywhere, Category = PluginSettings)
+		bool FixBoneRotationsOnImport;
+
+	/** Updates the bones to use a locale rotation.  This currently breaks animations coming from Daz Studio. */
+	UPROPERTY(config, EditAnywhere, Category = PluginSettings)
+		bool ZeroRootRotationOnImport;
 
 	/** Skeleton to use for Genesis 1 characters */
 	UPROPERTY(config, EditAnywhere, Category = SkeletonSettings, meta = (AllowedClasses = "Skeleton"))
@@ -118,17 +142,9 @@ public:
 	UPROPERTY(config, EditAnywhere, Category = SkeletonSettings)
 		TMap<FString, FSoftObjectPath> OtherSkeletons;
 
-	/** Post Process Animation Blueprint to use for Genesis 1 characters */
+	/** A mapping of default post process animations for different skeletons */
 	UPROPERTY(config, EditAnywhere, Category = SkeletonSettings)
-		FSoftClassPath Genesis1PostProcessAnimation;
-
-	/** Post Process Animation Blueprint to use for Genesis 3 characters */
-	UPROPERTY(config, EditAnywhere, Category = SkeletonSettings)
-		FSoftClassPath Genesis3PostProcessAnimation;
-
-	/** Post Process Animation Blueprint to use for Genesis 8 characters */
-	UPROPERTY(config, EditAnywhere, Category = SkeletonSettings)
-		FSoftClassPath Genesis8PostProcessAnimation;
+		TMap<FSoftObjectPath, FSoftClassPath> SkeletonPostProcessAnimation;
 
 	/** Used to set the default Material to use for a shader type from Daz Studio */
 	UPROPERTY(config, EditAnywhere, Category = MaterialSettings)
@@ -177,6 +193,18 @@ public:
 	/** Used to change the name of material parameters at import time */
 	UPROPERTY(config, EditAnywhere, Category = MaterialSettings)
 		TMap<FString, FString> MaterialPropertyMapping;
+
+	/** Default Diffuse Subsurface Color Weight to use for Skin Materials */
+	UPROPERTY(config, EditAnywhere, Category = MaterialSettings)
+		float DefaultSkinDiffuseSubsurfaceColorWeight;
+
+	/** Default Opacity to use for EyeMoisture, Tears, etc */
+	UPROPERTY(config, EditAnywhere, Category = MaterialSettings)
+		float DefaultEyeMoistureOpacity;
+
+	/** Use the internal name rather than the display name when transfering morphs */
+	UPROPERTY(config, EditAnywhere, Category = MorphSettings)
+		bool UseInternalMorphName;
 
 	/** Override for the sub surface scatter opacity texture for the arms and fingernails for Genesis 3 Male  */
 	UPROPERTY(config, EditAnywhere, Category = SubSurfaceScatterGenesis, meta = (AllowedClasses = "Texture"))

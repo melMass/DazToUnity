@@ -5,6 +5,8 @@
 #include "DazToUnrealMaterials.h"
 #include "DazToUnrealUtils.h"
 #include "DazToUnrealFbx.h"
+#include "DazToUnrealEnvironment.h"
+#include "DazToUnrealPoses.h"
 
 #include "LevelEditor.h"
 #include "Widgets/Docking/SDockTab.h"
@@ -150,7 +152,18 @@ void FDazToUnrealModule::StartupModule()
 		  TSharedPtr<FExtender> ToolbarExtender = MakeShareable(new FExtender);
 		  ToolbarExtender->AddToolBarExtension("Settings", EExtensionHook::After, PluginCommands, FToolBarExtensionDelegate::CreateRaw(this, &FDazToUnrealModule::AddToolbarExtension));
 
-		  //LevelEditorModule.GetToolBarExtensibilityManager()->AddExtender(ToolbarExtender);
+
+		  FString InstallerPath = IPluginManager::Get().FindPlugin("DazToUnreal")->GetBaseDir() / TEXT("Resources") / TEXT("DazToUnrealSetup.exe");
+		  FString InstallerAbsolutePath = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*InstallerPath);
+
+		  FString DazStudioPluginPath = IPluginManager::Get().FindPlugin("DazToUnreal")->GetBaseDir() / TEXT("Resources") / TEXT("dzunrealbridge.dll");
+		  FString DazStudioPluginAbsolutePath = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*InstallerPath);
+
+		  if (FPaths::FileExists(InstallerAbsolutePath)
+			  && FPaths::FileExists(DazStudioPluginAbsolutePath))
+		  {
+			  LevelEditorModule.GetToolBarExtensibilityManager()->AddExtender(ToolbarExtender);
+		  }
 	 }
 
 	 /*FGlobalTabmanager::Get()->RegisterNomadTabSpawner(DazToUnrealTabName, FOnSpawnTab::CreateRaw(this, &FDazToUnrealModule::OnSpawnPluginTab))
@@ -304,13 +317,17 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 	 TMap<FString, TArray<FDUFTextureProperty>> MaterialProperties;
 
 	 FString FBXPath = JsonObject->GetStringField(TEXT("FBX File"));
-	 FString AssetName = JsonObject->GetStringField(TEXT("Asset Name"));
+	 FString AssetName = FDazToUnrealUtils::SanitizeName(JsonObject->GetStringField(TEXT("Asset Name")));
 	 FString ImportFolder = JsonObject->GetStringField(TEXT("Import Folder"));
 	 DazAssetType AssetType = DazAssetType::StaticMesh;
 	 if (JsonObject->GetStringField(TEXT("Asset Type")) == TEXT("SkeletalMesh"))
 		  AssetType = DazAssetType::SkeletalMesh;
 	 else if (JsonObject->GetStringField(TEXT("Asset Type")) == TEXT("Animation"))
-		  AssetType = DazAssetType::Animation;;
+		  AssetType = DazAssetType::Animation;
+	 else if (JsonObject->GetStringField(TEXT("Asset Type")) == TEXT("Environment"))
+		 AssetType = DazAssetType::Environment;
+	 else if (JsonObject->GetStringField(TEXT("Asset Type")) == TEXT("Pose"))
+		 AssetType = DazAssetType::Pose;
 
 	 // Set up the folder paths
 	 FString ImportDirectory = FPaths::ProjectDir() / TEXT("Import");
@@ -343,19 +360,25 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 	 FString LocalCharacterMaterialFolder = CharacterMaterialFolder.Replace(TEXT("/Game/"), *ContentDirectory);
 
 	 // Make any needed folders.  If any of these fail, don't continue
-	 if (!MakeDirectoryAndCheck(ImportDirectory)) return false;
-	 if (!MakeDirectoryAndCheck(ImportCharacterFolder)) return false;
-	 if (!MakeDirectoryAndCheck(ImportCharacterTexturesFolder)) return false;
-	 if (!MakeDirectoryAndCheck(LocalDAZImportFolder)) return false;
-	 if (!MakeDirectoryAndCheck(LocalDAZAnimationImportFolder)) return false;
-	 if (!MakeDirectoryAndCheck(LocalCharacterFolder)) return false;
-	 if (!MakeDirectoryAndCheck(LocalCharacterTexturesFolder)) return false;
-	 if (!MakeDirectoryAndCheck(LocalCharacterMaterialFolder)) return false;
+	 if (!FDazToUnrealUtils::MakeDirectoryAndCheck(ImportDirectory)) return nullptr;
+	 if (!FDazToUnrealUtils::MakeDirectoryAndCheck(ImportCharacterFolder)) return nullptr;
+	 if (!FDazToUnrealUtils::MakeDirectoryAndCheck(ImportCharacterTexturesFolder)) return nullptr;
+	 if (!FDazToUnrealUtils::MakeDirectoryAndCheck(LocalDAZImportFolder)) return nullptr;
+	 if (!FDazToUnrealUtils::MakeDirectoryAndCheck(LocalDAZAnimationImportFolder)) return nullptr;
+	 if (!FDazToUnrealUtils::MakeDirectoryAndCheck(LocalCharacterFolder)) return nullptr;
+	 if (!FDazToUnrealUtils::MakeDirectoryAndCheck(LocalCharacterTexturesFolder)) return nullptr;
+	 if (!FDazToUnrealUtils::MakeDirectoryAndCheck(LocalCharacterMaterialFolder)) return nullptr;
+
+	 if (AssetType == DazAssetType::Environment)
+	 {
+		 FDazToUnrealEnvironment::ImportEnvironment(JsonObject);
+		 return nullptr;
+	 }
 
 	 // If there isn't an FBX file, stop
 	 if (!FPaths::FileExists(FBXFile))
 	 {
-		  return false;
+		  return nullptr;
 	 }
 
 	 // Load subdivision info
@@ -457,6 +480,20 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 				{
 					 Property.Type = TEXT("Color");
 				}
+				
+				// Properties that end with Enabled are switches for functionality
+				if (Property.Name.EndsWith(TEXT(" Enable")))
+				{
+					Property.Type = TEXT("Switch");
+					if (Property.Value == TEXT("0"))
+					{
+						Property.Value = TEXT("false");
+					}
+					else
+					{
+						Property.Value = TEXT("true");
+					}
+				}
 
 				MaterialProperties[MaterialName].Add(Property);
 				if (!TextureName.IsEmpty())
@@ -531,11 +568,10 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 	 }
 
 	 // Daz Studio puts the base bone rotations in a different place than Unreal expects them.
-	 //if (AssetType == DazAssetType::SkeletalMesh && RootBone)
-	 //{
-	 //	FDazToUnrealFbx::FixBoneRotations(RootBone);
-	 //	FDazToUnrealFbx::FixBindPose(Scene, RootBone);
-	 //}
+	 if (CachedSettings->FixBoneRotationsOnImport && AssetType == DazAssetType::SkeletalMesh && RootBone)
+	 {
+		FDazToUnrealFbx::FixClusterTranformLinks(Scene, RootBone);
+	 }
 
 	 // If this is a skeleton mesh, but a root bone wasn't found, it may be a scene under a group node or something similar
 	 // So create a root node.
@@ -985,7 +1021,40 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 	 for (int32 i = 0; i < morphList.Num(); i++)
 	 {
 		  TSharedPtr<FJsonObject> morph = morphList[i]->AsObject();
-		  MorphMappings.Add(morph->GetStringField(TEXT("Name")), morph->GetStringField(TEXT("Label")));
+		  FString MorphName = morph->GetStringField(TEXT("Name"));
+		  FString MorphLabel = morph->GetStringField(TEXT("Label"));
+
+		  // Daz Studio seems to strip the part of the name before a period when exporting the morph to FBX
+		  if (MorphName.Contains(TEXT(".")))
+		  {
+			  FString Left;
+			  MorphName.Split(TEXT("."), &Left, &MorphName);
+		  }
+
+		  if (CachedSettings->UseInternalMorphName)
+		  {
+			  MorphMappings.Add(MorphName, MorphName);
+		  }
+		  else
+		  {
+			  MorphMappings.Add(MorphName, MorphLabel);
+		  }
+	 }
+
+	 // Get a list of morph name mappings
+	 TArray<FString> PoseNameList;
+	 const TArray<TSharedPtr<FJsonValue>>* PoseList;
+	 if (JsonObject->TryGetArrayField(TEXT("Poses"), PoseList))
+	 {
+		 PoseNameList.Add(TEXT("ReferencePose"));
+		 for (int32 i = 0; i < PoseList->Num(); i++)
+		 {
+			 TSharedPtr<FJsonObject> Pose = (*PoseList)[i]->AsObject();
+			 FString PoseName = Pose->GetStringField(TEXT("Name"));
+			 FString PoseLabel = Pose->GetStringField(TEXT("Label"));
+
+			 PoseNameList.Add(PoseLabel);
+		 }
 	 }
 
 	 // Combine clothing and body morphs
@@ -1107,12 +1176,12 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 	 // Make folders for saving the updated FBX file
 	 FString UpdatedFBXFolder = FPaths::GetPath(FBXFile) / TEXT("UpdatedFBX");
 	 FString UpdatedFBXFile = FPaths::GetPath(FBXFile) / TEXT("UpdatedFBX") / FPaths::GetCleanFilename(FBXPath);
-	 if (!MakeDirectoryAndCheck(UpdatedFBXFolder)) return false;
+	 if (!MakeDirectoryAndCheck(UpdatedFBXFolder)) return nullptr;
 
 	 // Initialize the exporter by providing a filename.
 	 if (!Exporter->Initialize(TCHAR_TO_UTF8(*UpdatedFBXFile), FileFormat, SdkManager->GetIOSettings()))
 	 {
-		  return false;
+		  return nullptr;
 	 }
 
 	 // Export the scene.
@@ -1124,23 +1193,23 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 	 // If this is a character, determine the type.
 	 DazCharacterType CharacterType = DazCharacterType::Unknown;
 	 FString CharacterTypeName = RootBoneName.Replace(TEXT("\0"), TEXT(""));
-	 if (RootBoneName.Contains(TEXT("Genesis3Male")))
+	 if (RootBoneName == TEXT("Genesis3Male"))
 	 {
 		  CharacterType = DazCharacterType::Genesis3Male;
 	 }
-	 else if (RootBoneName.Contains(TEXT("Genesis3Female")))
+	 else if (RootBoneName == TEXT("Genesis3Female"))
 	 {
 		  CharacterType = DazCharacterType::Genesis3Female;
 	 }
-	 else if (RootBoneName.Contains(TEXT("Genesis8Male")))
+	 else if (RootBoneName == TEXT("Genesis8Male"))
 	 {
 		  CharacterType = DazCharacterType::Genesis8Male;
 	 }
-	 else if (RootBoneName.Contains(TEXT("Genesis8Female")))
+	 else if (RootBoneName == TEXT("Genesis8Female"))
 	 {
 		  CharacterType = DazCharacterType::Genesis8Female;
 	 }
-	 else if (RootBoneName.Contains(TEXT("Genesis")))
+	 else if (RootBoneName == TEXT("Genesis"))
 	 {
 		  CharacterType = DazCharacterType::Genesis1;
 	 }
@@ -1162,6 +1231,9 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 	 // Create Intermediate Materials
 	 if (AssetType == DazAssetType::SkeletalMesh || AssetType == DazAssetType::StaticMesh)
 	 {
+		 // Create a default Master Subsurface Profile if needed
+		 USubsurfaceProfile* MasterSubsurfaceProfile = FDazToUnrealMaterials::CreateSubsurfaceBaseProfileForCharacter(CharacterMaterialFolder, MaterialProperties);
+
 		  for (FString IntermediateMaterialName : IntermediateMaterials)
 		  {
 				TArray<FString> ChildMaterials;
@@ -1191,65 +1263,77 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 					 //MaterialProperties[IntermediateMaterialName] = MaterialProperties[ChildMaterials[0]];
 
 
-
 					 // Create Material
 					 FSoftObjectPath BaseMaterialPath = FDazToUnrealMaterials::GetMostCommonBaseMaterial(ChildMaterials, MaterialProperties);//FDazToUnrealMaterials::GetBaseMaterial(ChildMaterials[0], MaterialProperties[IntermediateMaterialName]);
 					 UObject* BaseMaterial = BaseMaterialPath.TryLoad();
-					 UMaterialInstanceConstant* UnrealMaterialConstant = FDazToUnrealMaterials::CreateMaterial(CharacterMaterialFolder, CharacterTexturesFolder, IntermediateMaterialName, MaterialProperties, CharacterType, nullptr);
+					 UMaterialInstanceConstant* UnrealMaterialConstant = FDazToUnrealMaterials::CreateMaterial(CharacterMaterialFolder, CharacterTexturesFolder, IntermediateMaterialName, MaterialProperties, CharacterType, nullptr, MasterSubsurfaceProfile);
 					 UnrealMaterialConstant->SetParentEditorOnly((UMaterial*)BaseMaterial);
 					 for (FString MaterialName : ChildMaterials)
 					 {
-						  if (FDazToUnrealMaterials::GetBaseMaterial(MaterialName, MaterialProperties[MaterialName]) == BaseMaterialPath)
-						  {
-								// Remove Identical Properties
-								//for (FString ChildMaterialNameForRemoval : ChildMaterials)
+						USubsurfaceProfile* SubsurfaceProfile = MasterSubsurfaceProfile;
+						if (!FDazToUnrealMaterials::SubsurfaceProfilesWouldBeIdentical(MasterSubsurfaceProfile, MaterialProperties[MaterialName]))
+						{
+							SubsurfaceProfile = FDazToUnrealMaterials::CreateSubsurfaceProfileForMaterial(MaterialName, ChildMaterialFolder, MaterialProperties[MaterialName]);
+						}
+
+						if (FDazToUnrealMaterials::GetBaseMaterial(MaterialName, MaterialProperties[MaterialName]) == BaseMaterialPath)
+						{
+
+							int32 Length = MaterialProperties[MaterialName].Num();
+							for (int32 Index = Length - 1; Index >= 0; Index--)
+							{
+								FDUFTextureProperty ChildPropertyForRemoval = MaterialProperties[MaterialName][Index];
+								if (ChildPropertyForRemoval.Name == TEXT("Asset Type")) continue;
+								for (FDUFTextureProperty ParentProperty : MaterialProperties[IntermediateMaterialName])
 								{
-
-									 int32 Length = MaterialProperties[MaterialName].Num();
-									 for (int32 Index = Length - 1; Index >= 0; Index--)
-									 {
-										  FDUFTextureProperty ChildPropertyForRemoval = MaterialProperties[MaterialName][Index];
-										  if (ChildPropertyForRemoval.Name == TEXT("Asset Type")) continue;
-										  for (FDUFTextureProperty ParentProperty : MaterialProperties[IntermediateMaterialName])
-										  {
-												if (ParentProperty.Name == ChildPropertyForRemoval.Name && ParentProperty.Value == ChildPropertyForRemoval.Value)
-												{
-													 MaterialProperties[MaterialName].RemoveAt(Index);
-													 break;
-												}
-										  }
-									 }
+									if (ParentProperty.Name == ChildPropertyForRemoval.Name && ParentProperty.Value == ChildPropertyForRemoval.Value)
+									{
+											MaterialProperties[MaterialName].RemoveAt(Index);
+											break;
+									}
 								}
+							}
 
-								FDazToUnrealMaterials::CreateMaterial(ChildMaterialFolder, CharacterTexturesFolder, MaterialName, MaterialProperties, CharacterType, UnrealMaterialConstant);
-						  }
-						  else
-						  {
-								FDazToUnrealMaterials::CreateMaterial(ChildMaterialFolder, CharacterTexturesFolder, MaterialName, MaterialProperties, CharacterType, nullptr);
-						  }
+							FDazToUnrealMaterials::CreateMaterial(ChildMaterialFolder, CharacterTexturesFolder, MaterialName, MaterialProperties, CharacterType, UnrealMaterialConstant, SubsurfaceProfile);
+						}
+						else
+						{
+							FDazToUnrealMaterials::CreateMaterial(ChildMaterialFolder, CharacterTexturesFolder, MaterialName, MaterialProperties, CharacterType, nullptr, SubsurfaceProfile);
+						}
 					 }
 				}
 				else if (ChildMaterials.Num() == 1)
 				{
-					 FDazToUnrealMaterials::CreateMaterial(CharacterMaterialFolder / IntermediateMaterialName, CharacterTexturesFolder, ChildMaterials[0], MaterialProperties, CharacterType, nullptr);
+					USubsurfaceProfile* SubsurfaceProfile = FDazToUnrealMaterials::CreateSubsurfaceProfileForMaterial(ChildMaterials[0], CharacterMaterialFolder / ChildMaterials[0], MaterialProperties[ChildMaterials[0]]);
+					FDazToUnrealMaterials::CreateMaterial(CharacterMaterialFolder / IntermediateMaterialName, CharacterTexturesFolder, ChildMaterials[0], MaterialProperties, CharacterType, nullptr, SubsurfaceProfile);
 				}
 
 		  }
 	 }
 
-	 // Create Material Instances
-	 /*if (AssetType == DazAssetType::SkeletalMesh || AssetType == DazAssetType::StaticMesh)
-	 {
-		 CreateMaterials(CharacterMaterialFolder, CharacterTexturesFolder, MaterialNames, MaterialProperties, CharacterType);
-	 }*/
-
 	 // Import FBX
-	 return ImportFBXAsset(UpdatedFBXFile, CharacterFolder, AssetType, CharacterType, CharacterTypeName);
+	 UObject* NewObject = ImportFBXAsset(UpdatedFBXFile, CharacterFolder, AssetType, CharacterType, CharacterTypeName);
+
+	 // If this is a Pose transfer, an AnimSequence was created.  Make a PoseAsset from it.
+	 if (AssetType == DazAssetType::Pose)
+	 {
+		 if (UAnimSequence* AnimSequence = Cast<UAnimSequence>(NewObject))
+		 {
+			 UPoseAsset* NewPoseAsset = FDazToUnrealPoses::CreatePoseAsset(AnimSequence, PoseNameList);
+
+			 FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
+			 TArray<UObject*> AssetsToSelect;
+			 AssetsToSelect.Add((UObject*)NewPoseAsset);
+			 ContentBrowserModule.Get().SyncBrowserToAssets(AssetsToSelect);
+		 }
+	 }
+
+	 return NewObject;
 }
 
 
 
-bool FDazToUnrealModule::CreateMaterials(const FString CharacterMaterialFolder, const FString CharacterTexturesFolder, const TArray<FString>& MaterialNames, TMap<FString, TArray<FDUFTextureProperty>> MaterialProperties, const DazCharacterType CharacterType)
+/*bool FDazToUnrealModule::CreateMaterials(const FString CharacterMaterialFolder, const FString CharacterTexturesFolder, const TArray<FString>& MaterialNames, TMap<FString, TArray<FDUFTextureProperty>> MaterialProperties, const DazCharacterType CharacterType)
 {
 	 const UDazToUnrealSettings* CachedSettings = GetDefault<UDazToUnrealSettings>();
 
@@ -1261,7 +1345,7 @@ bool FDazToUnrealModule::CreateMaterials(const FString CharacterMaterialFolder, 
 
 
 	 return true;
-}
+}*/
 
 
 // Modified from the FColor::FromHex function
@@ -1352,21 +1436,26 @@ UObject* FDazToUnrealModule::ImportFBXAsset(const FString& SourcePath, const FSt
 	 FbxFactory->AddToRoot();
 
 	 USkeleton* Skeleton = nullptr;
+	 FSoftObjectPath SkeletonPath;
 	 if (CharacterType == DazCharacterType::Genesis1)
 	 {
 		  Skeleton = (USkeleton*)CachedSettings->Genesis1Skeleton.TryLoad();
+		  SkeletonPath = CachedSettings->Genesis1Skeleton;
 	 }
 	 if (CharacterType == DazCharacterType::Genesis3Male || CharacterType == DazCharacterType::Genesis3Female)
 	 {
 		  Skeleton = (USkeleton*)CachedSettings->Genesis3Skeleton.TryLoad();
+		  SkeletonPath = CachedSettings->Genesis3Skeleton;
 	 }
 	 if (CharacterType == DazCharacterType::Genesis8Male || CharacterType == DazCharacterType::Genesis8Female)
 	 {
 		  Skeleton = (USkeleton*)CachedSettings->Genesis8Skeleton.TryLoad();
+		  SkeletonPath = CachedSettings->Genesis8Skeleton;
 	 }
 	 if (CharacterType == DazCharacterType::Unknown && CachedSettings->OtherSkeletons.Contains(CharacterTypeName))
 	 {
 		  Skeleton = (USkeleton*)CachedSettings->OtherSkeletons[CharacterTypeName].TryLoad();
+		  SkeletonPath = CachedSettings->OtherSkeletons[CharacterTypeName];
 	 }
 
 	 UFbxImportUI* ImportUI = NewObject<UFbxImportUI>();
@@ -1382,6 +1471,8 @@ UObject* FDazToUnrealModule::ImportFBXAsset(const FString& SourcePath, const FSt
 		  FbxFactory->ImportUI->SkeletalMeshImportData->bImportMorphTargets = true;
 		  FbxFactory->ImportUI->bImportAnimations = true;
 		  FbxFactory->ImportUI->SkeletalMeshImportData->bUseT0AsRefPose = CachedSettings->FrameZeroIsReferencePose;
+		  FbxFactory->ImportUI->SkeletalMeshImportData->bConvertScene = true;
+		  FbxFactory->ImportUI->SkeletalMeshImportData->bForceFrontXAxis = CachedSettings->ZeroRootRotationOnImport;
 		  FbxFactory->ImportUI->MeshTypeToImport = FBXIT_SkeletalMesh;
 	 }
 	 if (AssetType == DazAssetType::StaticMesh)
@@ -1390,7 +1481,7 @@ UObject* FDazToUnrealModule::ImportFBXAsset(const FString& SourcePath, const FSt
 		  FbxFactory->ImportUI->bImportMaterials = true;
 		  FbxFactory->ImportUI->MeshTypeToImport = FBXIT_StaticMesh;
 	 }
-	 if (AssetType == DazAssetType::Animation)
+	 if (AssetType == DazAssetType::Animation || AssetType == DazAssetType::Pose)
 	 {
 		  FbxFactory->ImportUI->bImportAsSkeletal = true;
 		  FbxFactory->ImportUI->Skeleton = Skeleton;
@@ -1407,7 +1498,7 @@ UObject* FDazToUnrealModule::ImportFBXAsset(const FString& SourcePath, const FSt
 	 ImportData->Filenames = FileNames;
 	 ImportData->DestinationPath = ImportLocation;
 	 ImportData->bReplaceExisting = true;
-	 if (AssetType == DazAssetType::Animation)
+	 if (AssetType == DazAssetType::Animation || AssetType == DazAssetType::Pose)
 	 {
 		  ImportData->DestinationPath = CachedSettings->AnimationImportDirectory.Path;
 	 }
@@ -1441,17 +1532,9 @@ UObject* FDazToUnrealModule::ImportFBXAsset(const FString& SourcePath, const FSt
 	 {
 		  if (USkeletalMesh* SkeletalMesh = Cast<USkeletalMesh>(ImportedAsset))
 		  {
-				if (CharacterType == DazCharacterType::Genesis1)
+				if (CachedSettings->SkeletonPostProcessAnimation.Contains(SkeletonPath))
 				{
-					 SkeletalMesh->PostProcessAnimBlueprint = CachedSettings->Genesis1PostProcessAnimation.TryLoadClass<UAnimInstance>();
-				}
-				if (CharacterType == DazCharacterType::Genesis3Male || CharacterType == DazCharacterType::Genesis3Female)
-				{
-					 SkeletalMesh->PostProcessAnimBlueprint = CachedSettings->Genesis3PostProcessAnimation.TryLoadClass<UAnimInstance>();
-				}
-				if (CharacterType == DazCharacterType::Genesis8Male || CharacterType == DazCharacterType::Genesis8Female)
-				{
-					 SkeletalMesh->PostProcessAnimBlueprint = CachedSettings->Genesis8PostProcessAnimation.TryLoadClass<UAnimInstance>();
+					SkeletalMesh->PostProcessAnimBlueprint = CachedSettings->SkeletonPostProcessAnimation[SkeletonPath].TryLoadClass<UAnimInstance>();
 				}
 
 				//Get the new skeleton
@@ -1472,7 +1555,7 @@ UObject* FDazToUnrealModule::ImportFBXAsset(const FString& SourcePath, const FSt
 					 //EditableSkeleton->Set
 
 					 CachedSettings->OtherSkeletons.Add(CharacterTypeName, Skeleton);
-					 CachedSettings->SaveConfig();
+					 CachedSettings->SaveConfig(CPF_Config, *CachedSettings->GetDefaultConfigFilename());
 				}
 		  }
 	 }

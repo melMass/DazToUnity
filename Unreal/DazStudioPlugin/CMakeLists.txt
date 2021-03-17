@@ -45,7 +45,7 @@ add_library( ${DZ_PLUGIN_TGT_NAME} SHARED
 	${OS_SOURCES}
 )
 
-target_include_directories(common PUBLIC ${COMMON_LIB_INCLUDE_DIR})
+target_include_directories(${DZ_PLUGIN_TGT_NAME} PUBLIC ${COMMON_LIB_INCLUDE_DIR})
 
 target_link_libraries(${DZ_PLUGIN_TGT_NAME}
 	PRIVATE 
