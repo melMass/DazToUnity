@@ -9,9 +9,9 @@
 #include "dzproperty.h"
 #include "dzpresentation.h"
 
-QStringList DzUtils::GetAvailableMorphs(DzNode *Node, QMap<QString, MorphInfo> &morphs)
+QMap<QString, MorphInfo> DzUtils::GetAvailableMorphs(DzNode *Node, bool recursive )
 {
-  QStringList newMorphList;
+  QMap<QString, MorphInfo> morphs;
 
   DzObject *Object = Node->getObject();
   DzShape *Shape = Object ? Object->getCurrentShape() : NULL;
@@ -22,6 +22,7 @@ QStringList DzUtils::GetAvailableMorphs(DzNode *Node, QMap<QString, MorphInfo> &
     QString propName = property->getName();
     QString propLabel = property->getLabel();
     DzPresentation *presentation = property->getPresentation();
+
     if (presentation)
     {
       MorphInfo morphInfo;
@@ -88,7 +89,14 @@ QStringList DzUtils::GetAvailableMorphs(DzNode *Node, QMap<QString, MorphInfo> &
         }
       }
     }
+
+    if (recursive)
+    {
+      for (int ChildIndex = 0; ChildIndex < Node->getNumNodeChildren(); ChildIndex++)
+      {
+      }
+    }
   }
 
-  return newMorphList;
+  return morphs;
 }

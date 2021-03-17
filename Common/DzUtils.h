@@ -48,7 +48,7 @@ public:
 class DzUtils
 {
 public:
-  static QStringList GetAvailableMorphs(DzNode *Node, QMap<QString, MorphInfo> &morphs);
+  static QMap<QString, MorphInfo> GetAvailableMorphs(DzNode *Node, bool recursive = false);
 
   // ...lots of great stuff
 
