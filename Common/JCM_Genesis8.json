@@ -1,0 +1,352 @@
+[
+  {
+    "BoneName": "neckUpper",
+    "RangeMin": 0.000000,
+    "RangeMax": 22.000000,
+    "MorphName": "pJCMNeckTwist_22_R",
+    "SourceComponent": "RotationY"
+  },
+  {
+    "BoneName": "neckUpper",
+    "RangeMin": 0.000000,
+    "RangeMax": -22.000000,
+    "MorphName": "pJCMNeckTwist_22_L",
+    "SourceComponent": "RotationY"
+  },
+  {
+    "BoneName": "neckLower",
+    "RangeMin": 0.000000,
+    "RangeMax": -40.000000,
+    "MorphName": "pJCMNeckLowerSide_40_R",
+    "SourceComponent": "RotationZ"
+  },
+  {
+    "BoneName": "neckLower",
+    "RangeMin": 0.000000,
+    "RangeMax": 40.000000,
+    "MorphName": "pJCMNeckLowerSide_40_L",
+    "SourceComponent": "RotationZ"
+  },
+  {
+    "BoneName": "head",
+    "RangeMin": 0.000000,
+    "RangeMax": -27.000000,
+    "MorphName": "pJCMHeadBack_27",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "head",
+    "RangeMin": 0.000000,
+    "RangeMax": 25.000000,
+    "MorphName": "pJCMHeadFwd_25",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "rCollar",
+    "RangeMin": 0.000000,
+    "RangeMax": 55.000000,
+    "MorphName": "pJCMCollarUp_55_R",
+    "SourceComponent": "RotationZ"
+  },
+  {
+    "BoneName": "rCollar",
+    "RangeMin": 0.000000,
+    "RangeMax": 30.000000,
+    "MorphName": "pJCMCollarTwist_p30_R",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "rCollar",
+    "RangeMin": 0.000000,
+    "RangeMax": -30.000000,
+    "MorphName": "pJCMCollarTwist_n30_R",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "lCollar",
+    "RangeMin": 0.000000,
+    "RangeMax": -55.000000,
+    "MorphName": "pJCMCollarUp_55_L",
+    "SourceComponent": "RotationZ"
+  },
+  {
+    "BoneName": "lCollar",
+    "RangeMin": 0.000000,
+    "RangeMax": 30.000000,
+    "MorphName": "pJCMCollarTwist_p30_L",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "lCollar",
+    "RangeMin": 0.000000,
+    "RangeMax": -30.000000,
+    "MorphName": "pJCMCollarTwist_n30_L",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "chestLower",
+    "RangeMin": 0.000000,
+    "RangeMax": -20.000000,
+    "MorphName": "pJCMChestSide_20_R",
+    "SourceComponent": "RotationZ"
+  },
+  {
+    "BoneName": "chestLower",
+    "RangeMin": 0.000000,
+    "RangeMax": 20.000000,
+    "MorphName": "pJCMChestSide_20_L",
+    "SourceComponent": "RotationZ"
+  },
+  {
+    "BoneName": "chestLower",
+    "RangeMin": 0.000000,
+    "RangeMax": 35.000000,
+    "MorphName": "pJCMChestFwd_35",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "abdomenUpper",
+    "RangeMin": 0.000000,
+    "RangeMax": -24.000000,
+    "MorphName": "pJCMAbdomen2Side_24_R",
+    "SourceComponent": "RotationZ"
+  },
+  {
+    "BoneName": "abdomenUpper",
+    "RangeMin": 0.000000,
+    "RangeMax": 24.000000,
+    "MorphName": "pJCMAbdomen2Side_24_L",
+    "SourceComponent": "RotationZ"
+  },
+  {
+    "BoneName": "abdomenUpper",
+    "RangeMin": 0.000000,
+    "RangeMax": 40.000000,
+    "MorphName": "pJCMAbdomen2Fwd_40",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "abdomenLower",
+    "RangeMin": 0.000000,
+    "RangeMax": 35.000000,
+    "MorphName": "pJCMAbdomenFwd_35",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "pelvis",
+    "RangeMin": 0.000000,
+    "RangeMax": -25.000000,
+    "MorphName": "pJCMPelvisFwd_25",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "rFoot",
+    "RangeMin": 0.000000,
+    "RangeMax": 75.000000,
+    "MorphName": "pJCMFootDwn_75_R",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "rFoot",
+    "RangeMin": 0.000000,
+    "RangeMax": -40.000000,
+    "MorphName": "pJCMFootUp_40_R",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "lFoot",
+    "RangeMin": 0.000000,
+    "RangeMax": 75.000000,
+    "MorphName": "pJCMFootDwn_75_L",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "lFoot",
+    "RangeMin": 0.000000,
+    "RangeMax": -40.000000,
+    "MorphName": "pJCMFootUp_40_L",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "rShin",
+    "RangeMin": 90.000000,
+    "RangeMax": 155.000000,
+    "MorphName": "pJCMShinBend_155_R",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "rShin",
+    "RangeMin": 0.000000,
+    "RangeMax": 90.000000,
+    "MorphName": "pJCMShinBend_90_R",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "lShin",
+    "RangeMin": 90.000000,
+    "RangeMax": 155.000000,
+    "MorphName": "pJCMShinBend_155_L",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "lShin",
+    "RangeMin": 0.000000,
+    "RangeMax": 90.000000,
+    "MorphName": "pJCMShinBend_90_L",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "rThighBend",
+    "RangeMin": 0.000000,
+    "RangeMax": 85.000000,
+    "MorphName": "pJCMThighSide_85_R",
+    "SourceComponent": "RotationZ"
+  },
+  {
+    "BoneName": "rThighBend",
+    "RangeMin": 0.000000,
+    "RangeMax": 35.000000,
+    "MorphName": "pJCMThighBack_35_R",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "rThighBend",
+    "RangeMin": -57.000000,
+    "RangeMax": -115.000000,
+    "MorphName": "pJCMThighFwd_115_R",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "rThighBend",
+    "RangeMin": 0.000000,
+    "RangeMax": -57.000000,
+    "MorphName": "pJCMThighFwd_57_R",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "lThighBend",
+    "RangeMin": 0.000000,
+    "RangeMax": -85.000000,
+    "MorphName": "pJCMThighSide_85_L",
+    "SourceComponent": "RotationZ"
+  },
+  {
+    "BoneName": "lThighBend",
+    "RangeMin": 0.000000,
+    "RangeMax": 35.000000,
+    "MorphName": "pJCMThighBack_35_L",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "lThighBend",
+    "RangeMin": -57.000000,
+    "RangeMax": -115.000000,
+    "MorphName": "pJCMThighFwd_115_L",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "lThighBend",
+    "RangeMin": 0.000000,
+    "RangeMax": -57.000000,
+    "MorphName": "pJCMThighFwd_57_L",
+    "SourceComponent": "RotationX"
+  },
+  {
+    "BoneName": "rHand",
+    "RangeMin": 0.000000,
+    "RangeMax": -70.000000,
+    "MorphName": "pJCMHandDwn_70_R",
+    "SourceComponent": "RotationZ"
+  },
+  {
+    "BoneName": "rHand",
+    "RangeMin": 0.000000,
+    "RangeMax": 80.000000,
+    "MorphName": "pJCMHandUp_80_R",
+    "SourceComponent": "RotationZ"
+  },
+  {
+    "BoneName": "lHand",
+    "RangeMin": 0.000000,
+    "RangeMax": 70.000000,
+    "MorphName": "pJCMHandDwn_70_L",
+    "SourceComponent": "RotationZ"
+  },
+  {
+    "BoneName": "lHand",
+    "RangeMin": 0.000000,
+    "RangeMax": -80.000000,
+    "MorphName": "pJCMHandUp_80_L",
+    "SourceComponent": "RotationZ"
+  },
+  {
+    "BoneName": "rForearmBend",
+    "RangeMin": -75.000000,
+    "RangeMax": -135.000000,
+    "MorphName": "pJCMForeArmFwd_135_R",
+    "SourceComponent": "RotationY"
+  },
+  {
+    "BoneName": "rForearmBend",
+    "RangeMin": 0.000000,
+    "RangeMax": -75.000000,
+    "MorphName": "pJCMForeArmFwd_75_R",
+    "SourceComponent": "RotationY"
+  },
+  {
+    "BoneName": "lForearmBend",
+    "RangeMin": 75.000000,
+    "RangeMax": 135.000000,
+    "MorphName": "pJCMForeArmFwd_135_L",
+    "SourceComponent": "RotationY"
+  },
+  {
+    "BoneName": "lForearmBend",
+    "RangeMin": 0.000000,
+    "RangeMax": 75.000000,
+    "MorphName": "pJCMForeArmFwd_75_L",
+    "SourceComponent": "RotationY"
+  },
+  {
+    "BoneName": "rShldrBend",
+    "RangeMin": 0.000000,
+    "RangeMax": -110.000000,
+    "MorphName": "pJCMShldrFwd_110_R",
+    "SourceComponent": "RotationY"
+  },
+  {
+    "BoneName": "rShldrBend",
+    "RangeMin": 0.000000,
+    "RangeMax": -40.000000,
+    "MorphName": "pJCMShldrDown_40_R",
+    "SourceComponent": "RotationZ"
+  },
+  {
+    "BoneName": "rShldrBend",
+    "RangeMin": 0.000000,
+    "RangeMax": 90.000000,
+    "MorphName": "pJCMShldrUp_90_R",
+    "SourceComponent": "RotationZ"
+  },
+  {
+    "BoneName": "lShldrBend",
+    "RangeMin": 0.000000,
+    "RangeMax": 110.000000,
+    "MorphName": "pJCMShldrFwd_110_L",
+    "SourceComponent": "RotationY"
+  },
+  {
+    "BoneName": "lShldrBend",
+    "RangeMin": 0.000000,
+    "RangeMax": 40.000000,
+    "MorphName": "pJCMShldrDown_40_L",
+    "SourceComponent": "RotationZ"
+  },
+  {
+    "BoneName": "lShldrBend",
+    "RangeMin": 0.000000,
+    "RangeMax": -90.000000,
+    "MorphName": "pJCMShldrUp_90_L",
+    "SourceComponent": "RotationZ"
+  }
+]
