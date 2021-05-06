@@ -1,4 +1,6 @@
 using System.IO;
+using Accord.Statistics.Kernels;
+using g3;
 using UnityEditor;
 using UnityEditor.Rendering.HighDefinition;
 using UnityEngine;
@@ -13,6 +15,7 @@ namespace Daz3D
             var name = Utilities.ScrubKey(material.AssetName);
             return dtuFile.Directory + "/" + name;
         }
+
         /// <summary>
         /// Guess if our material looks like a hair
         /// </summary>
@@ -46,7 +49,7 @@ namespace Daz3D
         /// </summary>
         /// <param name="dTUMaterial"></param>
         /// <returns></returns>
-        public static bool IsSkin( this DTUMaterial dtuMaterial)
+        public static bool IsSkin(this DTUMaterial dtuMaterial)
         {
             var dualLobeSpecularWeight = dtuMaterial.Get("Dual Lobe Specular Weight");
             var dualLobeSpecularReflectivity = dtuMaterial.Get("Dual Lobe Specular Reflectivity");
@@ -2214,16 +2217,28 @@ namespace Daz3D
         /// </summary>
         /// <param name="dtuMaterial">The DTUMaterial object that exists in the array of mats inside the .dtu file</param>
         /// <param name="dtuFile"></param>
+        /// <param name="regenerateMaterials"></param>
         /// <returns></returns>
-        public static Material ConvertToUnity(this DTUMaterial dtuMaterial, DTUFile dtuFile)
+        public static Material ConvertToUnity(this DTUMaterial dtuMaterial, DTUFile dtuFile, bool regenerateMaterials)
         {
-            var materialDir = GetMaterialDir(dtuMaterial,dtuFile);
+            var materialDir = GetMaterialDir(dtuMaterial, dtuFile);
             if (!Directory.Exists(materialDir))
             {
                 Directory.CreateDirectory(materialDir);
             }
 
             var materialPath = materialDir + "/" + Utilities.ScrubKey(dtuMaterial.MaterialName) + ".mat";
+
+            string materialRealPath = Path.Combine(Application.dataPath, materialPath);
+            if (File.Exists(materialRealPath) && !regenerateMaterials)
+            {
+                Utilities.Log(
+                    $"Material {dtuMaterial.MaterialName} exist and regenerate material is off, returning existing");
+                return AssetDatabase.LoadAssetAtPath<Material>(materialPath);
+            }
+
+
+            Utilities.Log($"No Material found at {materialRealPath} regenerating");
 
 
             DTUMaterialType materialType = DTUMaterialType.Unknown;
@@ -2366,7 +2381,8 @@ namespace Daz3D
         /// <param name="sortingPriority"></param>
         /// <param name="hasGlossyLayeredWeight"></param>
         /// <param name="hasGlossyColor"></param>
-        public static void ToggleCommonMaterialProperties(ref Material mat, string matNameLower, bool isTransparent = false,
+        public static void ToggleCommonMaterialProperties(ref Material mat, string matNameLower,
+            bool isTransparent = false,
             bool isDoubleSided = false, bool hasDualLobeSpecularWeight = false,
             bool hasDualLobeSpecularReflectivity = false, int sortingPriority = 0, bool hasGlossyLayeredWeight = false,
             bool hasGlossyColor = false)
@@ -2525,7 +2541,7 @@ namespace Daz3D
 
             var md5Remote = Utilities.MD5(path);
 
-            bool copyRemtoe = true;
+            bool copyRemote = true;
 
             //Does this file already exist locally?
             var cleanPath = localAssetDir + "/" + filename;
@@ -2535,14 +2551,14 @@ namespace Daz3D
 
                 if (md5Remote == md5Local)
                 {
-                    copyRemtoe = false;
+                    copyRemote = false;
                 }
             }
 
             bool dirty = false;
 
 
-            if (copyRemtoe)
+            if (copyRemote)
             {
                 Utilities.Log("Copying file: " + path);
                 File.Copy(path, cleanPath);
@@ -2551,7 +2567,7 @@ namespace Daz3D
 
 
             var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(cleanPath);
-            var ti = TextureImporter.GetAtPath(cleanPath) as TextureImporter;
+            var ti = AssetImporter.GetAtPath(cleanPath) as TextureImporter;
 
             if (ti == null)
             {
@@ -2596,7 +2612,7 @@ namespace Daz3D
                     ti.SaveAndReimport();
                 }
 
-                if (copyRemtoe)
+                if (copyRemote)
                 {
                     record?.AddToken("Imported " + ti.textureType + " texture");
                     record?.AddToken(tex.name, tex);

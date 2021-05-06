@@ -1,26 +1,28 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using SimpleJSON;
 using UnityEngine;
 
 namespace Daz3D
 {
-        public class MaterialMap
+    public class MaterialMap
+    {
+        public MaterialMap(string path)
         {
-            public MaterialMap(string path)
-            {
-                Path = path;
-            }
-
-            public void AddMaterial(Material material)
-            {
-                if (material && !Map.ContainsKey(material.name))
-                    Map.Add(material.name, material);
-            }
-
-            public string Path { get; set; }
-            public Dictionary<string, Material> Map = new Dictionary<string, Material>();
+            Path = path;
         }
+
+        public void AddMaterial(Material material)
+        {
+            if (material && !Map.ContainsKey(material.name))
+                Map.Add(material.name, material);
+        }
+
+        public string Path { get; set; }
+        public Dictionary<string, Material> Map = new Dictionary<string, Material>();
+    }
+
     #region Material Properties
 
     public struct DTUMaterialProperty
@@ -51,10 +53,10 @@ namespace Daz3D
         public static DTUMaterialProperty FromJSON(JSONNode prop)
         {
             var dtuMatProp = new DTUMaterialProperty();
-            
+
             //since this property was found, mark it
             dtuMatProp.Exists = true;
-            
+
             dtuMatProp.Name = prop["Name"].Value;
             dtuMatProp.Texture = prop["Texture"].Value;
 
@@ -110,6 +112,10 @@ namespace Daz3D
 
     #endregion
 
+    
+    
+    
+    
     [Serializable]
     public struct DTUMaterial
     {
@@ -127,9 +133,9 @@ namespace Daz3D
         {
             var dtuMat = new DTUMaterial();
             dtuMat.Version = matValue["Version"].AsFloat;
-            dtuMat.AssetName = matValue["Asset Name"].Value;
-            dtuMat.MaterialName = matValue["Material Name"].Value;
-            dtuMat.MaterialType = matValue["Material Type"].Value;
+            dtuMat.AssetName = matValue["AssetName"].Value;
+            dtuMat.MaterialName = matValue["MaterialName"].Value;
+            dtuMat.MaterialType = matValue["MaterialType"].Value;
             dtuMat.Value = matValue["Value"].Value;
             dtuMat.Properties = new List<DTUMaterialProperty>();
 
@@ -151,9 +157,12 @@ namespace Daz3D
                 if (_map == null || _map.Count == 0)
                 {
                     _map = new Dictionary<string, DTUMaterialProperty>();
-                    foreach (var prop in Properties)
+                    if (Properties != null)
                     {
-                        _map[prop.Name] = prop;
+                        foreach (var prop in Properties)
+                        {
+                            _map[prop.Name] = prop;
+                        }
                     }
                 }
 

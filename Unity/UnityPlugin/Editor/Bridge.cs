@@ -43,7 +43,7 @@ namespace Daz3D
 
         private static Bridge _instance;
 
-        [MenuItem("Daz3D/Open Daz3DBridge window")]
+        [MenuItem("Window/Daz3D Bridge")]
         public static void ShowWindow()
         {
             ObtainInstance();
@@ -91,7 +91,8 @@ namespace Daz3D
             GUILayout.BeginHorizontal();
 
             if (masthead == null)
-                masthead = Resources.Load<Texture>("Daz_Combined_Small");
+                masthead = AssetDatabase.LoadAssetAtPath<Texture>(
+                    AssetDatabase.GUIDToAssetPath("8addd0fb0fc7fd84cafe316c365bf0fe"));
 
             GUILayout.FlexibleSpace();
             GUILayout.Label(masthead, GUILayout.Height(100));
@@ -286,7 +287,10 @@ namespace Daz3D
 
         private void DrawHelpReadMe()
         {
-            var readMe = Resources.Load<TextAsset>("ReadMe");
+            // var readMe = Resources.Load<TextAsset>("ReadMe");
+            var readMe =
+                AssetDatabase.LoadAssetAtPath<TextAsset>(
+                    AssetDatabase.GUIDToAssetPath("de4adb36be8419d4fb63f6bbde810978"));
             if (readMe)
             {
                 readMePos = GUILayout.BeginScrollView(readMePos);

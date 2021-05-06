@@ -1,12 +1,30 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Newtonsoft.Json;
 using SimpleJSON;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Daz3D
 {
+    [Serializable]
+    public class DTUSubdivision
+
+    {
+        public float Version;
+        public string AssetName;
+        public int Value;
+    }
+
+    [Serializable]
+    public class DTUMorph
+
+    {
+        public string Name;
+        public string Label;
+    }
+
     public struct DTUValue
     {
         public enum DataType
@@ -21,11 +39,29 @@ namespace Daz3D
 
         public DataType Type;
 
-        public int AsInteger;
-        public float AsFloat;
-        public double AsDouble;
-        public Color AsColor;
-        public string AsString;
+        //public object Value;
+        public int AsInteger; // => (int)Value;
+
+        public float AsFloat; // => (float)Value;
+        public double AsDouble; // => (float)Value;
+
+        public Color AsColor; //
+        // {
+        //     get
+        //     {
+        //         Color color;
+        //         var tmpStr = (string) Value; 
+        //         if (!ColorUtility.TryParseHtmlString(tmpStr, out color))
+        //         {
+        //             Debug.LogError("Failed to parse color hex code: " + tmpStr);
+        //             throw new Exception("Invalid color hex code");
+        //         }
+        //
+        //         return color;
+        //     }
+        // }
+
+        public string AsString; // => (string) Value;
 
         public override string ToString()
         {
@@ -49,7 +85,7 @@ namespace Daz3D
         public static DTUValue FromJSON(JSONNode prop)
         {
             var v = new DTUValue();
-            var propDataType = prop["Data Type"].Value;
+            var propDataType = prop["DataType"].Value;
             if (propDataType == "Double")
             {
                 v.Type = DTUValue.DataType.Double;
@@ -119,7 +155,9 @@ namespace Daz3D
         [SerializeField] public string ImportFolder;
         [SerializeField] public List<DTUMaterial> Materials;
         [SerializeField] public List<DTUSubdivision> Subdivisions;
-        [SerializeField] public DazFigurePlatform FigureType;
+        [SerializeField] public List<DTUMorph> Morphs;
+
+        [SerializeField] public DazFigurePlatform FigureType = DazFigurePlatform.Genesis8;
         [SerializeField] public GameObject Prefab;
 
 
@@ -129,6 +167,7 @@ namespace Daz3D
         public string AssetPath;
 
         private string _directory;
+
 
         public string Directory
         {
@@ -142,7 +181,7 @@ namespace Daz3D
                 //if we have regular backslashes on windows, convert to forward slashes
                 _directory = _directory.Replace(@"\", @"/");
                 //remove everything up to Assets from the path so it's relative to the project folder
-                _directory = _directory.Replace(Application.dataPath, "Assets");
+                _directory = Utilities.RelativePath(_directory);
                 return _directory;
             }
         }
@@ -166,20 +205,28 @@ namespace Daz3D
                 return dtuFile;
             }
 
-            dtuFile.AssetPath = path;
+            // dtuFile = JsonUtility.FromJson<DTUFile>(text);
+            // var settings = new JsonSerializerSettings();
+            // settings.Error = (serializer, err) => { err.ErrorContext.Handled = true; };
+            //
+            // JsonConvert.PopulateObject(text, dtuFile, settings);
 
+
+            // return dtuFile;
+            // 
+            //
             var root = JSON.Parse(text);
 
-            dtuFile.AssetID = root["Asset Id"].Value;
-            dtuFile.AssetName = root["Asset Name"].Value;
-            dtuFile.AssetType = root["Asset Type"].Value;
-            dtuFile.FBXFile = root["FBX File"].Value;
-            dtuFile.ImportFolder = root["Import Folder"].Value;
-
-            dtuFile.FigureType = dtuFile.DiscoverFigurePlatform();
-
+            dtuFile.AssetID = root["AssetId"].Value;
+            dtuFile.AssetName = root["AssetName"].Value;
+            dtuFile.AssetType = root["AssetType"].Value;
+            dtuFile.FBXFile = Utilities.RelativePath(root["FBXFile"].Value);
+            dtuFile.ImportFolder = root["ImportFolder"].Value;
 
             dtuFile.Materials = new List<DTUMaterial>();
+            
+            dtuFile.FigureType = dtuFile.AssetID.ToFigurePlatform();
+            dtuFile.AssetPath = path;
 
             var materials = root["Materials"].AsArray;
 
@@ -196,11 +243,26 @@ namespace Daz3D
                 var dtuSub = new DTUSubdivision();
 
                 dtuSub.Version = subdivision["Version"].AsFloat;
-                dtuSub.AssetName = subdivision["Asset Name"].Value;
+                dtuSub.AssetName = subdivision["AssetName"].Value;
                 dtuSub.Value = (int) subdivision["Value"].AsFloat;
 
                 dtuFile.Subdivisions.Add(dtuSub);
             }
+
+            dtuFile.Morphs = new List<DTUMorph>();
+            var morphs = root["Morphs"].AsArray;
+            foreach (var morphKVP in morphs)
+            {
+                var morph = morphKVP.Value;
+                var dtuMorph = new DTUMorph();
+
+                dtuMorph.Name = morph["Name"].Value;
+                dtuMorph.Label = morph["Label"].Value;
+
+                dtuFile.Morphs.Add(dtuMorph);
+            }
+
+            
 
             return dtuFile;
         }
@@ -217,21 +279,8 @@ namespace Daz3D
 
             foreach (var dtuMat in Materials)
             {
-                dtuMat.ConvertToUnity(this);
+                dtuMat.ConvertToUnity(this, true);
             }
-        }
-
-        private DazFigurePlatform DiscoverFigurePlatform()
-        {
-            var token = AssetID.ToLower();
-
-            foreach (DazFigurePlatform dfp in Enum.GetValues(typeof(DazFigurePlatform)))
-            {
-                if (token.Contains(dfp.ToString().ToLower()))
-                    return dfp;
-            }
-
-            return DazFigurePlatform.Genesis8; //default
         }
     }
 }

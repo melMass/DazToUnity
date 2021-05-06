@@ -1,19 +1,18 @@
-using System;
 using UnityEditor;
 using UnityEngine;
 
 namespace Daz3D
 {
-    [CustomEditor(typeof(BlendshapesController))]
+    [CustomEditor(typeof(BlendshapesSyncedController))]
     public class BlendshapesControllerEditor : Editor
     {
         SerializedProperty _blendshapes;
         SerializedProperty _dirty;
-        private BlendshapesController _controller;
+        private BlendshapesSyncedController _controller;
 
         private void OnEnable()
         {
-            _controller = target as BlendshapesController;
+            _controller = target as BlendshapesSyncedController;
             _blendshapes = serializedObject.FindProperty("blendshapes");
             _dirty = serializedObject.FindProperty("dirty");
         }

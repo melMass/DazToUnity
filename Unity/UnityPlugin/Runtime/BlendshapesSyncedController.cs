@@ -31,46 +31,9 @@ namespace Daz3D
     //     }
     // }
     
-     [Serializable]
-    public struct DazBlendshape
-    {
-        public new string name;
-        
-        [SerializeField]
-        public float weight;
-
-        
-        public List<Action<float>> onValueChangeActions;
-        public HashSet<string> prefixes ;
-
-        // public DazBlendshape(string name, float weight)
-        // {
-        //     this.name = name;
-        //     this.weight = weight;
-        //     onValueChangeActions = new List<Action<float>>();
-        //     prefixes = new HashSet<string>();
-        // }
-        public void Apply()
-        {
-            foreach (var action in onValueChangeActions)
-            {
-                action.Invoke(weight);
-            }
-        }
-        public static DazBlendshape Init(string initName, float initWeight)
-        {
-            //var instance = CreateInstance<DazBlendshape>();
-            var instance = new DazBlendshape();
-            instance.name = initName;
-            instance.weight = initWeight;
-            instance.onValueChangeActions = new List<Action<float>>();
-            instance.prefixes = new HashSet<string>();
-            return instance;
-        }
-    }
-
+     
     [ExecuteInEditMode]
-    public class BlendshapesController : MonoBehaviour
+    public class BlendshapesSyncedController : MonoBehaviour
     {
         [SerializeField] 
         private DazBlendshape[] blendshapes;
@@ -97,9 +60,13 @@ namespace Daz3D
                 {
                     var bsName = s.sharedMesh.GetBlendShapeName(x);
                     var prefix = bsName.Split('_')[0];
-                    bsName = bsName.Split(new string[] {"__"}, StringSplitOptions.None)[1];
+                    DazBlendshape current;
+                    if (bsName.Contains("__"))
+                    {
+                        bsName = bsName.Split(new string[] {"__"}, StringSplitOptions.None)[1];
+                    }
 
-                    var current = blendshapesList.Find(m => m.name == bsName);
+                    current = blendshapesList.Find(m => m.name == bsName);
                     // if (current == null)
                     if (string.IsNullOrEmpty(current.name))
                     {
@@ -123,7 +90,7 @@ namespace Daz3D
 
         private void Update()
         {
-            if (!dirty) return;
+                if (!dirty) return;
             
             Array.ForEach(blendshapes,m => m.Apply());
             

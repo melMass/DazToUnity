@@ -1,0 +1,21 @@
+{
+    "name": "DAZEditor",
+    "rootNamespace": "Daz3D",
+    "references": [
+        "DAZRuntime",
+        "Autodesk.Fbx",
+        "Autodesk.Fbx.Editor",
+        "Unity.RenderPipelines.HighDefinition.Runtime",
+        "Unity.RenderPipelines.HighDefinition.Editor",
+        "Unity.EditorCoroutines.Editor"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

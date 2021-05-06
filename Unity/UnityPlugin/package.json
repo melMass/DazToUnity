@@ -1,0 +1,25 @@
+{
+  "name": "com.daz.unity",
+  "version": "1.0.0",
+  "displayName": "Daz To Unity",
+  "description": "Bridge for Daz3D",
+  "keywords": [
+    "unity",
+    "Daz3D",
+    "characters"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/mtb-packages/com.daz.unity.git"
+  },
+  "unity": "2020.1",
+  "author": {
+    "name": "Mel Massadian",
+    "email": "mel@melmassadian.com",
+    "url": "https://www.melmassadian.com"
+  },
+  "dependencies": {
+    "com.unity.editorcoroutines": "1.0.0"
+  },
+  "hideInEditor": false
+}

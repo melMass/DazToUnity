@@ -1,4 +1,5 @@
-using Cinemachine.Editor;
+using Newtonsoft.Json;
+using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEditor.AssetImporters;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace Daz3D
         [HideInInspector] [SerializeField] private Texture2D icon;
 
         // protected override bool useAssetDrawPreview => true;
+        private JsonSerializerSettings settings;
 
         public override void OnInspectorGUI()
         {
@@ -23,6 +25,7 @@ namespace Daz3D
             EditorGUILayout.LabelField("Import Settings", EditorStyles.boldLabel);
             {
                 EditorGUI.indentLevel++;
+                SerializedProperty ApplySubdivisions = serializedObject.FindProperty("ApplySubdivisions");
                 SerializedProperty UseHighQualityTextures = serializedObject.FindProperty("UseHighQualityTextures");
                 SerializedProperty AutoImportDTUChanges = serializedObject.FindProperty("AutoImportDTUChanges");
                 SerializedProperty GenerateUnityPrefab = serializedObject.FindProperty("GenerateUnityPrefab");
@@ -31,6 +34,8 @@ namespace Daz3D
                     serializedObject.FindProperty("AutomateMecanimAvatarMappings");
                 SerializedProperty ReplaceMaterials = serializedObject.FindProperty("ReplaceMaterials");
 
+                EditorGUILayout.PropertyField(ApplySubdivisions,
+                    new GUIContent("Apply Subdivisions", "If necessary, rebinds missing skin weights."));
                 EditorGUILayout.PropertyField(UseHighQualityTextures,
                     new GUIContent("Use High Quality Textures", "Use Highest Quality for Textures"));
                 EditorGUILayout.PropertyField(AutoImportDTUChanges,
@@ -79,17 +84,39 @@ namespace Daz3D
                 //
 
 
-                if (GUILayout.Button("ApplySubdivisions"))
+                if (GUILayout.Button(new GUIContent("Apply Subdivisions",
+                    "This will generate a separate fbx file with the new skin weights")))
                 {
-                    DazCoroutine.StartCoroutine(DazFBXUtils.ApplySubdivisions(importer.dtuFile.FBXFile,
-                        importer.dtuFile.Subdivisions.ToArray()));
+                    //DazCoroutine.StartCoroutine(DazFBXUtils.ApplySubdivisions(importer.dtuFile.FBXFile,
+                    //    importer.dtuFile));    
+                    EditorCoroutineUtility.StartCoroutineOwnerless(DazFBXUtils.ApplySubdivisions(
+                        importer.dtuFile.FBXFile,
+                        importer.dtuFile));
                 }
 
-                if (GUILayout.Button("Print DTU Informations"))
+                if (GUILayout.Button(new GUIContent("Regenerate Prefab",
+                    "This sets the right settings on the fbx file and generate a prefab from it.")))
                 {
-                    Utilities.Log(importer.path);
-                    Utilities.Log(importer.dtuFile.Prefab);
-                    Utilities.Log(importer.dtuFile.Subdivisions.Count);
+                    importer.GeneratePrefabFromFBX(importer.dtuFile.FBXFile, importer.dtuFile.FigureType);
+                }
+
+                if (GUILayout.Button(new GUIContent("Guess Genesis Type",
+                    "[DEBUG]")))
+                {
+                    importer.dtuFile.FigureType = importer.dtuFile.AssetID.ToFigurePlatform();
+                }
+
+                if (GUILayout.Button(new GUIContent("Export JSON")))
+                {
+                    if (settings == null)
+                    {
+                        settings = new JsonSerializerSettings();
+                        settings.Error = (serializer, err) => { err.ErrorContext.Handled = true; };
+                    }
+
+
+                    // Debug.Log(EditorJsonUtility.ToJson(importer.dtuFile));
+                    Debug.Log(JsonConvert.SerializeObject(importer.dtuFile, settings));
                 }
             }
 

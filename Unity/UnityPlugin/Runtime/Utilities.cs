@@ -47,6 +47,22 @@ namespace Daz3D
             return color.grayscale;
         }
 
+        /// <summary>
+        /// Returns the provided path relative to the Assets folder.
+        /// Returns the full path if it's not a project path.
+        /// </summary>
+        /// <param name="path">Absolute Path</param>
+        /// <returns></returns>
+        public static string RelativePath(string path)
+        {
+            string relativepath = path;
+            if (path.StartsWith(Application.dataPath)) {
+                relativepath =  "Assets" + path.Substring(Application.dataPath.Length);
+            }
+
+            return relativepath;
+        }
+
         public static void Log(object message)
         {
             Debug.Log($"<color=yellow><b>DAZ 3D:</b></color> {message}");

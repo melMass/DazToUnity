@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEditor.AssetImporters;
 using UnityEngine;
@@ -14,38 +14,63 @@ using Object = UnityEngine.Object;
 namespace Daz3D
 {
     public enum DazFigurePlatform
+    {
+        [InspectorName("Genesis 8.1")] Genesis81,
+        [InspectorName("Genesis 8")] Genesis8,
+        [InspectorName("Genesis 3")] Genesis3,
+        [InspectorName("Genesis 2")] Genesis2,
+        [InspectorName("Victori a")] Victoria,
+        [InspectorName("Genesis")] Genesis,
+        [InspectorName("Michael")] Michael,
+        [InspectorName("TheFreak")] TheFreak,
+        [InspectorName("Victoria 4")] Victoria4,
+        [InspectorName("Victoria4Elite")] Victoria4Elite,
+        [InspectorName("Michael 4")] Michael4,
+        [InspectorName("Michael4Elite")] Michael4Elite,
+        [InspectorName("Stephanie 4")] Stephanie4,
+        [InspectorName("Aiko 4")] Aiko4
+    }
+
+    public static class DazFigurePlatformExtensions
+    {
+        public static DazFigurePlatform ToFigurePlatform(this string src)
         {
-            [Description("Genesis 8.1")] Genesis81,
+             var token = src.ToLower();
 
-            Genesis8,
-            Genesis3,
-            Genesis2,
-            Victoria,
-            Genesis,
-            Michael,
-            TheFreak,
-            Victoria4,
-            Victoria4Elite,
-            Michael4,
-            Michael4Elite,
-            Stephanie4,
-            Aiko4
+            // Debug.Log($"Token {token}");
+
+            if (token.ToLower().StartsWith("genesis8_1"))
+            {
+                return DazFigurePlatform.Genesis81;
+            }
+
+            foreach (DazFigurePlatform dfp in Enum.GetValues(typeof(DazFigurePlatform)))
+            {
+                if (token.Contains(dfp.ToString().ToLower()))
+                    return dfp;
+            }
+
+            return DazFigurePlatform.Genesis8; //default
         }
+    }
 
-    
+
     [ScriptedImporter(1, "dtu", 0x7FFFFFFF)]
     public class DTUImporter : ScriptedImporter
     {
+        [SerializeField] bool ApplySubdivisions = true;
         [SerializeField] bool AutoImportDTUChanges = true;
         [SerializeField] bool GenerateUnityPrefab = true;
         [SerializeField] bool ReplaceSceneInstances = true;
         [SerializeField] bool AutomateMecanimAvatarMappings = true;
         [SerializeField] bool ReplaceMaterials = true;
         [SerializeField] bool UseHighQualityTextures = true;
+        [SerializeField] bool RegenerateMaterials = false;
         [SerializeField] public DTUFile dtuFile;
 
+        private EditorCoroutine m_ImportCoroutine;
 
-        public string path = "";
+        // public string path = "";
 
         private static Dictionary<string, Material> s_StandardMaterialCollection = new Dictionary<string, Material>();
         private static MaterialMap _map;
@@ -59,39 +84,26 @@ namespace Daz3D
         {
             EventQueue = new Queue<ImportEventRecord>();
         }
-        public static void FoldAll()
-        {
-            foreach (var record in EventQueue)
-                record.Unfold = false;
-        }
 
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            if (AutoImportDTUChanges)
-            {
-                var dtuPath = ctx.assetPath;
-                var fbxPath = dtuPath.Replace(".dtu", ".fbx");
-                
-                dtuFile = DTUFile.Load(dtuPath);
-                
-                ctx.AddObjectToAsset("DTUFile",dtuFile);
-                ctx.SetMainObject(dtuFile);
+            if (!AutoImportDTUChanges) return;
+            
+            var dtuPath = ctx.assetPath;
+            var fbxPath = dtuPath.Replace(".dtu", ".fbx");
 
-                Import(dtuFile, fbxPath, () =>
-                {
-                    Utilities.Log($"Importer Done for {dtuFile.AssetName}");
-                    
-                });
+            dtuFile = DTUFile.Load(dtuPath);
 
+            ctx.AddObjectToAsset("DTUFile", dtuFile);
+            ctx.SetMainObject(dtuFile);
 
-               
-            }
+            Import(dtuFile, fbxPath, () => { Utilities.Log($"Importer Done for {dtuFile.AssetName}"); });
         }
 
-        [MenuItem("Daz3D/Extract materials from selected DTU", true)]
-        [MenuItem("Assets/Daz3D/Create Unity Prefab", true)]
-        [MenuItem("Daz3D/Create Unity Prefab from selected DTU", true)]
-        [MenuItem("Assets/Daz3D/Extract materials", true)]
+        // [MenuItem("Daz3D/Extract materials from selected DTU", true)]
+        // [MenuItem("Assets/Daz3D/Create Unity Prefab", true)]
+        // [MenuItem("Daz3D/Create Unity Prefab from selected DTU", true)]
+        // [MenuItem("Assets/Daz3D/Extract materials", true)]
         public static bool ValidateDTUSelected()
         {
             var obj = Selection.activeObject;
@@ -106,45 +118,60 @@ namespace Daz3D
         public void Import(DTUFile dtuFile, string fbxPath, Action done)
         {
             //path = dtuPath;
-            DazCoroutine.StartCoroutine(ImportRoutine(dtuFile, fbxPath,done));
+            m_ImportCoroutine = EditorCoroutineUtility.StartCoroutineOwnerless(ImportRoutine(dtuFile, fbxPath, done));
+            //DazCoroutine.StartCoroutine(ImportRoutine(dtuFile, fbxPath, done));
         }
 
         #endregion
 
-        private IEnumerator ImportRoutine(DTUFile dtuFile, string fbxPath,Action done)
+        private IEnumerator ImportRoutine(DTUFile dtuFile, string fbxPath, Action done = null)
         {
             Bridge.CurrentToolbarMode = Bridge.ToolbarMode.History; //force into history mode during import
 
             Bridge.Progress = .03f;
-            yield return new WaitForEndOfFrame();
+            yield return null;
 
             _map = new MaterialMap(dtuFile.AssetPath);
 
             while (!IrayShadersReady())
-                yield return new WaitForEndOfFrame();
+                yield return null;
 
+            yield return ImportDTURoutine(dtuFile, .8f);
             // var dtu = new DTUFile();
-            var routine = ImportDTURoutine(dtuFile,  .8f);
-            while (routine.MoveNext())
-                yield return new WaitForEndOfFrame();
+            // var routine = ImportDTURoutine(dtuFile, .8f);
+            // while (routine.MoveNext())
+            //     yield return null;
+            //     //yield return new WaitForEndOfFrame();
 
             Bridge.Progress = .9f;
-            yield return new WaitForEndOfFrame();
+            yield return null;
+            //yield return new WaitForEndOfFrame();
 
             if (GenerateUnityPrefab)
             {
+                
+                if (ApplySubdivisions)
+                {
+                    Utilities.Log("Applying Subdivisions");
+                    var routineSubdivisions = DazFBXUtils.ApplySubdivisions(dtuFile.FBXFile, dtuFile);
+                    while (routineSubdivisions.MoveNext())
+                        yield return null;
+                        //yield return new WaitForEndOfFrame();
+                }
+                
                 Utilities.Log("Generating Prefab");
                 GeneratePrefabFromFBX(fbxPath, dtuFile.FigureType, done);
             }
 
             Bridge.Progress = 1f;
-            yield return new WaitForEndOfFrame();
+            yield return null;
+            //yield return new WaitForEndOfFrame();
 
             _map = null;
 
             Bridge.Progress = 0;
         }
-       
+
         private static bool IrayShadersReady()
         {
             if (
@@ -161,11 +188,12 @@ namespace Daz3D
 
             return true;
         }
-        public IEnumerator ImportDTURoutine(DTUFile dtuFile,  float progressLimit)
+
+        public IEnumerator ImportDTURoutine(DTUFile dtuFile, float progressLimit)
         {
             Utilities.Log("ImportDTU for " + dtuFile.AssetPath);
 
-            FoldAll();
+            EventQueue.FoldAll();
 
             ImportEventRecord record = new ImportEventRecord();
             EventQueue.Enqueue(record);
@@ -175,13 +203,13 @@ namespace Daz3D
 
             record.AddToken("Imported DTU file: " + dtuFile.AssetPath);
             record.AddToken(dtuObject.name, dtuObject, ENDLINE);
-            
+
             //UnityEngine.Debug.Log("DTU: " + dtu.AssetName + " contains: " + dtu.Materials.Count + " materials");
-            
+
             record.AddToken("Generated materials: ");
             float progressIncrement = (progressLimit - Bridge.Progress) / dtuFile.Materials.Count;
 
-            foreach (var material in dtuFile.Materials.Select(dtuMat => dtuMat.ConvertToUnity(dtuFile)))
+            foreach (var material in dtuFile.Materials.Select(dtuMat => dtuMat.ConvertToUnity(dtuFile,RegenerateMaterials)))
             {
                 _map.AddMaterial(material);
 
@@ -189,7 +217,8 @@ namespace Daz3D
 
                 Bridge.Progress = Mathf.MoveTowards(Bridge.Progress, progressLimit, progressIncrement);
 
-                yield return new WaitForEndOfFrame();
+                yield return null;
+                //yield return new WaitForEndOfFrame();
             }
 
             record.AddToken(" based on DTU file.", null, ENDLINE);
@@ -202,7 +231,7 @@ namespace Daz3D
                 bridge = EditorWindow.CreateWindow<Bridge>(consoleType);
             }
 
-            bridge?.Focus();
+            bridge.Focus();
 
             //just a safeguard to keep the history data at a managable size (100 records)
             while (EventQueue.Count > 100)
@@ -211,10 +240,20 @@ namespace Daz3D
             }
         }
 
-        public void GeneratePrefabFromFBX(string fbxPath, DazFigurePlatform platform, Action done)
+        public void GeneratePrefabFromFBX(string fbxPath, DazFigurePlatform platform, Action done = null)
         {
-            var fbxPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(fbxPath);
+            GameObject fbxPrefab;
+            
+            fbxPath = Utilities.RelativePath(fbxPath);
 
+            if (ApplySubdivisions)
+                fbxPath = Path.Combine(Path.GetDirectoryName(fbxPath)!,
+                    dtuFile.AssetName + "_Updated.fbx");
+
+            fbxPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(fbxPath);
+
+            var fbxName = Path.GetFileNameWithoutExtension(dtuFile.FBXFile);
+            
             if (fbxPrefab == null)
             {
                 Debug.LogWarning("no FBX model prefab found at " + fbxPath);
@@ -242,12 +281,22 @@ namespace Daz3D
                 ModelImporter importer = GetAtPath(fbxPath) as ModelImporter;
                 if (importer)
                 {
-                    var description = importer.humanDescription;
-                    DescribeHumanJointsForFigure(ref description, platform);
-
-                    importer.humanDescription = description;
+                    importer.animationType = ModelImporterAnimationType.Human;
                     importer.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
 
+                    var description = importer.humanDescription;
+                    // Utilities.Log("TODO??: I have disabled the human mapping of the initial plugin");
+                    DescribeHumanJointsForFigure(ref description, platform);
+                    
+                    importer.humanDescription = description;
+                    
+                    importer.importBlendShapeNormals = ModelImporterNormals.None;
+                    importer.optimizeMeshPolygons = false;
+                    importer.optimizeMeshVertices = false;
+                    importer.weldVertices = false;
+                    importer.meshCompression = ModelImporterMeshCompression.Medium;
+
+                     // Utilities.Log("TODO??: I have disabled the avatar setup of the initial plugin");
                     // Genesis 8 is modeled in A-pose, so we correct to T-pose before configuring avatar joints
                     // using Unity's internal MakePoseValid method, which does a perfect job
                     if (platform == DazFigurePlatform.Genesis8 || platform == DazFigurePlatform.Genesis81)
@@ -255,49 +304,55 @@ namespace Daz3D
                         //use reflection to access AvatarSetupTool;
                         var setupToolType = Type.GetType("UnityEditor.AvatarSetupTool,UnityEditor.dll");
                         var boneWrapperType = Type.GetType("UnityEditor.AvatarSetupTool+BoneWrapper,UnityEditor.dll");
-
+                    
                         if (boneWrapperType != null && setupToolType != null)
                         {
                             var existingMappings = new Dictionary<string, string>();
                             var human = description.human;
-
+                    
                             for (var i = 0; i < human.Length; ++i)
-                                existingMappings[human[i].humanName] = human[i].boneName;
-
+                            {
+                                if (!string.IsNullOrEmpty(human[i].boneName))
+                                {
+                                    Debug.Log($"Human Name: {human[i].humanName} -> Bone Name: {human[i].boneName}");
+                                    existingMappings.Add(human[i].humanName, human[i].boneName);
+                                }
+                            }
+                    
                             var getModelBones = setupToolType.GetMethod("GetModelBones");
                             var getHumanBones = setupToolType.GetMethod("GetHumanBones",
                                 new[] {typeof(Dictionary<string, string>), typeof(Dictionary<Transform, bool>)});
                             var makePoseValid = setupToolType.GetMethod("MakePoseValid");
                             resetPose = setupToolType.GetMethod("CopyPose");
                             xferPose = setupToolType.GetMethod("TransferPoseToDescription");
-
+                    
                             if (getModelBones != null && getHumanBones != null && makePoseValid != null)
                             {
                                 record.AddToken("Corrected Avatar Setup T-pose for Genesis8 figure: ");
                                 record.AddToken(fbxPrefab.name, fbxPrefab, ENDLINE);
-
+                    
                                 var modelBones = (Dictionary<Transform, bool>) getModelBones.Invoke(null,
                                     new object[] {avatarInstance.transform, false, null});
                                 var humanBones = (ICollection<object>) getHumanBones.Invoke(null,
                                     new object[] {existingMappings, modelBones});
-
+                    
                                 // a little dance to populate array of Unity's internal BoneWrapper type 
                                 var humanBonesArray = new object[humanBones.Count];
                                 humanBones.CopyTo(humanBonesArray, 0);
                                 Array destinationArray = Array.CreateInstance(boneWrapperType, humanBones.Count);
                                 Array.Copy(humanBonesArray, destinationArray, humanBones.Count);
-
+                    
                                 //This mutates the transforms (modelBones) via Bonewrapper class
                                 makePoseValid.Invoke(null, new[] {destinationArray});
                             }
                         }
+                        else
+                        {
+                            Utilities.Log("Relfection failed. AvataSetup tool not found");
+                        }
                     }
 
-                    importer.importBlendShapeNormals = ModelImporterNormals.None;
-                    importer.optimizeMeshPolygons = false;
-                    importer.optimizeMeshVertices = false;
-                    importer.weldVertices = false;
-                    importer.meshCompression = ModelImporterMeshCompression.Off;
+ 
 
                     AssetDatabase.WriteImportSettingsIfDirty(fbxPath);
                     AssetDatabase.ImportAsset(fbxPath, ImportAssetOptions.ForceUpdate);
@@ -308,7 +363,7 @@ namespace Daz3D
                     {
                         SerializedObject modelImporterObj = new SerializedObject(importer);
                         var skeleton = modelImporterObj?.FindProperty("m_HumanDescription.m_Skeleton");
-
+                    
                         if (skeleton != null)
                         {
                             resetPose.Invoke(null, new object[] {avatarInstance, fbxPrefab});
@@ -316,15 +371,16 @@ namespace Daz3D
                         }
                     }
 
+                    //Utilities.Log("DEBUG: Not removing AvatarInstance");
                     DestroyImmediate(avatarInstance);
-
-                    record.AddToken("Automated Mecanim avatar setup for " + fbxPrefab.name + ": ");
+                    
+                    record.AddToken("Automated Mecanim avatar setup for " + fbxName + ": ");
 
                     //a little dance to get the avatar just reimported
-                    var allAvatars = Resources.FindObjectsOfTypeAll(typeof(Avatar));
-                    var avatar = Array.Find(allAvatars, element => element.name.StartsWith(fbxPrefab.name));
-                    if (avatar)
-                        record.AddToken(avatar.name, avatar, ENDLINE);
+                    // var allAvatars = Resources.FindObjectsOfTypeAll(typeof(Avatar));
+                    // var avatar = Array.Find(allAvatars, element => element.name.StartsWith(fbxPrefab.name));
+                    // if (avatar)
+                    //     record.AddToken(avatar.name, avatar, ENDLINE);
                 }
                 else
                 {
@@ -341,7 +397,7 @@ namespace Daz3D
 
             //remap the materials
             var workingInstance = Instantiate(fbxPrefab);
-            workingInstance.name = "Daz3d_" + fbxPrefab.name;
+            workingInstance.name = "Daz3d_" + fbxName;
 
             var renderers = workingInstance.GetComponentsInChildren<Renderer>();
             if (renderers?.Length == 0)
@@ -360,6 +416,7 @@ namespace Daz3D
 
                     if (renderer.name.ToLower().Contains("eyelashes"))
                         renderer.shadowCastingMode = ShadowCastingMode.Off;
+                    
                     foreach (var keyMat in renderer.sharedMaterials)
                     {
                         var key = keyMat.name;
@@ -396,7 +453,7 @@ namespace Daz3D
                             //CustomizeMaterial(ref nuMat, info);
 
                             var matPath = Path.GetDirectoryName(modelPath);
-                            matPath = Path.Combine(matPath, fbxPrefab.name + "Daz3D_Materials");
+                            matPath = Path.Combine(matPath, fbxName + "Daz3D_Materials");
                             matPath = AssetDatabase.GenerateUniqueAssetPath(matPath);
 
                             if (!Directory.Exists(matPath))
@@ -427,18 +484,18 @@ namespace Daz3D
             // WARNING: I have disabled uniqueness so prefabs ARE overwritten.
             // Make sure the file name is unique, in case an existing Prefab has the same name
             var nuPrefabPathPath = Path.GetDirectoryName(modelPath);
-            nuPrefabPathPath = Path.Combine(nuPrefabPathPath, fbxPrefab.name + "_Prefab");
+            nuPrefabPathPath = Path.Combine(nuPrefabPathPath, fbxName + "_Prefab");
             //nuPrefabPathPath = AssetDatabase.GenerateUniqueAssetPath(nuPrefabPathPath);
             if (!Directory.Exists(nuPrefabPathPath))
                 Directory.CreateDirectory(nuPrefabPathPath);
 
-            nuPrefabPathPath += "/Daz3D_" + fbxPrefab.name + ".prefab";
+            nuPrefabPathPath += "/Daz3D_" + fbxName + ".prefab";
 
             // For future refreshment
             var component = workingInstance.AddComponent<Daz3DInstance>();
             component.SourceFBX = fbxPrefab;
 
-            workingInstance.AddComponent<BlendshapesController>();
+            workingInstance.AddComponent<BlendshapesSyncedController>();
 
 
             // Create the new Prefab.
@@ -446,11 +503,11 @@ namespace Daz3D
             var prefab = PrefabUtility.SaveAsPrefabAssetAndConnect(workingInstance, nuPrefabPathPath,
                 InteractionMode.AutomatedAction);
 
-            
+
             var Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(nuPrefabPathPath);
 
             dtuFile.Prefab = Prefab;
-            
+
             Selection.activeGameObject = prefab;
 
             //now, seek other instance(s) in the scene having been sourced from this fbx asset
@@ -499,7 +556,8 @@ namespace Daz3D
             pfbRecord.AddToken(resultingInstance.name, resultingInstance, ENDLINE);
             EventQueue.Enqueue(pfbRecord);
 
-            done();
+            done?.Invoke();
+            
             //highlight/select the object in the scene view
             Selection.activeGameObject = resultingInstance;
         }
@@ -626,7 +684,7 @@ namespace Daz3D
         }
 
         #region unused
-        
+
         // public static void ResetOptions()
         // {
         //     AutoImportDTUChanges = true;
@@ -637,7 +695,7 @@ namespace Daz3D
         //     UseHighQualityTextures = true;
         //  
         // }
-        
+
         //[MenuItem("Daz3D/Create Unity Prefab from selected DTU")]
         // public void MenuItemConvert()
         // {
