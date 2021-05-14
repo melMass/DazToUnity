@@ -20,6 +20,8 @@
 #include "DzUnityDialog.h"
 #include "DzUnityAction.h"
 
+#include "DzFbxUtils.h"
+
 DzUnityAction::DzUnityAction() :
 	 DzRuntimePluginAction(tr("&Daz to Unity"), tr("Send the selected node to Unity."))
 {
@@ -66,11 +68,13 @@ void DzUnityAction::executeAction()
 		  CharacterName = dlg->assetNameEdit->text();
 		  CharacterFolder = appendPath(ImportFolder,CharacterName);
 		  CharacterFBX = appendPath(CharacterFolder, CharacterName + ".fbx");
+
 		  AssetType = dlg->assetTypeCombo->currentText().replace(" ", "");
 		  MorphString = dlg->GetMorphString();
 		  ExportMorphs = dlg->morphsEnabledCheckBox->isChecked();
 		  ExportSubdivisions = dlg->subdivisionEnabledCheckBox->isChecked();
 		  MorphMapping = dlg->GetMorphMapping();
+
 #ifdef FBXOPTIONS
 		  ShowFbxDialog = dlg->showFbxDialogCheckBox->isChecked();
 #endif
@@ -83,6 +87,8 @@ void DzUnityAction::executeAction()
 		  FBXVersion = QString("FBX 2014 -- Binary");
 
 		  Export();
+
+			DzFbxUtils::PostExport(CharacterFBX.toStdString());
 
 		  //Rename the textures folder
 		  QDir textureDir(appendPath(CharacterFolder , CharacterName + ".images"));
@@ -104,7 +110,7 @@ QString DzUnityAction::GetMD5(const QString &path)
         int readSize = qMin(fileSize, bufferSize);
 
         QCryptographicHash hash(algo);
-        while (readSize > 0 && (bytesRead = sourceFile.read(buffer, readSize)) > 0) 
+        while (readSize > 0 && (bytesRead = sourceFile.read(buffer, readSize)) > 0)
         {
             fileSize -= bytesRead;
             hash.addData(buffer, bytesRead);
@@ -157,7 +163,7 @@ bool DzUnityAction::CopyFile(QFile *file, QString *dst, bool replace, bool compa
 	//file->setPermissions(QFile::ReadOther | QFile::WriteOther);
 
 	auto result = file->copy(*dst);
-	
+
 	if(QFile::exists(*dst))
 	{
 		QFile::setPermissions(*dst, QFile::ReadOther | QFile::WriteOther);
@@ -210,7 +216,7 @@ void DzUnityAction::CreateUnityFiles(bool replace)
 		  CopyFile(&file, &shader, replace);
 		  file.close();
 	 }
-	 
+
 	 //Create shader helpers folder if it doesn't exist
 	 QString shaderHelperFolder = appendPath(appendPath(ImportFolder, "Shaders"), "Helpers");
 	 dir.mkpath(shaderHelperFolder);
@@ -249,7 +255,7 @@ void DzUnityAction::CreateUnityFiles(bool replace)
 		  CopyFile(&file, &profile, replace);
 		  file.close();
 	 }
-	 
+
 	 //Create Resources folder if it doesn't exist
 	 QString resourcesFolder = appendPath(ImportFolder, "Resources");
 	 dir.mkpath(resourcesFolder);

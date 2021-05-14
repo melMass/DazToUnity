@@ -28,6 +28,7 @@
 #include "DzUnityMorphSelectionDialog.h"
 #include "DzUnitySubdivisionDialog.h"
 #include "DzUnityTexturesDialog.h"
+#include "DzUnityAnimatedMorphsDialog.h"
 
 #include "errorhandler.h"
 
@@ -118,6 +119,12 @@ DzUnityDialog::DzUnityDialog(QWidget* parent) :
 	 textureButton = new QPushButton("Choose textures", this);
 	 connect(textureButton, SIGNAL(released()), this, SLOT(HandleChooseTexturesButton()));
 	 textureLayout->addWidget(textureButton);
+	 
+	 // Animated Morphs
+	 QHBoxLayout* aMorphsLayout = new QHBoxLayout();
+	 aMorphsButton = new QPushButton("Animated Morphs", this);
+	 connect(aMorphsButton, SIGNAL(released()), this, SLOT(HandleChooseAnimatedMorphsButton()));
+	 aMorphsLayout->addWidget(aMorphsButton);
 
 	 // Show FBX Dialog option
 	 installUnityFilesCheckBox = new QCheckBox("", this);
@@ -128,6 +135,7 @@ DzUnityDialog::DzUnityDialog(QWidget* parent) :
 	 mainLayout->addRow("Enable Morphs", morphsLayout);
 	 mainLayout->addRow("Enable Subdivision", subdivisionLayout);
 	 mainLayout->addRow("Textures", textureLayout);
+	 mainLayout->addRow("Animated Morphs", aMorphsLayout);
 	 mainLayout->addRow("Unity Assets Folder", assetsFolderLayout);
 	 mainLayout->addRow("Install Unity Files", installUnityFilesCheckBox);
 	 connect(installUnityFilesCheckBox, SIGNAL(stateChanged(int)), this, SLOT(HandleInstallUnityFilesCheckBoxChange(int)));
@@ -264,6 +272,11 @@ void DzUnityDialog::HandleChooseTexturesButton()
 {
 	 DzUnityTexturesDialog* dlg = DzUnityTexturesDialog::Get(this);
 	 dlg->exec();
+}
+void DzUnityDialog::HandleChooseAnimatedMorphsButton()
+{
+	DzUnityAnimatedMorphsDialog *dlg = DzUnityAnimatedMorphsDialog::Get(this);
+	dlg->exec();
 }
 
 QString DzUnityDialog::GetMorphString()

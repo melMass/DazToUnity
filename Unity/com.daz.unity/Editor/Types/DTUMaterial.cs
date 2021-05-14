@@ -112,10 +112,10 @@ namespace Daz3D
 
     #endregion
 
-    
-    
-    
-    
+
+
+
+
     [Serializable]
     public struct DTUMaterial
     {
@@ -133,9 +133,9 @@ namespace Daz3D
         {
             var dtuMat = new DTUMaterial();
             dtuMat.Version = matValue["Version"].AsFloat;
-            dtuMat.AssetName = matValue["AssetName"].Value;
-            dtuMat.MaterialName = matValue["MaterialName"].Value;
-            dtuMat.MaterialType = matValue["MaterialType"].Value;
+            dtuMat.AssetName = matValue["Asset Name"].Value;
+            dtuMat.MaterialName = matValue["Material Name"].Value;
+            dtuMat.MaterialType = matValue["Material Type"].Value;
             dtuMat.Value = matValue["Value"].Value;
             dtuMat.Properties = new List<DTUMaterialProperty>();
 

@@ -115,7 +115,7 @@ DzUnityTexturesDialog *DzUnityTexturesDialog::singleton = nullptr;
 
 void DzUnityTexturesDialog::imageAvailable(const QString &fichier, const QImage &img)
 {
-  SUCCESS(QString("DAZRuntime - Main Thread received image ").arg(fichier));
+  SUCCESS(QString("DAZRuntime - Main Thread received image %1").arg(fichier));
 
   SortingListItem *item = new SortingListItem();
   item->setText(fichier);

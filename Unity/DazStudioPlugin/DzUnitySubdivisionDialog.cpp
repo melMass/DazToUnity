@@ -61,7 +61,7 @@ DzUnitySubdivisionDialog::DzUnitySubdivisionDialog(QWidget *parent) :
 
 
 
-	// Set the dialog title 
+	// Set the dialog title
 	setWindowTitle(tr("Choose Subdivision Levels"));
 
 	// Setup folder
@@ -142,7 +142,7 @@ void DzUnitySubdivisionDialog::CreateList(DzNode* Node)
 	{
 		DzShape* Shape = Object ? Object->getCurrentShape() : NULL;
 		DzGeometry* Geo = Shape ? Shape->getGeometry() : NULL;
-		
+
 		int row = subdivisionItemsGrid->rowCount();
 		subdivisionItemsGrid->addWidget(new QLabel(Node->getLabel()), row, 0);
 		QComboBox* subdivisionLevelCombo = new QComboBox(this);

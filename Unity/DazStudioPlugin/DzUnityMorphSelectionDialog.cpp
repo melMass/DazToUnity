@@ -82,6 +82,7 @@ DzUnityMorphSelectionDialog::DzUnityMorphSelectionDialog(QWidget *parent) :
 	morphExportListWidget = new QListWidget();
 	morphExportListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
+
 	// Quick filter box
 	QHBoxLayout* filterLayout = new QHBoxLayout();
 	filterLayout->addWidget(new QLabel("filter"));
@@ -652,6 +653,17 @@ void DzUnityMorphSelectionDialog::HandleARKitGenesis81MorphsButton()
 	MorphsToAdd.append("facs_bs_NoseSneerRight_div2");
 	MorphsToAdd.append("facs_bs_TongueOut");
 
+	MorphsToAdd.append("facs_ctrl_EyeLookUpRight");
+	MorphsToAdd.append("facs_ctrl_EyeLookDownLeft");
+	MorphsToAdd.append("facs_ctrl_EyeLookDownRight");
+	MorphsToAdd.append("facs_ctrl_EyeLookInLeft");
+	MorphsToAdd.append("facs_ctrl_EyeLookInRight");
+	MorphsToAdd.append("facs_ctrl_EyeLookOutLeft");
+	MorphsToAdd.append("facs_ctrl_EyeLookOutRight");
+	MorphsToAdd.append("facs_ctrl_EyeLookUpLeft");
+
+
+
 	// Add the list for export
 	foreach (QString MorphName, MorphsToAdd)
 	{
@@ -672,6 +684,9 @@ void DzUnityMorphSelectionDialog::RefreshExportMorphList()
 		SortingListItem* item = new SortingListItem();
 		item->setText(morphInfo.Label);
 		item->setData(Qt::UserRole, morphInfo.Name);
+		Qt::ItemFlags eFlags = item->flags();
+		eFlags |= Qt::ItemIsEditable;
+		item->setFlags(eFlags);
 
 		morphExportListWidget->addItem(item);
 	}

@@ -50,7 +50,7 @@ namespace Daz3D
         //     get
         //     {
         //         Color color;
-        //         var tmpStr = (string) Value; 
+        //         var tmpStr = (string) Value;
         //         if (!ColorUtility.TryParseHtmlString(tmpStr, out color))
         //         {
         //             Debug.LogError("Failed to parse color hex code: " + tmpStr);
@@ -85,7 +85,7 @@ namespace Daz3D
         public static DTUValue FromJSON(JSONNode prop)
         {
             var v = new DTUValue();
-            var propDataType = prop["DataType"].Value;
+            var propDataType = prop["Data Type"].Value;
             if (propDataType == "Double")
             {
                 v.Type = DTUValue.DataType.Double;
@@ -123,7 +123,7 @@ namespace Daz3D
             {
                 v.Type = DTUValue.DataType.Texture;
 
-                //these values will be hex colors 
+                //these values will be hex colors
                 var tmpStr = prop["Value"].Value;
                 Color color;
                 if (!ColorUtility.TryParseHtmlString(tmpStr, out color))
@@ -213,18 +213,18 @@ namespace Daz3D
 
 
             // return dtuFile;
-            // 
+            //
             //
             var root = JSON.Parse(text);
 
-            dtuFile.AssetID = root["AssetId"].Value;
-            dtuFile.AssetName = root["AssetName"].Value;
-            dtuFile.AssetType = root["AssetType"].Value;
-            dtuFile.FBXFile = Utilities.RelativePath(root["FBXFile"].Value);
-            dtuFile.ImportFolder = root["ImportFolder"].Value;
+            dtuFile.AssetID = root["Asset Id"].Value;
+            dtuFile.AssetName = root["Asset Name"].Value;
+            dtuFile.AssetType = root["Asset Type"].Value;
+            dtuFile.FBXFile = Utilities.RelativePath(root["FBX File"].Value);
+            dtuFile.ImportFolder = root["Import Folder"].Value;
 
             dtuFile.Materials = new List<DTUMaterial>();
-            
+
             dtuFile.FigureType = dtuFile.AssetID.ToFigurePlatform();
             dtuFile.AssetPath = path;
 
@@ -243,7 +243,7 @@ namespace Daz3D
                 var dtuSub = new DTUSubdivision();
 
                 dtuSub.Version = subdivision["Version"].AsFloat;
-                dtuSub.AssetName = subdivision["AssetName"].Value;
+                dtuSub.AssetName = subdivision["Asset Name"].Value;
                 dtuSub.Value = (int) subdivision["Value"].AsFloat;
 
                 dtuFile.Subdivisions.Add(dtuSub);
@@ -262,7 +262,7 @@ namespace Daz3D
                 dtuFile.Morphs.Add(dtuMorph);
             }
 
-            
+
 
             return dtuFile;
         }
