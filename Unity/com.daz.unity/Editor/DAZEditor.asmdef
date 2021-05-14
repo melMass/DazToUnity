@@ -16,6 +16,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.render-pipelines.high-definition",
+            "expression": "10.0",
+            "define": "USING_HDRP"
+        }
+    ],
     "noEngineReferences": false
 }

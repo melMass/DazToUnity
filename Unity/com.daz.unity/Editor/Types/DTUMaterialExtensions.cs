@@ -1,8 +1,10 @@
 using System.IO;
-using Accord.Statistics.Kernels;
-using g3;
+// using Accord.Statistics.Kernels;
+// using g3;
 using UnityEditor;
+#if USING_HDRP
 using UnityEditor.Rendering.HighDefinition;
+#endif
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -2512,7 +2514,9 @@ namespace Daz3D
             AssetDatabase.CreateAsset(mat, materialPath);
 
             //Works around a bug in HDRP, see: https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@7.1/manual/Creating-and-Editing-HDRP-Shader-Graphs.html "Known Issues"
+            #if USING_HDRP
             HDShaderUtils.ResetMaterialKeywords(mat);
+            #endif
         }
 
         /// <summary>
