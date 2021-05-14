@@ -1,3 +1,6 @@
 .history/
 build/
+_build/
+export/
 DAZ.log
+cmake-build-release/

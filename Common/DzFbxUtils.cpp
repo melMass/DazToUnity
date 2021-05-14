@@ -1,4 +1,5 @@
 #include "DzFbxUtils.h"
+#include "filesystem.hpp"
 
 void DzFbxUtils::RenameDuplicateBones(FbxNode *RootNode)
 {

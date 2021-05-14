@@ -30,7 +30,7 @@ add_custom_command(OUTPUT ${DPC_IMAGES_CPP}
 	WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
 )
 
-add_library( ${DZ_PLUGIN_TGT_NAME} SHARED	
+set(ALL_SRC
 	DzUnrealAction.cpp
 	DzUnrealAction.h
 	DzUnrealDialog.cpp
@@ -44,6 +44,11 @@ add_library( ${DZ_PLUGIN_TGT_NAME} SHARED
 	${DPC_IMAGES_CPP}
 	${OS_SOURCES}
 )
+
+add_library( ${DZ_PLUGIN_TGT_NAME} SHARED	
+	${ALL_SRC}
+)
+
 
 target_include_directories(${DZ_PLUGIN_TGT_NAME} PUBLIC ${COMMON_LIB_INCLUDE_DIR})
 

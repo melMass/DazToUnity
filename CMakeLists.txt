@@ -16,13 +16,56 @@
 #**********************************************************************
 
 cmake_minimum_required(VERSION 3.4.0)
+project(daz-runtime CXX)
 
-if(APPLE)
-	if(NOT CMAKE_OSX_ARCHITECTURES)
-  		message( FATAL_ERROR "Mac needs CMAKE_OSX_ARCHITECTURES, set to i386 or x86_64" )	
-		return()
-	endif()
-endif(APPLE)
+# For IDEs, generate a compile_commands.json file.
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+
+if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
+    include(${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
+    conan_basic_setup(TARGETS NO_OUTPUT_DIRS)
+else()
+    execute_process(COMMAND /usr/local/bin/conan install ${CMAKE_CURRENT_SOURCE_DIR} -s build_type=Release
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            )
+    include(${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
+    conan_basic_setup(TARGETS NO_OUTPUT_DIRS)
+endif()
+
+
+if (APPLE)
+	set(CMAKE_OSX_ARCHITECTURES x86_64)
+endif()
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
+set(CMAKE_OSX_DEPLOYMENT_TARGET 10.10)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+#- CUSTOM CMAKE MODULES
+include(FetchContent)
+
+FetchContent_Declare(
+  mtb-cmake
+  GIT_REPOSITORY git@gitlab.com:mtb-libs/mtb-cmake.git
+)
+
+FetchContent_GetProperties(mtb-cmake)
+
+if(NOT mtb-cmake_POPULATED)
+        FetchContent_Populate(mtb-cmake)
+        list(APPEND CMAKE_MODULE_PATH ${mtb-cmake_SOURCE_DIR}/modules)
+        # include(SetupMTB) # Colors, Uninstall...
+        message(STATUS "> Loaded MTB CMake modules from ${mtb-cmake_SOURCE_DIR}")
+endif()
+
+# include(UninstallRule)
+include(Colors)
+
+# include_directories("/usr/local/include")
+
 
 project("DazRunTimePlugins")
 
@@ -52,7 +95,7 @@ if(WIN32)
 elseif(APPLE)
 	set(DZ_LIB_SUFFIX ".dylib")
 	set(DZ_BIN_SUFFIX ".dylib")
-	set(DZ_LIB_PREFIX "lib")	
+	set(DZ_LIB_PREFIX "lib")
 	set(UTIL_EXT "")
 	if(CMAKE_SIZEOF_VOID_P EQUAL 4)
 		set(DZ_PLATFORM x86)
@@ -61,14 +104,14 @@ elseif(APPLE)
 	elseif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 		set(DZ_PLATFORM x64)
 		set(DZ_MIXED_PLATFORM Mac64)
-		set(DZ_OS_PLATFORM Mac64)	
+		set(DZ_OS_PLATFORM Mac64)
 	else()
-		message(FATAL_ERROR "Unknown architecture")		
+		message(FATAL_ERROR "Unknown architecture")
 	endif()
 	set(CMAKE_MACOSX_RPATH TRUE)
 	set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 else()
-	message(FATAL_ERROR "Unknown architecture")	
+	message(FATAL_ERROR "Unknown architecture")
 endif(WIN32)
 
 set(DAZ_SDK_DIR_DEFAULT "")
@@ -100,7 +143,7 @@ if(NOT QT_BINARY_DIR_DEFAULT)
 	return()
 endif()
 
-find_package(OpenGL REQUIRED)	
+find_package(OpenGL REQUIRED)
 
 #we only have release libraries for dzcore/qt so make sure even in debug they we use MD and undef debug
 if(WIN32)
@@ -165,4 +208,4 @@ list(APPEND CMAKE_AUTOMOC_MOC_OPTIONS -i)
 
 add_subdirectory("Common")
 add_subdirectory("Unity")
-add_subdirectory("Unreal")
+# add_subdirectory("Unreal")
