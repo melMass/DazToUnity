@@ -100,3 +100,38 @@ QMap<QString, MorphInfo> DzUtils::GetAvailableMorphs(DzNode *Node, bool recursiv
 
   return morphs;
 }
+
+// std::string replace_all (std::string &original, std::string from, std::string to){
+//   std::replace( original.begin(), original.end(), from, to);
+// }
+
+void replace_all(std::string& str, const std::string& from, const std::string& to) {
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+         str.replace(start_pos, from.length(), to);
+         start_pos += to.length(); // ...
+}
+}
+QString DzUtils::appendPath(const QString &path1, const QString &path2)
+{
+	return QDir::cleanPath(path1 + QDir::separator() + path2);
+	//return path1 + QDir::separator() + path2;
+}
+
+std::string DzUtils::SanitizeName(std::string OriginalName)
+{
+  std::string FinalName = OriginalName;
+	replace_all(FinalName," ", "_");
+	replace_all(FinalName, "(", "_");
+	replace_all(FinalName, ")", "_");
+	replace_all(FinalName, ".", "_");
+	replace_all(FinalName, "&", "_");
+	replace_all(FinalName, "!", "_");
+	replace_all(FinalName, "*", "_");
+	replace_all(FinalName, "<", "_");
+	replace_all(FinalName, ">", "_");
+	replace_all(FinalName, "?", "_");
+	replace_all(FinalName, "\\", "_");
+
+  return FinalName;
+}

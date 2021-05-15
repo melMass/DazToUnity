@@ -3,20 +3,25 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/Common/**",
+                "${workspaceFolder}/SDK/**",
+                "${workspaceFolder}/Unity/**",
+                "${workspaceFolder}/Unreal/**",
             ],
             "defines": [],
             "macFrameworkPath": [
                 "/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/System/Library/Frameworks"
             ],
             "compilerPath": "/usr/local/opt/llvm@11/bin/clang++",
-            "cStandard": "c17",
-            "cppStandard": "c++14",
-            "intelliSenseMode": "macos-clang-x64",
-            "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64",
+            // "compilerArgs": [
+            //     "-std=c++17",
+            //     "-stdlib=libc++"
+            // ],
+            "compileCommands": "${workspaceFolder}/_build/build/compile_commands.json"
         }
     ],
     "version": 4
 }
-
-

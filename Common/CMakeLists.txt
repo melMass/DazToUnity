@@ -12,7 +12,6 @@ set(LIB_SRCS
 	"debug.cpp"
 	"DzFbxUtils.cpp"
 	"DzUtils.cpp"
-	"filesystem.hpp"
 )
 
 add_library(common STATIC ${LIB_SRCS})
@@ -26,4 +25,5 @@ target_link_libraries(common
 	${DZSDK_QT_NETWORK_TARGET}
 	"/Users/imac/Daz 3D/Applications/DAZ 3D/DAZStudio4 64-bit/Frameworks/libfbxsdk.dylib"
 	# CONAN_PKG::fbxsdk
+	# CONAN_PKG::fmt
 )

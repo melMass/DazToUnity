@@ -9,4 +9,5 @@
 # RM -rf _build
 conan source . --source-folder=_build/source
 conan install . --install-folder=_build/build/ --build=missing -s build_type=Release
+# --profile ~/.conan/profiles/gcc
 conan build . --source-folder=_build/source --build-folder=_build/build

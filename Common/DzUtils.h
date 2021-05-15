@@ -4,32 +4,9 @@
 #include <QStringList>
 #include <QListWidgetItem>
 #include "dznode.h"
-
-struct MorphInfo
-{
-  QString Name;
-  QString Label;
-  QString Type;
-  QString Path;
-
-  inline bool operator==(MorphInfo other)
-  {
-    if (Name == other.Name)
-    {
-      return true;
-    }
-    return false;
-  }
-
-  MorphInfo()
-  {
-    Name = QString();
-    Label = QString();
-    Type = QString();
-    Path = QString();
-  }
-};
-
+#include <QDir>
+#include "DTUConfig.h"
+#include "debug.h"
 // For sorting the lists
 class SortingListItem : public QListWidgetItem
 {
@@ -49,6 +26,8 @@ class DzUtils
 {
 public:
   static QMap<QString, MorphInfo> GetAvailableMorphs(DzNode *Node, bool recursive = false);
+  static std::string SanitizeName(std::string OriginalName);
+  static QString appendPath(const QString &path1, const QString &path2);
 
   // ...lots of great stuff
 

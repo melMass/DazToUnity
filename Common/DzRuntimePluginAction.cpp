@@ -36,6 +36,10 @@
 
 #include "DzRuntimePluginAction.h"
 
+#include "DzUtils.h"
+#include "debug.h"
+
+
 DzRuntimePluginAction::DzRuntimePluginAction(const QString &text, const QString &desc) : DzAction(text, desc)
 {
 	ExportMorphs = false;
@@ -50,16 +54,17 @@ DzRuntimePluginAction::~DzRuntimePluginAction()
 
 void DzRuntimePluginAction::Export()
 {
+	DEBUG("Running Common Runtime Export");
 	// FBX Export
 	Selection = dzScene->getPrimarySelection();
 	if (!Selection)
 		return;
 
 	QMap<QString, DzNode *> PropToInstance;
-	if (AssetType == "Environment")
+	if (config.assetType == Environment)
 	{
 		// Store off the original export information
-		QString OriginalCharacterName = CharacterName;
+		QString OriginalAssetName = config.assetName;
 		DzNode *OriginalSelection = Selection;
 
 		// Find all the different types of props in the scene
@@ -68,11 +73,11 @@ void DzRuntimePluginAction::Export()
 		for (iter = PropToInstance.begin(); iter != PropToInstance.end(); ++iter)
 		{
 			// Override the export info for exporting this prop
-			AssetType = "StaticMesh";
-			CharacterName = iter.key();
-			CharacterName = CharacterName.remove(QRegExp("[^A-Za-z0-9_]"));
-			CharacterFolder = ImportFolder + "\\" + CharacterName + "\\";
-			CharacterFBX = CharacterFolder + CharacterName + ".fbx";
+			config.assetType = StaticMesh;
+			config.assetName = iter.key();
+			config.assetName = config.assetName.remove(QRegExp("[^A-Za-z0-9_]"));
+			CharacterFolder = DzUtils::appendPath(config.importFolder, config.assetName);
+			config.FBXFile = DzUtils::appendPath(CharacterFolder, config.assetName + ".fbx");
 			DzNode *Node = iter.value();
 
 			// If this is a figure, send it as a skeletal mesh
@@ -80,7 +85,7 @@ void DzRuntimePluginAction::Export()
 			{
 				if (DzFigure *Figure = qobject_cast<DzFigure *>(Skeleton))
 				{
-					AssetType = "SkeletalMesh";
+					config.assetType = SkeletalMesh;
 				}
 			}
 
@@ -110,16 +115,16 @@ void DzRuntimePluginAction::Export()
 		}
 
 		// After the props have been exported, export the environment
-		CharacterName = OriginalCharacterName;
-		CharacterFolder = ImportFolder + "\\" + CharacterName + "\\";
-		CharacterFBX = CharacterFolder + CharacterName + ".fbx";
+		config.assetName = OriginalAssetName;
+		CharacterFolder = config.importFolder + "\\" + config.assetName + "\\";
+		config.FBXFile = CharacterFolder + config.assetName + ".fbx";
 		Selection = OriginalSelection;
-		AssetType = "Environment";
+		config.assetType = Environment;
 		ExportNode(Selection);
 	}
-	else if (AssetType == "Pose")
+	else if (config.assetType == Pose)
 	{
-		PoseList.clear();
+		config.poseNameList.clear();
 		DzNode *Selection = dzScene->getPrimarySelection();
 		int poseIndex = 0;
 		DzNumericProperty *previousProperty = nullptr;
@@ -131,16 +136,16 @@ void DzRuntimePluginAction::Export()
 			if (numericProperty)
 			{
 				QString propName = property->getName();
-				if (MorphMapping.contains(propName))
+				if (config.morphMappings.contains(propName))
 				{
 					poseIndex++;
 					numericProperty->setDoubleValue(0.0f, 0.0f);
-					for (int frame = 0; frame < MorphMapping.count() + 1; frame++)
+					for (int frame = 0; frame < config.morphMappings.count() + 1; frame++)
 					{
 						numericProperty->setDoubleValue(dzScene->getTimeStep() * double(frame), 0.0f);
 					}
 					numericProperty->setDoubleValue(dzScene->getTimeStep() * double(poseIndex), 1.0f);
-					PoseList.append(propName);
+					config.poseNameList.append(propName);
 				}
 			}
 		}
@@ -164,16 +169,16 @@ void DzRuntimePluginAction::Export()
 						{
 							QString propName = property->getName();
 							qDebug() << propName;
-							if (MorphMapping.contains(modifier->getName()))
+							if (config.morphMappings.contains(modifier->getName()))
 							{
 								poseIndex++;
 								numericProperty->setDoubleValue(0.0f, 0.0f);
-								for (int frame = 0; frame < MorphMapping.count() + 1; frame++)
+								for (int frame = 0; frame < config.morphMappings.count() + 1; frame++)
 								{
 									numericProperty->setDoubleValue(dzScene->getTimeStep() * double(frame), 0.0f);
 								}
 								numericProperty->setDoubleValue(dzScene->getTimeStep() * double(poseIndex), 1.0f);
-								PoseList.append(modifier->getName());
+								config.poseNameList.append(modifier->getName());
 							}
 						}
 					}
@@ -186,7 +191,7 @@ void DzRuntimePluginAction::Export()
 
 		ExportNode(Selection);
 	}
-	else if (AssetType == "SkeletalMesh")
+	else if (config.assetType == SkeletalMesh)
 	{
 		QList<QString> DisconnectedModifiers = DisconnectOverrideControllers();
 		DzNode *Selection = dzScene->getPrimarySelection();
@@ -198,6 +203,8 @@ void DzRuntimePluginAction::Export()
 		DzNode *Selection = dzScene->getPrimarySelection();
 		ExportNode(Selection);
 	}
+	SUCCESS("Exporter Done");
+
 }
 
 void DzRuntimePluginAction::DisconnectNode(DzNode *Node, QList<AttachmentInfo> &AttachmentList)
@@ -251,7 +258,7 @@ void DzRuntimePluginAction::ExportNode(DzNode *Node)
 	dzScene->selectAllNodes(false);
 	dzScene->setPrimarySelection(Node);
 
-	if (AssetType == "Environment")
+	if (config.assetType == Environment)
 	{
 		QDir dir;
 		dir.mkpath(CharacterFolder);
@@ -267,7 +274,7 @@ void DzRuntimePluginAction::ExportNode(DzNode *Node)
 		DzFileIOSettings ExportOptions;
 		ExportOptions.setBoolValue("doSelected", true);
 		ExportOptions.setBoolValue("doVisible", false);
-		if (AssetType == "SkeletalMesh" || AssetType == "StaticMesh" || AssetType == "Environment")
+		if (config.assetType == SkeletalMesh || config.assetType == StaticMesh || config.assetType == Environment)
 		{
 			ExportOptions.setBoolValue("doFigures", true);
 			ExportOptions.setBoolValue("doProps", true);
@@ -280,7 +287,7 @@ void DzRuntimePluginAction::ExportNode(DzNode *Node)
 		ExportOptions.setBoolValue("doLights", false);
 		ExportOptions.setBoolValue("doCameras", false);
 		ExportOptions.setBoolValue("doAnims", true);
-		if ((AssetType == "Animation" || AssetType == "SkeletalMesh") && ExportMorphs && MorphString != "")
+		if ((config.assetType == Animation || config.assetType == SkeletalMesh) && ExportMorphs && MorphString != "")
 		{
 			ExportOptions.setBoolValue("doMorphs", true);
 			ExportOptions.setStringValue("rules", MorphString);
@@ -306,7 +313,7 @@ void DzRuntimePluginAction::ExportNode(DzNode *Node)
 
 		// get the top level node for things like clothing so we don't get dupe material names
 		DzNode *Parent = Node;
-		if (AssetType != "Environment")
+		if (config.assetType != Environment)
 		{
 			while (Parent->getNodeParent() != NULL)
 			{
@@ -323,7 +330,7 @@ void DzRuntimePluginAction::ExportNode(DzNode *Node)
 		dir.mkpath(CharacterFolder);
 
 		SetExportOptions(ExportOptions);
-		Exporter->writeFile(CharacterFBX, &ExportOptions);
+		Exporter->writeFile(config.FBXFile, &ExportOptions);
 
 		WriteConfiguration();
 
@@ -380,7 +387,7 @@ void DzRuntimePluginAction::GetScenePropList(DzNode *Node, QMap<QString, DzNode 
 	DzSkeleton *Skeleton = Node->getSkeleton();
 	DzFigure *Figure = Skeleton ? qobject_cast<DzFigure *>(Skeleton) : NULL;
 	//QString AssetId = Node->getAssetId();
-	//IDzSceneAsset::AssetType Type = Node->getAssetType();
+	//IDzSceneAsset::config.assetType Type = Node->getconfig.assetType();
 
 	// Use the FileName to generate a name for the prop to be exported
 	QString Path = Node->getAssetFileInfo().getUri().getFilePath();
@@ -428,7 +435,7 @@ QList<QString> DzRuntimePluginAction::DisconnectOverrideControllers()
 		if (numericProperty && !numericProperty->isOverridingControllers())
 		{
 			QString propName = property->getName();
-			if (MorphMapping.contains(propName) && ControllersToDisconnect.contains(propName))
+			if (config.morphMappings.contains(propName) && ControllersToDisconnect.contains(propName))
 			{
 				numericProperty->setOverrideControllers(true);
 				ModifiedList.append(propName);
@@ -454,7 +461,7 @@ QList<QString> DzRuntimePluginAction::DisconnectOverrideControllers()
 					if (numericProperty && !numericProperty->isOverridingControllers())
 					{
 						QString propName = property->getName();
-						if (MorphMapping.contains(modifier->getName()) && ControllersToDisconnect.contains(modifier->getName()))
+						if (config.morphMappings.contains(modifier->getName()) && ControllersToDisconnect.contains(modifier->getName()))
 						{
 							numericProperty->setOverrideControllers(true);
 							ModifiedList.append(modifier->getName());

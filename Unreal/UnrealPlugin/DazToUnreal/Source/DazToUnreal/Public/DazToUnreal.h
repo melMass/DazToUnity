@@ -15,14 +15,14 @@ struct FDUFTextureProperty;
 //class FbxNode;
 
 
-enum DazAssetType
-{
-	SkeletalMesh,
-	StaticMesh,
-	Animation,
-	Environment,
-	Pose
-};
+// enum DazAssetType
+// {
+// 	SkeletalMesh,
+// 	StaticMesh,
+// 	Animation,
+// 	Environment,
+// 	Pose
+// };
 
 
 class FDazToUnrealModule : public IModuleInterface
@@ -32,7 +32,7 @@ public:
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
-	
+
 	static inline FDazToUnrealModule& Get()
 	{
 		return FModuleManager::LoadModuleChecked< FDazToUnrealModule >("DazToUnreal");
@@ -49,12 +49,12 @@ public:
 
 	//** Copies the material assets and redirects and references to them*/
 	void InstallMaterialAssetsToProject();
-	
+
 	/** Function to start the import process*/
 	UObject* ImportFromDaz(TSharedPtr<FJsonObject> JsonObject);
 
 private:
-	
+
 	void AddToolbarExtension(FToolBarBuilder& Builder);
 	void AddMenuExtension(FMenuBuilder& Builder);
 	TSharedRef<SWidget> MakeDazToUnrealToolbarMenu(TSharedPtr<FUICommandList> DazToUnrealCommandList);

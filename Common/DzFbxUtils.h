@@ -1,9 +1,16 @@
-#ifndef DZFBXUTILS_H
-#define DZFBXUTILS_H
-#include <fbxsdk.h>
-#include <map>
+#pragma once
+
+#include <QMap>
+
 #include <iostream>
 #include "qstring.h"
+#include "DzUtils.h"
+#include "DTUConfig.h"
+
+#ifndef DZFBXUTILS_H
+#define DZFBXUTILS_H
+
+#include <fbxsdk.h>
 
 class DzFbxUtils
 {
@@ -12,9 +19,9 @@ class DzFbxUtils
     static void AddWeightsToAllNodes(FbxNode *Parent);
     static void FixClusterTranformLinks(FbxScene *Scene, FbxNode *RootNode);
 
-    static void PostExport(std::string path);
+    static void PostExport(const DTUConfig config);
 
   private:
-    static void RenameDuplicateBones(FbxNode *RootNode, std::map<std::string, int> &ExistingBones);
+    static void RenameDuplicateBones(FbxNode *RootNode, QMap<QString, int> &ExistingBones);
 };
 #endif

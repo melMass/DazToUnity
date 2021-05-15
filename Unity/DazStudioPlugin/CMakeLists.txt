@@ -68,6 +68,7 @@ target_link_libraries(${DZ_PLUGIN_TGT_NAME}
 	${DZSDK_QT_SCRIPT_TARGET}
 	${DZSDK_QT_NETWORK_TARGET}
 	# CONAN_PKG::fbxsdk
+	# CONAN_PKG::fmt
 	"/Users/imac/Daz 3D/Applications/DAZ 3D/DAZStudio4 64-bit/Frameworks/libfbxsdk.dylib"
 )
 

@@ -18,6 +18,15 @@
 cmake_minimum_required(VERSION 3.4.0)
 project(daz-runtime CXX)
 
+if (APPLE)
+	set(CMAKE_OSX_ARCHITECTURES x86_64)
+	# set(CMAKE_OSX_SYSROOT /Developer/OSX_sdks/MacOSX10.7.sdk)
+endif()
+
+set(CMAKE_OSX_DEPLOYMENT_TARGET 10.10)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # For IDEs, generate a compile_commands.json file.
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
@@ -33,16 +42,8 @@ else()
 endif()
 
 
-if (APPLE)
-	set(CMAKE_OSX_ARCHITECTURES x86_64)
-endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
-set(CMAKE_OSX_DEPLOYMENT_TARGET 10.10)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #- CUSTOM CMAKE MODULES
 include(FetchContent)

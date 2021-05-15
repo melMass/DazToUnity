@@ -6,6 +6,8 @@
 #include "QtCore/qfile.h"
 #include "QtCore/qtextstream.h"
 
+#include "DTUConfig.h"
+
 // Struct to remember attachment info
 struct AttachmentInfo
 {
@@ -21,15 +23,16 @@ public:
 	virtual ~DzRuntimePluginAction();
 
 protected:
-	QString CharacterName;
-	QString ImportFolder;
+	// QString CharacterName;
+	// QString ImportFolder;
+	DTUConfig config;
 	QString CharacterFolder;
-	QString CharacterFBX;
-	QString AssetType;
+	// QString CharacterFBX;
+	// QString AssetType;
 	QString MorphString;
 	QString FBXVersion;
-	QMap<QString, QString> MorphMapping;
-	QList<QString> PoseList;
+	// QMap<QString, QString> MorphMapping;
+	// QList<QString> PoseList;
 
 	bool ExportMorphs;
 	bool ExportSubdivisions;

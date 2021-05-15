@@ -29,6 +29,9 @@ class DazConan(ConanFile):
     # USE DAZ BUNDLED ONE INSTEAD.....!!!!
     # requires=["fbxsdk/2020.1.1"]
     # requires=["fbxsdk/2014.2.1"]
+    requires = [
+        # "fmt/7.1.3",
+    ]
 
     def config_options(self):
         if self.settings.os == "Windows":

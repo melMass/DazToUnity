@@ -78,7 +78,10 @@ namespace Daz3D
                     current.onValueChangeActions.Add(
                         (v) =>
                         {
+                            #if UNITY_EDITOR
                             Undo.RecordObject(s,"Daz Blendshape - Set");
+                            #endif
+                            
                             s.SetBlendShapeWeight(x1, v);
                         });
                     current.prefixes.Add(prefix);
