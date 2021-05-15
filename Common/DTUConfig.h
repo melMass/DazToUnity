@@ -163,6 +163,7 @@ struct DTUConfig
   QMap<QString, QString> morphMappings;
   QVector<QString> poseNameList;
 	QVector<QString> materialNames;
+  QString FBXVersion;
 
   QString getAssetType(){
     switch(assetType){

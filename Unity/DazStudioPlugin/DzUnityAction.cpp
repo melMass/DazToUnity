@@ -68,7 +68,7 @@ void DzUnityAction::executeAction()
 		config.importFolder = config.importFolder;
 		dir.mkpath(config.importFolder);
 
-		DEBUG("Created Destination Directory");
+		DEBUG(QString("Created Import Folder (config)\n%s").arg(config.importFolder));
 
 		// Collect the values from the dialog fields
 		config.assetName = dlg->assetNameEdit->text();
@@ -83,14 +83,18 @@ void DzUnityAction::executeAction()
 		DEBUG(QString("Asset Type (config): %1").arg(config.getAssetType()));
 
 		MorphString = dlg->GetMorphString();
-		DEBUG(QString("Morph string: %1").arg(MorphString));
+		if (!MorphString.isEmpty()){
+			DEBUG(QString("Morph string: %1").arg(MorphString));
+		}
 
 		ExportMorphs = dlg->morphsEnabledCheckBox->isChecked();
 		ExportSubdivisions = dlg->subdivisionEnabledCheckBox->isChecked();
 
-		config.morphMappings = dlg->GetMorphMapping();
-		DEBUG(QString("Morph Mapping Size (config): %1").arg(MorphString.size()));
 
+		config.morphMappings = dlg->GetMorphMapping();
+		if (config.morphMappings.size()>0){
+			DEBUG(QString("Morph Mapping Size (config): %1").arg(config.morphMappings.size()));
+		}
 #ifdef FBXOPTIONS
 		ShowFbxDialog = dlg->showFbxDialogCheckBox->isChecked();
 #endif
@@ -100,7 +104,9 @@ void DzUnityAction::executeAction()
 
 		SubdivisionDialog = DzUnitySubdivisionDialog::Get(dlg);
 		SubdivisionDialog->LockSubdivisionProperties(ExportSubdivisions);
-		FBXVersion = QString("FBX 2014 -- Binary");
+		config.FBXVersion = "FBX 2014 -- Binary";
+
+		DEBUG(QString("Using FBX Version (config): %1").arg(config.FBXVersion));
 
 		Export();
 

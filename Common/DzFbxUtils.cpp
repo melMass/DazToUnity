@@ -384,7 +384,7 @@ void DzFbxUtils::PostExport(const DTUConfig config)
 	FbxImporter *Importer = FbxImporter::Create(SdkManager, "");
 
 	DEBUG("creating scene");
-	//  const bool bImportStatus = Importer->Initialize(FBXFile);
+	const bool bImportStatus = Importer->Initialize(config.FBXFile.toStdString().c_str());
 	FbxScene *Scene = FbxScene::Create(SdkManager, "");
 	DEBUG("import into scene");
 	Importer->Import(Scene);
@@ -1010,8 +1010,10 @@ void DzFbxUtils::PostExport(const DTUConfig config)
 	QString UpdatedFBXFolder = fbx_file_info.absoluteDir().filePath("UpdatedFBX");
 
 
+QFileInfo fileInfo(config.FBXFile);
+QString filename(fileInfo.fileName());
 
-	QString UpdatedFBXFile = QDir(UpdatedFBXFolder).filePath(QFile(config.FBXFile).fileName());
+	QString UpdatedFBXFile = DzUtils::appendPath(UpdatedFBXFolder, filename);
 
 	if (!QDir(UpdatedFBXFolder).exists())
 	{
@@ -1030,13 +1032,14 @@ void DzFbxUtils::PostExport(const DTUConfig config)
 		return;
 	}
 
-	DEBUG("Exporting custom FBX");
+	DEBUG(QString("Exporting custom FBX to %1").arg(UpdatedFBXFile));
 
 	// Export the scene.
 	bool Status = Exporter->Export(Scene);
 
 	if (Status){
-		SUCCESS("Exported custom FBX");
+		// TODO: Add `success` text after context in output
+		SUCCESS(QString("Exported custom FBX").arg(UpdatedFBXFile));
 	}
 
 	// Destroy the exporter.

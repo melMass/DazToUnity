@@ -298,7 +298,7 @@ void DzRuntimePluginAction::ExportNode(DzNode *Node)
 			ExportOptions.setStringValue("rules", "");
 		}
 
-		ExportOptions.setStringValue("format", FBXVersion);
+		ExportOptions.setStringValue("format", config.FBXVersion);
 		ExportOptions.setIntValue("RunSilent", !ShowFbxDialog);
 
 		ExportOptions.setBoolValue("doEmbed", false);

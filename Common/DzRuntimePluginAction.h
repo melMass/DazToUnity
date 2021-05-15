@@ -30,7 +30,7 @@ protected:
 	// QString CharacterFBX;
 	// QString AssetType;
 	QString MorphString;
-	QString FBXVersion;
+	// QString FBXVersion;
 	// QMap<QString, QString> MorphMapping;
 	// QList<QString> PoseList;
 
