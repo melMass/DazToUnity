@@ -159,11 +159,11 @@ namespace Daz3D
         /// | Diffuse Roughness                  | X | X | X | DT   | Seemingly affects roughness, but has almost no effect |
         /// | Diffuse Overlay Weight             | X | X | X | D    | If > 0 mixes the "Diffuse Overlay Color" into the diffuse on top (amongst other props, see below) |
         /// | ++ Diffuse Overlay Weight Squared  | X | X | X | B    | if on, take diffuse overlay weight and square the value (0.5 => 0.25) |
-        /// | ++ Diffuse Overlay Color           | X | X | X | CT   |  applies a color (mixes into the diffuse channel on top of the existing) | 
-        /// | ++ Diffuse Overlay Color Effect    | X | X | X | E    | Scatter Only/ Scatter Transmit / Scatter Transmit Intensity | 
+        /// | ++ Diffuse Overlay Color           | X | X | X | CT   |  applies a color (mixes into the diffuse channel on top of the existing) |
+        /// | ++ Diffuse Overlay Color Effect    | X | X | X | E    | Scatter Only/ Scatter Transmit / Scatter Transmit Intensity |
         /// | ++ Diffuse Overlay Roughness       | X | X | X | D    | (same effect as Diffuse Roughness |
         /// | Translucency Weight                | X | X | X | D    | if > 0 makes the material translucent (see through) and enables the following |
-        /// | ++ Base Color Effect               | X | X | X | E    | Scatter Only/ Scatter Transmit / Scatter Transmit Intensity | 
+        /// | ++ Base Color Effect               | X | X | X | E    | Scatter Only/ Scatter Transmit / Scatter Transmit Intensity |
         /// | ++ Translucency Color              | X | X | X | CT   | Sets the color that the mat is translucent (like how the light passes through it) greatly effects the final color, washes out diffuse quite a bit |
         /// | ++ Invert Transmission Normal      | X | X | X | B    | ?Flips the normal? |
         /// | Dual Lobe Specular Weight          | X | X | X | D    | See GDC notes on Next Generateion Character Rendering for info, the gist is these are top coat specular highlights (primiarily used for skin), 0 => off, 1=>on at 100% |
@@ -174,14 +174,14 @@ namespace Daz3D
         /// | ++ Specular Lobe 2 Glossiness      |   | X |   | D    | 0=>rough, 1=>smooth |
         /// | ++ Dual Lobe Specular Ratio        | X | X | X | D    | A lerp between lobe 1 and 2, where 0 is just lobe 2, 1 is just lobe 1 (notice the flip there!) and 0.5 is 50% of each|
         /// | Glossy Layered Weight              | X | X |   | D    | 0 => Rough, 1 => Smooth, controls metal/spec paths for all gloss values below |
-        /// | Glossy Weight                      |   |   | X | D    | 0 => Rough, 1 => Smooth If > 0 enables: Glossy Color, Glossy Color Effect, Glossy Roughness, Glossy Anisotropy, Backscattering Weight | 
+        /// | Glossy Weight                      |   |   | X | D    | 0 => Rough, 1 => Smooth If > 0 enables: Glossy Color, Glossy Color Effect, Glossy Roughness, Glossy Anisotropy, Backscattering Weight |
         /// | ++ Glossy Color                    | X | X | X | CT   | Effects specular highlights, (on by default for Metal and Spec) |
-        /// | ++ Glossy Color Effect             | X | X | X | E    | Scatter Only/ Scatter Transmit / Scatter Transmit Intensity (on by default for Metal and Spec) | 
-        /// | ++ Glossy Roughness                | X | X | X | DT   | 0 => smooth, 1 => Rough (on by default for Metal and Spec) | 
+        /// | ++ Glossy Color Effect             | X | X | X | E    | Scatter Only/ Scatter Transmit / Scatter Transmit Intensity (on by default for Metal and Spec) |
+        /// | ++ Glossy Roughness                | X | X | X | DT   | 0 => smooth, 1 => Rough (on by default for Metal and Spec) |
         /// | ++ Glossy Reflectivity             | X |   |   | DT   | How much of the environment should be reflected in the gloss layer? 1=> high, 0=>off
         /// | ++++ Glossy Anisotropy             | X | X | X | DT   | |
         /// | ++++ Glossy Anisotropy Rotations   | X | X |   | DT   | |
-        /// | ++ Backscattering Weight           | X | X | X | DT   | (on by default for Metal and Spec) | 
+        /// | ++ Backscattering Weight           | X | X | X | DT   | (on by default for Metal and Spec) |
         /// | Share Glossy Inputs                | X | X | X | B    | Setting on or off had no effect? |
         /// | Glossy Specular                    |   | X |   | CT   | Affects the gloss epcular highlights |
         /// | Glossiness                         |   | X |   | DT   | Affects smoothness (0=>rough 1=>smooth), ignored if Glossy Layered Weight = 0
@@ -193,8 +193,8 @@ namespace Daz3D
         /// | ++ Abbe                            | X | X | X | D    | Used to detmine how much the light splits like with a prism, high values have low dispersion, low values have high dispersion, see: https:///en.wikipedia.org/wiki/Abbe_number |
         /// | Base Thin Film                     | X | X | X | DT   | |
         /// | ++ Base Thin Film IOR              | X | X | X | DT   | |
-        /// | Base Bump                          | X | X | X | DT   | A height map, you want to read both the texture and the value | 
-        /// | Normal Map                         | X | X | X | DT   | A normal map, the value is the "strength" of the normal | 
+        /// | Base Bump                          | X | X | X | DT   | A height map, you want to read both the texture and the value |
+        /// | Normal Map                         | X | X | X | DT   | A normal map, the value is the "strength" of the normal |
         /// | Metallic Flakes Weight             | X | X | X | DT   | Enables a lot of flake options, we're ignoring this for now |
         /// | Top Coat Weight                    | X | X | X | DT   | Enables additional options, adds a 3rd layer to iray, ignored by us |
         /// | Thin Walled                        | X | X | X | B    | On for thin things like bubbles, hollow, etc, off for thick things like fluids and solids |
@@ -494,7 +494,7 @@ namespace Daz3D
             }
             else
             {
-                //this means we're either skin, metal, spec, etc... 
+                //this means we're either skin, metal, spec, etc...
 
                 isTransparent = refractionWeight.Float > 0f || refractionWeight.TextureExists() ||
                                 cutoutOpacity.TextureExists();
@@ -1047,7 +1047,7 @@ namespace Daz3D
             }
             else
             {
-                //this means we're either skin, metal, spec, etc... 
+                //this means we're either skin, metal, spec, etc...
 
                 isTransparent = refractionWeight.Float > 0f || refractionWeight.TextureExists() ||
                                 cutoutOpacity.TextureExists();
@@ -2428,6 +2428,20 @@ namespace Daz3D
             mat.SetShaderPassEnabled("TransparentBackface", false);
             mat.SetOverrideTag("MotionVector", "User");
 
+            if(matNameLower.Contains("eyelash"))
+			{
+				//we don't want specular reflections on the transparent part of the material for eyelashes, it's not a "wet" mat or lens
+				if(mat.HasProperty("_EnableBlendModePreserveSpecularLighting"))
+				{
+					mat.SetFloat("_EnableBlendModePreserveSpecularLighting",0);
+				}
+
+				//most eyelashes come in with a roughness of 0.1 when we really should be mostly rough, this hardcodes the eyelash so it looks better
+				if(mat.HasProperty("_Roughness"))
+				{
+					mat.SetFloat("_Roughness",0.9f);
+				}
+			}
 
             if (isDoubleSided)
             {

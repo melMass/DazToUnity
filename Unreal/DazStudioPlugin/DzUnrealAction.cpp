@@ -84,7 +84,7 @@ void DzUnrealAction::executeAction()
 		  ExportSubdivisions = dlg->subdivisionEnabledCheckBox->isChecked();
 		  MorphMapping = dlg->GetMorphMapping();
 		  ShowFbxDialog = dlg->showFbxDialogCheckBox->isChecked();
-		  ExportMaterialPropertiesCSV = dlg->exportMaterialPropertyCSVCheckBox->isChecked();
+		 	//ExportMaterialPropertiesCSV = dlg->exportMaterialPropertyCSVCheckBox->isChecked();
 		  SubdivisionDialog = DzUnrealSubdivisionDialog::Get(dlg);
 		  SubdivisionDialog->LockSubdivisionProperties(ExportSubdivisions);
 		  FBXVersion = dlg->fbxVersionCombo->currentText();
@@ -107,26 +107,26 @@ void DzUnrealAction::WriteConfiguration()
 
 	 if (AssetType != "Environment")
 	 {
-		 if (ExportMaterialPropertiesCSV)
-		 {
-			 QString filename = CharacterFolder + CharacterName + "_Maps.csv";
-			 QFile file(filename);
-			 file.open(QIODevice::WriteOnly);
-			 QTextStream stream(&file);
-			 stream << "Version, Object, Material, Type, Color, Opacity, File" << endl;
+		//  if (ExportMaterialPropertiesCSV)
+		//  {
+		// 	 QString filename = CharacterFolder + CharacterName + "_Maps.csv";
+		// 	 QFile file(filename);
+		// 	 file.open(QIODevice::WriteOnly);
+		// 	 QTextStream stream(&file);
+		// 	 stream << "Version, Object, Material, Type, Color, Opacity, File" << endl;
 
-			 writer.startMemberArray("Materials", true);
-			 WriteMaterials(Selection, writer, stream);
-			 writer.finishArray();
-		 }
-		 else
-		 {
+		// 	 writer.startMemberArray("Materials", true);
+		// 	 WriteMaterials(Selection, writer, stream);
+		// 	 writer.finishArray();
+		//  }
+		//  else
+		//  {
 			 QString throwaway;
 			 QTextStream stream(&throwaway);
 			 writer.startMemberArray("Materials", true);
 			 WriteMaterials(Selection, writer, stream);
 			 writer.finishArray();
-		 }
+		//  }
 
 
 
