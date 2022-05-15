@@ -64,7 +64,7 @@ DzUnityTexturesDialog *DzUnityTexturesDialog::singleton = nullptr;
   progressBar = NULL;
 
   // Thread
-  SUCCESS("DAZRuntime - Setting up thread");
+  //SUCCESS(QString("DAZRuntime - Setting up thread"));
   m_loader.moveToThread(&m_loaderThread);
   m_loaderThread.start();
 
@@ -115,14 +115,14 @@ DzUnityTexturesDialog *DzUnityTexturesDialog::singleton = nullptr;
 
 void DzUnityTexturesDialog::imageAvailable(const QString &fichier, const QImage &img)
 {
-  SUCCESS(QString("DAZRuntime - Main Thread received image ").arg(fichier));
+  //SUCCESS(QString("DAZRuntime - Main Thread received image ").arg(fichier));
 
   SortingListItem *item = new SortingListItem();
   item->setText(fichier);
   QPixmap map = QPixmap::fromImage(img);
   item->setData(Qt::DecorationRole, map.scaled(150, 150, Qt::KeepAspectRatio));
   item->setTextAlignment(Qt::AlignLeft);
-  
+
   //item->setIcon(QIcon(tex));
   textureListWidget->addItem(item);
   progressBar->setValue(progressBar->value() + 1);
@@ -198,7 +198,7 @@ void DzUnityTexturesDialog::UpdateTexturesList()
 
   foreach (QString tex, textureList)
   {
-    SUCCESS(QString("DAZRuntime - Setting up thread to load %1").arg(tex));
+    //SUCCESS(QString("DAZRuntime - Setting up thread to load %1").arg(tex));
 
     // calling the signal
     emit loadImage(tex);

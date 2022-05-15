@@ -104,7 +104,7 @@ QString DzUnityAction::GetMD5(const QString &path)
         int readSize = qMin(fileSize, bufferSize);
 
         QCryptographicHash hash(algo);
-        while (readSize > 0 && (bytesRead = sourceFile.read(buffer, readSize)) > 0) 
+        while (readSize > 0 && (bytesRead = sourceFile.read(buffer, readSize)) > 0)
         {
             fileSize -= bytesRead;
             hash.addData(buffer, bytesRead);
@@ -157,7 +157,7 @@ bool DzUnityAction::CopyFile(QFile *file, QString *dst, bool replace, bool compa
 	//file->setPermissions(QFile::ReadOther | QFile::WriteOther);
 
 	auto result = file->copy(*dst);
-	
+
 	if(QFile::exists(*dst))
 	{
 		QFile::setPermissions(*dst, QFile::ReadOther | QFile::WriteOther);
@@ -171,6 +171,8 @@ void DzUnityAction::CreateUnityFiles(bool replace)
 	 if (!InstallUnityFiles)
 		  return;
 
+		// This approach is actually pretty good, but for now it's out of sync. This is not a user project anyway.
+		return;
 	 //Create shader folder if it doesn't exist
 	 QDir dir;
 	 QString scriptsFolder = appendPath(ImportFolder, "Scripts");
@@ -210,7 +212,7 @@ void DzUnityAction::CreateUnityFiles(bool replace)
 		  CopyFile(&file, &shader, replace);
 		  file.close();
 	 }
-	 
+
 	 //Create shader helpers folder if it doesn't exist
 	 QString shaderHelperFolder = appendPath(appendPath(ImportFolder, "Shaders"), "Helpers");
 	 dir.mkpath(shaderHelperFolder);
@@ -249,7 +251,7 @@ void DzUnityAction::CreateUnityFiles(bool replace)
 		  CopyFile(&file, &profile, replace);
 		  file.close();
 	 }
-	 
+
 	 //Create Resources folder if it doesn't exist
 	 QString resourcesFolder = appendPath(ImportFolder, "Resources");
 	 dir.mkpath(resourcesFolder);
@@ -271,11 +273,11 @@ void DzUnityAction::WriteConfiguration()
 	 DTUfile.open(QIODevice::WriteOnly);
 	 DzJsonWriter writer(&DTUfile);
 	 writer.startObject(true);
-	 writer.addMember("Asset Id", Selection->getAssetId());
-	 writer.addMember("Asset Name", CharacterName);
-	 writer.addMember("Asset Type", AssetType);
-	 writer.addMember("FBX File", CharacterFBX);
-	 writer.addMember("Import Folder", CharacterFolder);
+	 writer.addMember("AssetId", Selection->getAssetId());
+	 writer.addMember("AssetName", CharacterName);
+	 writer.addMember("AssetType", AssetType);
+	 writer.addMember("FBXFile", CharacterFBX);
+	 writer.addMember("ImportFolder", CharacterFolder);
 
 	 writer.startMemberArray("Materials", true);
 	 WriteMaterials(Selection, writer);
@@ -350,9 +352,9 @@ void DzUnityAction::WriteMaterials(DzNode* Node, DzJsonWriter& Writer)
 				{
 					 Writer.startObject(true);
 					 Writer.addMember("Version", 2);
-					 Writer.addMember("Asset Name", Node->getLabel());
-					 Writer.addMember("Material Name", Material->getName());
-					 Writer.addMember("Material Type", Material->getMaterialName());
+					 Writer.addMember("AssetName", Node->getLabel());
+					 Writer.addMember("MaterialName", Material->getName());
+					 Writer.addMember("MaterialType", Material->getMaterialName());
 
 					 DzPresentation* presentation = Node->getPresentation();
 					 if (presentation != nullptr)
@@ -383,7 +385,7 @@ void DzUnityAction::WriteMaterials(DzNode* Node, DzJsonWriter& Writer)
 								Writer.startObject(true);
 								Writer.addMember("Name", Name);
 								Writer.addMember("Value", Material->getDiffuseColor().name());
-								Writer.addMember("Data Type", QString("Texture"));
+								Writer.addMember("DataType", QString("Texture"));
 								Writer.addMember("Texture", TextureName);
 								Writer.finishObject();
 								continue;
@@ -403,7 +405,7 @@ void DzUnityAction::WriteMaterials(DzNode* Node, DzJsonWriter& Writer)
 								Writer.startObject(true);
 								Writer.addMember("Name", Name);
 								Writer.addMember("Value", ColorProperty->getColorValue().name());
-								Writer.addMember("Data Type", QString("Color"));
+								Writer.addMember("DataType", QString("Color"));
 								Writer.addMember("Texture", TextureName);
 								Writer.finishObject();
 								continue;
@@ -423,7 +425,7 @@ void DzUnityAction::WriteMaterials(DzNode* Node, DzJsonWriter& Writer)
 								Writer.startObject(true);
 								Writer.addMember("Name", Name);
 								Writer.addMember("Value", QString::number(NumericProperty->getDoubleValue()));
-								Writer.addMember("Data Type", QString("Double"));
+								Writer.addMember("DataType", QString("Double"));
 								Writer.addMember("Texture", TextureName);
 								Writer.finishObject();
 						  }

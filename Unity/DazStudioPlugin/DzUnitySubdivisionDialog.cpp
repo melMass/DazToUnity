@@ -61,7 +61,7 @@ DzUnitySubdivisionDialog::DzUnitySubdivisionDialog(QWidget *parent) :
 
 
 
-	// Set the dialog title 
+	// Set the dialog title
 	setWindowTitle(tr("Choose Subdivision Levels"));
 
 	// Setup folder
@@ -142,7 +142,7 @@ void DzUnitySubdivisionDialog::CreateList(DzNode* Node)
 	{
 		DzShape* Shape = Object ? Object->getCurrentShape() : NULL;
 		DzGeometry* Geo = Shape ? Shape->getGeometry() : NULL;
-		
+
 		int row = subdivisionItemsGrid->rowCount();
 		subdivisionItemsGrid->addWidget(new QLabel(Node->getLabel()), row, 0);
 		QComboBox* subdivisionLevelCombo = new QComboBox(this);
@@ -262,7 +262,7 @@ void DzUnitySubdivisionDialog::WriteSubdivisions(DzJsonWriter& Writer)
 		int targetValue = combo->currentText().toInt();
 		Writer.startObject(true);
 		Writer.addMember("Version", 1);
-		Writer.addMember("Asset Name", Name);
+		Writer.addMember("AssetName", Name);
 		Writer.addMember("Value", targetValue);
 		Writer.finishObject();
 		//stream << "1, " << Name << ", " << targetValue << endl;

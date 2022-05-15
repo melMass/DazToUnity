@@ -42,7 +42,7 @@ FSoftObjectPath FDazToUnrealMaterials::GetBaseMaterial(FString MaterialName, TAr
 	TArray<FDUFTextureProperty> Properties = MaterialProperties;
 	for (FDUFTextureProperty Property : Properties)
 	{
-		if (Property.Name == TEXT("Asset Type"))
+		if (Property.Name == TEXT("AssetType"))
 		{
 			AssetType = Property.Value;
 			ShaderName = Property.ShaderName;
@@ -55,7 +55,7 @@ FSoftObjectPath FDazToUnrealMaterials::GetBaseMaterial(FString MaterialName, TAr
 		BaseMaterialAssetPath = CachedSettings->BaseShaderMaterials[ShaderName];
 		//return BaseMaterialAssetPath;
 	}
-	
+
 	if (AssetType == TEXT("Follower/Hair"))
 	{
 		BaseMaterialAssetPath = CachedSettings->BaseHairMaterial;
@@ -156,7 +156,7 @@ FSoftObjectPath FDazToUnrealMaterials::GetBaseMaterial(FString MaterialName, TAr
 					BaseMaterialAssetPath = CachedSettings->BaseAlphaMaterial;
 				}
 			}
-			
+
 		}
 	}
 	else if (MaterialName.Contains(TEXT("_EyeMoisture")))
@@ -178,7 +178,7 @@ FSoftObjectPath FDazToUnrealMaterials::GetBaseMaterial(FString MaterialName, TAr
 				BaseMaterialAssetPath = CachedSettings->BaseAlphaMaterial;
 			}
 		}
-		
+
 	}
 	if (MaterialName.EndsWith(TEXT("_NoDraw")))
 	{
@@ -197,7 +197,7 @@ UMaterialInstanceConstant* FDazToUnrealMaterials::CreateMaterial(const FString C
 	{
 		BaseMaterialAssetPath = GetBaseMaterial(MaterialName, MaterialProperties[MaterialName]);
 	}
-	
+
 	FString ShaderName = "";
 	FString AssetType = "";
 	if (MaterialProperties.Contains(MaterialName))
@@ -205,7 +205,7 @@ UMaterialInstanceConstant* FDazToUnrealMaterials::CreateMaterial(const FString C
 		TArray<FDUFTextureProperty> Properties = MaterialProperties[MaterialName];
 		for (FDUFTextureProperty Property : Properties)
 		{
-			if (Property.Name == TEXT("Asset Type"))
+			if (Property.Name == TEXT("AssetType"))
 			{
 				AssetType = Property.Value;
 				ShaderName = Property.ShaderName;
@@ -525,7 +525,7 @@ TArray<FDUFTextureProperty> FDazToUnrealMaterials::GetMostCommonProperties(TArra
 	{
 		for (FDUFTextureProperty Property : MaterialProperties[MaterialName])
 		{
-			if (Property.Name != TEXT("Asset Type"))
+			if (Property.Name != TEXT("AssetType"))
 			{
 				PossibleProperties.AddUnique(Property.Name);
 			}
@@ -625,7 +625,7 @@ USubsurfaceProfile* FDazToUnrealMaterials::CreateSubsurfaceBaseProfileForCharact
 		FString AssetType;
 		for (FDUFTextureProperty Property : Pair.Value)
 		{
-			if (Property.Name == TEXT("Asset Type"))
+			if (Property.Name == TEXT("AssetType"))
 			{
 				AssetType = Property.Value;
 			}
@@ -652,7 +652,7 @@ USubsurfaceProfile* FDazToUnrealMaterials::CreateSubsurfaceProfileForMaterial(co
 	FString ShaderName;
 	for (FDUFTextureProperty Property : MaterialProperties)
 	{
-		if (Property.Name == TEXT("Asset Type"))
+		if (Property.Name == TEXT("AssetType"))
 		{
 			ShaderName = Property.ShaderName;
 		}

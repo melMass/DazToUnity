@@ -29,11 +29,13 @@ QString colorizeFunc(QString name)
 
     QStringList::const_iterator param;
     for (param = params.begin(); param != params.constEnd(); ++param) {
+        if (param != nullptr){
         if(param != params.begin()) {
             output.append("\033[0m,");
         }
         output.append("\033[036m");
-        output.append((*param));
+        output.append(*param);
+        }
     }
     output.append("\033[0m)");
     return output;

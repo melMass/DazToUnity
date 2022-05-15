@@ -129,7 +129,7 @@ DzUnityDialog::DzUnityDialog(QWidget* parent) :
 	 mainLayout->addRow("Enable Subdivision", subdivisionLayout);
 	 mainLayout->addRow("Textures", textureLayout);
 	 mainLayout->addRow("Unity Assets Folder", assetsFolderLayout);
-	 mainLayout->addRow("Install Unity Files", installUnityFilesCheckBox);
+	 mainLayout->addRow("Install Unity Files (not used anymore for now)", installUnityFilesCheckBox);
 	 connect(installUnityFilesCheckBox, SIGNAL(stateChanged(int)), this, SLOT(HandleInstallUnityFilesCheckBoxChange(int)));
 	 addLayout(mainLayout);
 #ifdef FBXOPTIONS

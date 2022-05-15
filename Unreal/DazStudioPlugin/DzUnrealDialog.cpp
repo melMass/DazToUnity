@@ -134,7 +134,7 @@ DzUnrealDialog::DzUnrealDialog(QWidget *parent) :
 	// Show FBX Dialog option
 	showFbxDialogCheckBox = new QCheckBox("", this);
 	connect(showFbxDialogCheckBox, SIGNAL(stateChanged(int)), this, SLOT(HandleShowFbxDialogCheckBoxChange(int)));
-	
+
 	// Export Material Property CSV option
 	exportMaterialPropertyCSVCheckBox = new QCheckBox("", this);
 	connect(exportMaterialPropertyCSVCheckBox, SIGNAL(stateChanged(int)), this, SLOT(HandleExportMaterialPropertyCSVCheckBoxChange(int)));

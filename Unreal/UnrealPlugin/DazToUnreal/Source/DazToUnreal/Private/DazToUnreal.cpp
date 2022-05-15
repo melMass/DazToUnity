@@ -316,17 +316,17 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 {
 	 TMap<FString, TArray<FDUFTextureProperty>> MaterialProperties;
 
-	 FString FBXPath = JsonObject->GetStringField(TEXT("FBX File"));
-	 FString AssetName = FDazToUnrealUtils::SanitizeName(JsonObject->GetStringField(TEXT("Asset Name")));
-	 FString ImportFolder = JsonObject->GetStringField(TEXT("Import Folder"));
+	 FString FBXPath = JsonObject->GetStringField(TEXT("FBXFile"));
+	 FString AssetName = FDazToUnrealUtils::SanitizeName(JsonObject->GetStringField(TEXT("AssetName")));
+	 FString ImportFolder = JsonObject->GetStringField(TEXT("ImportFolder"));
 	 DazAssetType AssetType = DazAssetType::StaticMesh;
-	 if (JsonObject->GetStringField(TEXT("Asset Type")) == TEXT("SkeletalMesh"))
+	 if (JsonObject->GetStringField(TEXT("AssetType")) == TEXT("SkeletalMesh"))
 		  AssetType = DazAssetType::SkeletalMesh;
-	 else if (JsonObject->GetStringField(TEXT("Asset Type")) == TEXT("Animation"))
+	 else if (JsonObject->GetStringField(TEXT("AssetType")) == TEXT("Animation"))
 		  AssetType = DazAssetType::Animation;
-	 else if (JsonObject->GetStringField(TEXT("Asset Type")) == TEXT("Environment"))
+	 else if (JsonObject->GetStringField(TEXT("AssetType")) == TEXT("Environment"))
 		 AssetType = DazAssetType::Environment;
-	 else if (JsonObject->GetStringField(TEXT("Asset Type")) == TEXT("Pose"))
+	 else if (JsonObject->GetStringField(TEXT("AssetType")) == TEXT("Pose"))
 		 AssetType = DazAssetType::Pose;
 
 	 // Set up the folder paths
@@ -387,7 +387,7 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 	 for (int32 i = 0; i < sdList.Num(); i++)
 	 {
 		  TSharedPtr<FJsonObject> subdivision = sdList[i]->AsObject();
-		  SubdivisionLevels.Add(subdivision->GetStringField(TEXT("Asset Name")), subdivision->GetIntegerField(TEXT("Value")));
+		  SubdivisionLevels.Add(subdivision->GetStringField(TEXT("AssetName")), subdivision->GetIntegerField(TEXT("Value")));
 	 }
 
 	 // Use the maps file to find the textures to load
@@ -403,7 +403,7 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 		  // Version 1 "Version, Material, Type, Color, Opacity, File"
 		  if (Version == 1)
 		  {
-				FString MaterialName = AssetName + TEXT("_") + material->GetStringField(TEXT("Material Name"));
+				FString MaterialName = AssetName + TEXT("_") + material->GetStringField(TEXT("MaterialName"));
 				MaterialName = FDazToUnrealUtils::SanitizeName(MaterialName);
 				FString TexturePath = material->GetStringField(TEXT("Texture"));
 				FString TextureName = FDazToUnrealUtils::SanitizeName(FPaths::GetBaseFilename(TexturePath));
@@ -414,7 +414,7 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 				}
 				FDUFTextureProperty Property;
 				Property.Name = material->GetStringField(TEXT("Name"));
-				Property.Type = material->GetStringField(TEXT("Data Type"));
+				Property.Type = material->GetStringField(TEXT("DataType"));
 				Property.Value = material->GetStringField(TEXT("Value"));
 				if (Property.Type == TEXT("Texture"))
 				{
@@ -457,11 +457,11 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 		  // Version 2 "Version, ObjectName, Material, Type, Color, Opacity, File"
 		  if (Version == 2)
 		  {
-				FString ObjectName = material->GetStringField(TEXT("Asset Name"));
+				FString ObjectName = material->GetStringField(TEXT("AssetName"));
 				ObjectName = FDazToUnrealUtils::SanitizeName(ObjectName);
 				IntermediateMaterials.AddUnique(ObjectName + TEXT("_BaseMat"));
-				FString ShaderName = material->GetStringField(TEXT("Material Type"));
-				FString MaterialName = AssetName + TEXT("_") + material->GetStringField(TEXT("Material Name"));
+				FString ShaderName = material->GetStringField(TEXT("MaterialType"));
+				FString MaterialName = AssetName + TEXT("_") + material->GetStringField(TEXT("MaterialName"));
 				MaterialName = FDazToUnrealUtils::SanitizeName(MaterialName);
 				FString TexturePath = material->GetStringField(TEXT("Texture"));
 				FString TextureName = FDazToUnrealUtils::SanitizeName(FPaths::GetBaseFilename(TexturePath));
@@ -472,7 +472,7 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 				}
 				FDUFTextureProperty Property;
 				Property.Name = material->GetStringField(TEXT("Name"));
-				Property.Type = material->GetStringField(TEXT("Data Type"));
+				Property.Type = material->GetStringField(TEXT("DataType"));
 				Property.Value = material->GetStringField(TEXT("Value"));
 				Property.ObjectName = ObjectName;
 				Property.ShaderName = ShaderName;
@@ -480,7 +480,7 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 				{
 					 Property.Type = TEXT("Color");
 				}
-				
+
 				// Properties that end with Enabled are switches for functionality
 				if (Property.Name.EndsWith(TEXT(" Enable")))
 				{
@@ -908,7 +908,7 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 		  FbxNode* IKRootNode = Scene->FindNodeByName(TCHAR_TO_UTF8(TEXT("ik_foot_root")));
 		  if (!IKRootNode)
 		  {
-				// Create IK Root 
+				// Create IK Root
 				FbxSkeleton* IKRootNodeAttribute = FbxSkeleton::Create(Scene, TCHAR_TO_UTF8(TEXT("ik_foot_root")));
 				IKRootNodeAttribute->SetSkeletonType(FbxSkeleton::eLimbNode);
 				IKRootNodeAttribute->Size.Set(1.0);
@@ -923,7 +923,7 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 		  FbxNode* FootLNode = Scene->FindNodeByName(TCHAR_TO_UTF8(TEXT("lFoot")));
 		  if (!IKFootLNode && FootLNode)
 		  {
-				// Create IK Root 
+				// Create IK Root
 				FbxSkeleton* IKFootLNodeAttribute = FbxSkeleton::Create(Scene, TCHAR_TO_UTF8(TEXT("ik_foot_l")));
 				IKFootLNodeAttribute->SetSkeletonType(FbxSkeleton::eLimbNode);
 				IKFootLNodeAttribute->Size.Set(1.0);
@@ -939,7 +939,7 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 		  FbxNode* FootRNode = Scene->FindNodeByName(TCHAR_TO_UTF8(TEXT("rFoot")));
 		  if (!IKFootRNode && FootRNode)
 		  {
-				// Create IK Root 
+				// Create IK Root
 				FbxSkeleton* IKFootRNodeAttribute = FbxSkeleton::Create(Scene, TCHAR_TO_UTF8(TEXT("ik_foot_r")));
 				IKFootRNodeAttribute->SetSkeletonType(FbxSkeleton::eLimbNode);
 				IKFootRNodeAttribute->Size.Set(1.0);
@@ -954,7 +954,7 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 		  FbxNode* IKHandRootNode = Scene->FindNodeByName(TCHAR_TO_UTF8(TEXT("ik_hand_root")));
 		  if (!IKHandRootNode)
 		  {
-				// Create IK Root 
+				// Create IK Root
 				FbxSkeleton* IKHandRootNodeAttribute = FbxSkeleton::Create(Scene, TCHAR_TO_UTF8(TEXT("ik_hand_root")));
 				IKHandRootNodeAttribute->SetSkeletonType(FbxSkeleton::eLimbNode);
 				IKHandRootNodeAttribute->Size.Set(1.0);
@@ -969,7 +969,7 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 		  FbxNode* HandRNode = Scene->FindNodeByName(TCHAR_TO_UTF8(TEXT("rHand")));
 		  if (!IKHandGunNode && HandRNode)
 		  {
-				// Create IK Root 
+				// Create IK Root
 				FbxSkeleton* IKHandGunNodeAttribute = FbxSkeleton::Create(Scene, TCHAR_TO_UTF8(TEXT("ik_hand_gun")));
 				IKHandGunNodeAttribute->SetSkeletonType(FbxSkeleton::eLimbNode);
 				IKHandGunNodeAttribute->Size.Set(1.0);
@@ -986,7 +986,7 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 		  //FbxNode* IKHandGunNode = Scene->FindNodeByName(TCHAR_TO_UTF8(TEXT("ik_hand_gun")));
 		  if (!IKHandRNode && HandRNode && IKHandGunNode)
 		  {
-				// Create IK Root 
+				// Create IK Root
 				FbxSkeleton* IKHandRNodeAttribute = FbxSkeleton::Create(Scene, TCHAR_TO_UTF8(TEXT("ik_hand_r")));
 				IKHandRNodeAttribute->SetSkeletonType(FbxSkeleton::eLimbNode);
 				IKHandRNodeAttribute->Size.Set(1.0);
@@ -1002,7 +1002,7 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 		  //FbxNode* IKHandGunNode = Scene->FindNodeByName(TCHAR_TO_UTF8(TEXT("ik_hand_gun")));
 		  if (!IKHandLNode && HandLNode && IKHandGunNode)
 		  {
-				// Create IK Root 
+				// Create IK Root
 				FbxSkeleton* IKHandRNodeAttribute = FbxSkeleton::Create(Scene, TCHAR_TO_UTF8(TEXT("ik_hand_l")));
 				IKHandRNodeAttribute->SetSkeletonType(FbxSkeleton::eLimbNode);
 				IKHandRNodeAttribute->Size.Set(1.0);
@@ -1283,7 +1283,7 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 							for (int32 Index = Length - 1; Index >= 0; Index--)
 							{
 								FDUFTextureProperty ChildPropertyForRemoval = MaterialProperties[MaterialName][Index];
-								if (ChildPropertyForRemoval.Name == TEXT("Asset Type")) continue;
+								if (ChildPropertyForRemoval.Name == TEXT("AssetType")) continue;
 								for (FDUFTextureProperty ParentProperty : MaterialProperties[IntermediateMaterialName])
 								{
 									if (ParentProperty.Name == ChildPropertyForRemoval.Name && ParentProperty.Value == ChildPropertyForRemoval.Value)
@@ -1337,7 +1337,7 @@ UObject* FDazToUnrealModule::ImportFromDaz(TSharedPtr<FJsonObject> JsonObject)
 {
 	 const UDazToUnrealSettings* CachedSettings = GetDefault<UDazToUnrealSettings>();
 
-	 // Update Material Names
+	 // Update MaterialNames
 	 for (FString MaterialName : MaterialNames)
 	 {
 		  FDazToUnrealMaterials::CreateMaterial(CharacterMaterialFolder, CharacterTexturesFolder, MaterialName, MaterialProperties, CharacterType, nullptr);

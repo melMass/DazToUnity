@@ -100,10 +100,10 @@ void DzUnrealAction::WriteConfiguration()
 	 DTUfile.open(QIODevice::WriteOnly);
 	 DzJsonWriter writer(&DTUfile);
 	 writer.startObject(true);
-	 writer.addMember("Asset Name", CharacterName);
-	 writer.addMember("Asset Type", AssetType);
-	 writer.addMember("FBX File", CharacterFBX);
-	 writer.addMember("Import Folder", CharacterFolder);
+	 writer.addMember("AssetName", CharacterName);
+	 writer.addMember("AssetType", AssetType);
+	 writer.addMember("FBXFile", CharacterFBX);
+	 writer.addMember("ImportFolder", CharacterFolder);
 
 	 if (AssetType != "Environment")
 	 {
@@ -217,12 +217,12 @@ void DzUnrealAction::WriteMaterials(DzNode* Node, DzJsonWriter& Writer, QTextStr
 						  const QString presentationType = presentation->getType();
 						  Writer.startObject(true);
 						  Writer.addMember("Version", 2);
-						  Writer.addMember("Asset Name", Node->getLabel());
-						  Writer.addMember("Material Name", Material->getName());
-						  Writer.addMember("Material Type", Material->getMaterialName());
-						  Writer.addMember("Name", QString("Asset Type"));
+						  Writer.addMember("AssetName", Node->getLabel());
+						  Writer.addMember("MaterialName", Material->getName());
+						  Writer.addMember("MaterialType", Material->getMaterialName());
+						  Writer.addMember("Name", QString("AssetType"));
 						  Writer.addMember("Value", presentationType);
-						  Writer.addMember("Data Type", QString("String"));
+						  Writer.addMember("DataType", QString("String"));
 						  Writer.addMember("Texture", QString(""));
 						  Writer.finishObject();
 
@@ -248,12 +248,12 @@ void DzUnrealAction::WriteMaterials(DzNode* Node, DzJsonWriter& Writer, QTextStr
 
 								Writer.startObject(true);
 								Writer.addMember("Version", 2);
-								Writer.addMember("Asset Name", Node->getLabel());
-								Writer.addMember("Material Name", Material->getName());
-								Writer.addMember("Material Type", Material->getMaterialName());
+								Writer.addMember("AssetName", Node->getLabel());
+								Writer.addMember("MaterialName", Material->getName());
+								Writer.addMember("MaterialType", Material->getMaterialName());
 								Writer.addMember("Name", Name);
 								Writer.addMember("Value", Material->getDiffuseColor().name());
-								Writer.addMember("Data Type", QString("Texture"));
+								Writer.addMember("DataType", QString("Texture"));
 								Writer.addMember("Texture", TextureName);
 								Writer.finishObject();
 								if (ExportMaterialPropertiesCSV)
@@ -276,12 +276,12 @@ void DzUnrealAction::WriteMaterials(DzNode* Node, DzJsonWriter& Writer, QTextStr
 
 								Writer.startObject(true);
 								Writer.addMember("Version", 2);
-								Writer.addMember("Asset Name", Node->getLabel());
-								Writer.addMember("Material Name", Material->getName());
-								Writer.addMember("Material Type", Material->getMaterialName());
+								Writer.addMember("AssetName", Node->getLabel());
+								Writer.addMember("MaterialName", Material->getName());
+								Writer.addMember("MaterialType", Material->getMaterialName());
 								Writer.addMember("Name", Name);
 								Writer.addMember("Value", ColorProperty->getColorValue().name());
-								Writer.addMember("Data Type", QString("Color"));
+								Writer.addMember("DataType", QString("Color"));
 								Writer.addMember("Texture", TextureName);
 								Writer.finishObject();
 								if (ExportMaterialPropertiesCSV)
@@ -304,12 +304,12 @@ void DzUnrealAction::WriteMaterials(DzNode* Node, DzJsonWriter& Writer, QTextStr
 
 								Writer.startObject(true);
 								Writer.addMember("Version", 2);
-								Writer.addMember("Asset Name", Node->getLabel());
-								Writer.addMember("Material Name", Material->getName());
-								Writer.addMember("Material Type", Material->getMaterialName());
+								Writer.addMember("AssetName", Node->getLabel());
+								Writer.addMember("MaterialName", Material->getName());
+								Writer.addMember("MaterialType", Material->getMaterialName());
 								Writer.addMember("Name", Name);
 								Writer.addMember("Value", NumericProperty->getDoubleValue());
-								Writer.addMember("Data Type", QString("Double"));
+								Writer.addMember("DataType", QString("Double"));
 								Writer.addMember("Texture", TextureName);
 								Writer.finishObject();
 								if (ExportMaterialPropertiesCSV)
