@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Autodesk.Fbx;
+//using FbxSdk;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,7 +11,7 @@ namespace Daz3D
 {
     public class DazFBXUtils
     {
-        static void RenameDuplicateBones(FbxNode RootNode)
+        /*static void RenameDuplicateBones(FbxNode RootNode)
         {
             Dictionary<string, int> ExistingBones = new Dictionary<string, int>();
             RenameDuplicateBones(RootNode, ref ExistingBones);
@@ -43,10 +43,10 @@ namespace Daz3D
                 FbxNode ChildNode = RootNode.GetChild(ChildIndex);
                 RenameDuplicateBones(ChildNode, ref ExistingBones);
             }
-        }
+        }*/
 
 
-        static void FindVertexNeedingWeight(int SearchFromVertex, FbxNode SceneNode, ref HashSet<int> NeedWeights,
+        /*static void FindVertexNeedingWeight(int SearchFromVertex, FbxNode SceneNode, ref HashSet<int> NeedWeights,
             ref Dictionary<int, List<int>> VertexPolygons, ref HashSet<int> NoWeights, int Depth)
         {
             foreach (var PolygonIndex in VertexPolygons[SearchFromVertex])
@@ -66,9 +66,9 @@ namespace Daz3D
                     }
                 }
             }
-        }
+        }*/
 
-        static void GetWeights(FbxNode SceneNode, ref Dictionary<int, List<int>> VertexPolygons,
+        /*static void GetWeights(FbxNode SceneNode, ref Dictionary<int, List<int>> VertexPolygons,
             ref Dictionary<int, double> ClusterWeights, FbxMatrix TargetMatrix, int
                 SearchFromVertex, ref HashSet<int> TouchedPolygons, ref HashSet<int> TouchedVertices,
             ref double WeightsOut, ref double DistancesOut, int Depth)
@@ -88,14 +88,14 @@ namespace Daz3D
                 if (TouchedPolygons.Contains(PolygonIndex)) continue;
                 TouchedPolygons.Add(PolygonIndex);
                 FbxVector4 NeedWeightVertexNormal;
-                /*for (int VertexIndex = 0; VertexIndex < SceneNode->GetMesh()->GetPolygonSize(PolygonIndex); ++VertexIndex)
+                *//*for (int VertexIndex = 0; VertexIndex < SceneNode->GetMesh()->GetPolygonSize(PolygonIndex); ++VertexIndex)
                 {
                     int Vertex = SceneNode->GetMesh()->GetPolygonVertex(PolygonIndex, VertexIndex);
                     if (Vertex == SearchFromVertex)
                     {
                         SceneNode->GetMesh()->GetPolygonVertexNormal(PolygonIndex, VertexIndex, NeedWeightVertexNormal);
                     }
-                }*/
+                }*//*
                 // Set the vertices with no weight, to be the average of the ones with weight.
                 for (int VertexIndex = 0;
                     VertexIndex < SceneNode.GetMesh().GetPolygonSize(PolygonIndex);
@@ -125,10 +125,10 @@ namespace Daz3D
                         //double VertexDistance = AdjustedComparePosition.Length();//AdjustedComparePosition.Distance(TargetPosition);
                         double VertexDistance = CompareLocation.Distance(TargetPosition) * AngleAdjustment;
                         //VertexDistance = VertexDistance * VertexDistance* VertexDistance* VertexDistance* VertexDistance* VertexDistance* VertexDistance* VertexDistance;
-                        /*if (DotProduct > 0.0)
+                        *//*if (DotProduct > 0.0)
                         {
                             VertexDistance = VertexDistance * DotProduct;
-                        }*/
+                        }*//*
 
                         //double AdditionalWeightCount = FurthestDistance / VertexDistance;
                         //double AdditionalWeight = AdditionalWeightCount * ClusterWeights[Vertex];
@@ -149,8 +149,8 @@ namespace Daz3D
             }
         }
 
-
-        static void FixClusterTranformLinks(FbxScene Scene, FbxNode RootNode)
+*/
+      /*  static void FixClusterTranformLinks(FbxScene Scene, FbxNode RootNode)
         {
             FbxGeometry NodeGeometry = RootNode.GetGeometry();
 
@@ -185,8 +185,8 @@ namespace Daz3D
                 FixClusterTranformLinks(Scene, ChildNode);
             }
         }
-
-        public static IEnumerator ApplySubdivisions(string fbxPath, DTUFile dtuFile, Action OnDone = default)
+*/
+       /* public static IEnumerator ApplySubdivisions(string fbxPath, DTUFile dtuFile, Action OnDone = default)
         {
             Log($"Logging information from {fbxPath}");
             //var fbxFile = AssetDatabase.LoadAssetAtPath<GameObject>(fbxPath);
@@ -454,7 +454,7 @@ namespace Daz3D
                                             HashSet<int> NeedWeights = new HashSet<int>();
                                             FindVertexNeedingWeight(WeightVertex, SceneNode, ref NeedWeights,
                                                 ref VertexPolygons, ref NoWeights, 1);
-                                            /*for (int PolygonIndex : VertexPolygons[WeightVertex])
+                                            *//*for (int PolygonIndex : VertexPolygons[WeightVertex])
                                                 {
                                                     for (int VertexIndex = 0; VertexIndex < SceneNode->GetMesh()->GetPolygonSize(PolygonIndex); ++VertexIndex)
                                                     {
@@ -464,7 +464,7 @@ namespace Daz3D
                                                             NeedWeights.AddUnique(Vertex);
                                                         }
                                                     }
-                                                }*/
+                                                }*//*
 
 
                                             foreach (int NeedWeightVertex in NeedWeights)
@@ -485,7 +485,7 @@ namespace Daz3D
                                                     ref Weight, ref WeightCount, 1);
 
 
-                                                /*for (int PolygonIndex : VertexPolygons[NeedWeightVertex])
+                                                *//*for (int PolygonIndex : VertexPolygons[NeedWeightVertex])
                                                     {
                                                         FbxVector4 NeedWeightVertexNormal;
                                                         for (int VertexIndex = 0; VertexIndex < SceneNode->GetMesh()->GetPolygonSize(PolygonIndex); ++VertexIndex)
@@ -519,7 +519,7 @@ namespace Daz3D
                                                                 WeightCount += AdditionalWeightCount;
                                                             }
                                                         }
-                                                    }*/
+                                                    }*//*
                                                 if (WeightCount > 0)
                                                 {
                                                     if (!WeightsToAdd.Keys.Contains(NeedWeightVertex))
@@ -813,5 +813,7 @@ namespace Daz3D
         {
             Debug.Log($"<color=cyan>DAZ FBX</color>: {message}");
         }
-    }
+    }*/
 }
+}
+

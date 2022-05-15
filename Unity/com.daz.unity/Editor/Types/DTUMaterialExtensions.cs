@@ -1,6 +1,4 @@
 using System.IO;
-using Accord.Statistics.Kernels;
-using g3;
 using UnityEditor;
 using UnityEditor.Rendering.HighDefinition;
 using UnityEngine;

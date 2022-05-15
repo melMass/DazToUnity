@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Daz3D
 {
-    using record = ImportEventRecord;
+
 
     /// <summary>
     /// An editor window where unity user can monitor the progress and history and details of DTU import activity 

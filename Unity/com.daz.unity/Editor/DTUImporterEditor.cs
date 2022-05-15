@@ -84,14 +84,15 @@ namespace Daz3D
                 //
 
 
-                if (GUILayout.Button(new GUIContent("Apply Subdivisions",
+                if (GUILayout.Button(new GUIContent("Apply Subdivisions (not used for now)",
                     "This will generate a separate fbx file with the new skin weights")))
                 {
                     //DazCoroutine.StartCoroutine(DazFBXUtils.ApplySubdivisions(importer.dtuFile.FBXFile,
                     //    importer.dtuFile));    
-                    EditorCoroutineUtility.StartCoroutineOwnerless(DazFBXUtils.ApplySubdivisions(
-                        importer.dtuFile.FBXFile,
-                        importer.dtuFile));
+                    /*  EditorCoroutineUtility.StartCoroutineOwnerless(DazFBXUtils.ApplySubdivisions(
+                          importer.dtuFile.FBXFile,
+                          importer.dtuFile));*/
+                    Debug.Log("This is removed as I'm trying to optout the C# FBX Bindings, I cannot maintain my own fork and unity's path about it is not working for these cases. Ideally this will be all done in C++ land in the DAZ Plugin");
                 }
 
                 if (GUILayout.Button(new GUIContent("Regenerate Prefab",

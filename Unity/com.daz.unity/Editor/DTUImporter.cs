@@ -150,7 +150,7 @@ namespace Daz3D
             if (GenerateUnityPrefab)
             {
                 
-                if (ApplySubdivisions)
+               /* if (ApplySubdivisions)
                 {
                     Utilities.Log("Applying Subdivisions");
                     var routineSubdivisions = DazFBXUtils.ApplySubdivisions(dtuFile.FBXFile, dtuFile);
@@ -158,7 +158,7 @@ namespace Daz3D
                         yield return null;
                         //yield return new WaitForEndOfFrame();
                 }
-                
+                */
                 Utilities.Log("Generating Prefab");
                 GeneratePrefabFromFBX(fbxPath, dtuFile.FigureType, done);
             }
