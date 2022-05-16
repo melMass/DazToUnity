@@ -1,5 +1,5 @@
 from conans import ConanFile, CMake
-
+import getpass
 class DazConan(ConanFile):
     name = "daz-runtime"
     version = "1.1.0"
@@ -13,7 +13,7 @@ class DazConan(ConanFile):
         "shared": [True, False],
         "fPIC": [True, False],
     }
-    default_options = {"shared": False, "fPIC": True}
+    default_options = {"shared": False, "fPIC": True, "fmt:header_only":True}
     generators = "cmake"
     exports_sources = [
       "Common/*",
@@ -31,7 +31,12 @@ class DazConan(ConanFile):
     # requires=["fbxsdk/2014.2.1"]
     requires = [
         # "fmt/7.1.3",
+        "simdjson/0.9.2",
+        "cli11/1.9.1",
+        "fmt/7.1.3"
     ]
+    _cmake = None
+
 
     def config_options(self):
         if self.settings.os == "Windows":
@@ -39,9 +44,14 @@ class DazConan(ConanFile):
 
 
     def _configure_cmake(self):
-        cmake = CMake(self)
-        cmake.configure()
-        return cmake
+        if self._cmake:
+            return self._cmake
+        user = getpass. getuser()
+        self.package_folder = "/Users/{}/Daz 3D/Applications/DAZ 3D/DAZStudio4 64-bit".format(user)
+
+        self._cmake = CMake(self)
+        self._cmake.configure()
+        return self._cmake
 
     def build(self):
         cmake = self._configure_cmake()

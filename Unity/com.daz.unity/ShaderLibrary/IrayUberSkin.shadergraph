@@ -392,6 +392,9 @@
         },
         {
             "m_Id": "6958afdde7e040e6be5824da2ddfdc91"
+        },
+        {
+            "m_Id": "e4c09c34d1a34ccc912990bea7aaf942"
         }
     ],
     "m_GroupDatas": [
@@ -1646,6 +1649,9 @@
             },
             {
                 "m_Id": "6958afdde7e040e6be5824da2ddfdc91"
+            },
+            {
+                "m_Id": "e4c09c34d1a34ccc912990bea7aaf942"
             }
         ]
     },
@@ -1664,6 +1670,9 @@
     "m_ActiveTargets": [
         {
             "m_Id": "940eacbedfe548e9913d4de9f2788a49"
+        },
+        {
+            "m_Id": "04c7ec41476a472f9b68d3b143bd326f"
         }
     ]
 }
@@ -1676,6 +1685,8 @@
         "m_GuidSerialized": "7ee29264-c279-4bdf-9850-d8dabf51c503"
     },
     "m_Name": "Metallic",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_444B0FB0",
     "m_OverrideReferenceName": "_Metallic",
     "m_GeneratePropertyBlock": true,
@@ -1791,6 +1802,20 @@
     "m_CustomColors": {
         "m_SerializableColors": []
     }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.Rendering.Universal.ShaderGraph.UniversalTarget",
+    "m_ObjectId": "04c7ec41476a472f9b68d3b143bd326f",
+    "m_ActiveSubTarget": {
+        "m_Id": "3fe495784c53485484f146167ac71238"
+    },
+    "m_SurfaceType": 0,
+    "m_AlphaMode": 0,
+    "m_TwoSided": false,
+    "m_AlphaClip": false,
+    "m_CustomEditorGUI": ""
 }
 
 {
@@ -1956,6 +1981,8 @@
         "m_GuidSerialized": "8ebd9456-1fa2-42d1-a40b-20d3ffdc801d"
     },
     "m_Name": "DualLobeSpecularWeight",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_830213A8",
     "m_OverrideReferenceName": "_DualLobeSpecularWeight",
     "m_GeneratePropertyBlock": true,
@@ -2242,6 +2269,8 @@
         "m_GuidSerialized": "16d109b3-6bf9-4beb-a40f-535597ba2fc9"
     },
     "m_Name": "SpecularColor",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Color_BFD6A825",
     "m_OverrideReferenceName": "_SpecularColor",
     "m_GeneratePropertyBlock": true,
@@ -2416,6 +2445,8 @@
         "m_GuidSerialized": "1294159d-35b4-4f02-8cfb-cb80ad7df7d6"
     },
     "m_Name": "TranslucencyColorMap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_7F04A19C",
     "m_OverrideReferenceName": "_TranslucencyColorMap",
     "m_GeneratePropertyBlock": true,
@@ -2715,6 +2746,8 @@
         "m_GuidSerialized": "3661705a-ca2d-49d3-8bcf-7ce0292f3ce7"
     },
     "m_Name": "SpecularColorMap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_CBA64E33",
     "m_OverrideReferenceName": "_SpecularColorMap",
     "m_GeneratePropertyBlock": true,
@@ -3230,6 +3263,8 @@
         "m_GuidSerialized": "180785e5-c60a-463d-9e1a-da9b9d5da73b"
     },
     "m_Name": "DualLobeSpecularReflectivityMap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_B15BB0D7",
     "m_OverrideReferenceName": "_DualLobeSpecularReflectivityMap",
     "m_GeneratePropertyBlock": true,
@@ -3411,6 +3446,8 @@
         "m_GuidSerialized": "9d0a9ee6-4bfa-4c30-b40d-6a0f2155400d"
     },
     "m_Name": "DiffuseMap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_72740554",
     "m_OverrideReferenceName": "_DiffuseMap",
     "m_GeneratePropertyBlock": true,
@@ -3827,6 +3864,8 @@
         "m_GuidSerialized": "8ef4a378-3fc1-4783-a4b0-f7abc8a0a214"
     },
     "m_Name": "Glossiness",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_E4B2EB43",
     "m_OverrideReferenceName": "_Glossiness",
     "m_GeneratePropertyBlock": true,
@@ -3917,6 +3956,8 @@
         "m_GuidSerialized": "38cdaf57-50c7-4c03-9a22-a8c6443eccc3"
     },
     "m_Name": "Emission",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Color_FAD9733C",
     "m_OverrideReferenceName": "_Emission",
     "m_GeneratePropertyBlock": true,
@@ -4071,6 +4112,8 @@
         "m_GuidSerialized": "b12fced7-01d1-405f-9707-2919ea9ab21d"
     },
     "m_Name": "SpecularLobe1RoughnessMap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_F7FF9A65",
     "m_OverrideReferenceName": "_SpecularLobe1RoughnessMap",
     "m_GeneratePropertyBlock": true,
@@ -4159,6 +4202,15 @@
 }
 
 {
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.Rendering.Universal.ShaderGraph.UniversalLitSubTarget",
+    "m_ObjectId": "3fe495784c53485484f146167ac71238",
+    "m_WorkflowMode": 1,
+    "m_NormalDropOffSpace": 0,
+    "m_ClearCoat": false
+}
+
+{
     "m_SGVersion": 1,
     "m_Type": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty",
     "m_ObjectId": "3febfe601a2a408e8ee51131a2cd6d2c",
@@ -4166,6 +4218,8 @@
         "m_GuidSerialized": "c1bf2af5-7d6b-47d0-866c-a6dc87836b31"
     },
     "m_Name": "SpecularStrength",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_3AE42DE0",
     "m_OverrideReferenceName": "_SpecularStrength",
     "m_GeneratePropertyBlock": true,
@@ -4361,6 +4415,8 @@
         "m_GuidSerialized": "eb573642-2539-4d96-a02d-2e2d8b6d0414"
     },
     "m_Name": "DualLobeSpecularReflectivity",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_A00D67DC",
     "m_OverrideReferenceName": "_DualLobeSpecularReflectivity",
     "m_GeneratePropertyBlock": true,
@@ -5024,6 +5080,8 @@
         "m_GuidSerialized": "76b1cb7e-b26f-42f9-9ec6-10576b33f1bc"
     },
     "m_Name": "ThicknessMap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_1E91FCAD",
     "m_OverrideReferenceName": "_ThicknessMap",
     "m_GeneratePropertyBlock": true,
@@ -5146,6 +5204,8 @@
         "m_GuidSerialized": "e5aa7ee5-1950-464c-9a54-67bd44803763"
     },
     "m_Name": "SpecularLobe2Roughness",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_C0E1EA15",
     "m_OverrideReferenceName": "_SpecularLobe2Roughness",
     "m_GeneratePropertyBlock": true,
@@ -5550,6 +5610,8 @@
         "m_GuidSerialized": "365ef052-66af-4638-a57f-b740f000d085"
     },
     "m_Name": "NormalMap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_528598AD",
     "m_OverrideReferenceName": "_NormalMap",
     "m_GeneratePropertyBlock": true,
@@ -5579,6 +5641,8 @@
         "m_GuidSerialized": "065fe4bf-8979-49fc-86b0-8dc26337fe6b"
     },
     "m_Name": "RoughnessMap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_71C8F0CA",
     "m_OverrideReferenceName": "_RoughnessMap",
     "m_GeneratePropertyBlock": true,
@@ -6175,6 +6239,8 @@
         "m_GuidSerialized": "fa3b934c-062c-4228-85ee-d823163f8770"
     },
     "m_Name": "Roughness",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_5E94940C",
     "m_OverrideReferenceName": "_Roughness",
     "m_GeneratePropertyBlock": true,
@@ -6350,6 +6416,8 @@
         "m_GuidSerialized": "a9e09fdb-9cc0-476a-8d7d-b09c22a13b26"
     },
     "m_Name": "AmbientOcclusionMap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_44CCB47B",
     "m_OverrideReferenceName": "_AmbientOcclusionMap",
     "m_GeneratePropertyBlock": true,
@@ -6373,6 +6441,8 @@
         "m_GuidSerialized": "7a2aebdd-c5af-4f5c-a108-27feb60bcb47"
     },
     "m_Name": "TranslucencyColor",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Color_653FC2DE",
     "m_OverrideReferenceName": "_TranslucencyColor",
     "m_GeneratePropertyBlock": true,
@@ -6467,6 +6537,8 @@
         "m_GuidSerialized": "de62a7a9-eef5-4699-9b5d-827f749bbcc5"
     },
     "m_Name": "SpecularLobe1Roughness",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_55EF8B06",
     "m_OverrideReferenceName": "_SpecularLobe1Roughness",
     "m_GeneratePropertyBlock": true,
@@ -6618,6 +6690,8 @@
         "m_GuidSerialized": "005f0698-e3e1-48b1-9608-a06e2eaaab7c"
     },
     "m_Name": "SpecularStrengthMap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_261F911A",
     "m_OverrideReferenceName": "_SpecularStrengthMap",
     "m_GeneratePropertyBlock": true,
@@ -7415,6 +7489,8 @@
         "m_GuidSerialized": "b53b39f2-bdbd-4d1c-8c0c-38f389f88c75"
     },
     "m_Name": "HeightMap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_956F4DB7",
     "m_OverrideReferenceName": "_HeightMap",
     "m_GeneratePropertyBlock": true,
@@ -7764,6 +7840,8 @@
         "m_GuidSerialized": "b34349f1-3356-4601-a8c1-07c8d00a1da0"
     },
     "m_Name": "AlphaMap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_117082FB",
     "m_OverrideReferenceName": "_AlphaMap",
     "m_GeneratePropertyBlock": true,
@@ -8448,6 +8526,8 @@
         "m_GuidSerialized": "c2121ea3-4814-4d4d-93be-cc7b08f78a43"
     },
     "m_Name": "Diffuse",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Color_972481E0",
     "m_OverrideReferenceName": "_Diffuse",
     "m_GeneratePropertyBlock": true,
@@ -8472,6 +8552,8 @@
         "m_GuidSerialized": "0d405a0b-2aa1-4961-bf40-2b43eff79dca"
     },
     "m_Name": "EmissionMap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_7A380F9D",
     "m_OverrideReferenceName": "_EmissionMap",
     "m_GeneratePropertyBlock": true,
@@ -8572,6 +8654,8 @@
         "m_GuidSerialized": "00a64af8-78f0-4788-a9b6-ce30e5b8b7d3"
     },
     "m_Name": "IndexOfRefraction",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_E41C8BD0",
     "m_OverrideReferenceName": "_IndexOfRefraction",
     "m_GeneratePropertyBlock": true,
@@ -8928,6 +9012,8 @@
         "m_GuidSerialized": "8be670ef-22a5-4d64-b3f2-3c33c978c1c6"
     },
     "m_Name": "MetallicMap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_2459B472",
     "m_OverrideReferenceName": "_MetallicMap",
     "m_GeneratePropertyBlock": true,
@@ -8951,6 +9037,8 @@
         "m_GuidSerialized": "5df66cd3-399b-4010-8516-8bfc489fa5ed"
     },
     "m_Name": "TranslucencyWeight",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_6B2D00A4",
     "m_OverrideReferenceName": "_TranslucencyWeight",
     "m_GeneratePropertyBlock": true,
@@ -9029,6 +9117,8 @@
         "m_GuidSerialized": "06cbb3cb-0765-4a0d-a86d-35ab3d97b7f7"
     },
     "m_Name": "HeightOffset",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_54E2B43E",
     "m_OverrideReferenceName": "_HeightOffset",
     "m_GeneratePropertyBlock": true,
@@ -9213,6 +9303,8 @@
         "m_GuidSerialized": "8e409e6c-3a14-44fd-a017-80afe570cc6b"
     },
     "m_Name": "IndexOfRefractionWeight",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_5E3CCC38",
     "m_OverrideReferenceName": "_IndexOfRefractionWeight",
     "m_GeneratePropertyBlock": true,
@@ -9296,6 +9388,8 @@
         "m_GuidSerialized": "fa8b5519-285b-462f-a8bb-d2cd939f85a1"
     },
     "m_Name": "SpecularLobe2RoughnessMap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_AFCA5142",
     "m_OverrideReferenceName": "_SpecularLobe2RoughnessMap",
     "m_GeneratePropertyBlock": true,
@@ -9908,6 +10002,8 @@
         "m_GuidSerialized": "c3580203-e9cf-4739-bb5b-c8b47c74e999"
     },
     "m_Name": "Alpha",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_836AC191",
     "m_OverrideReferenceName": "_Alpha",
     "m_GeneratePropertyBlock": true,
@@ -9931,6 +10027,8 @@
         "m_GuidSerialized": "7c553299-01e6-4fe9-b03c-fcbf3a034a1d"
     },
     "m_Name": "SSSMap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_31A25A30",
     "m_OverrideReferenceName": "_SSSMap",
     "m_GeneratePropertyBlock": true,
@@ -9995,6 +10093,8 @@
         "m_GuidSerialized": "b31c2f51-1531-4b10-98f6-4019f785850c"
     },
     "m_Name": "GlossinessMap",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Texture2D_3B61C5C3",
     "m_OverrideReferenceName": "_GlossinessMap",
     "m_GeneratePropertyBlock": true,
@@ -10083,6 +10183,8 @@
         "m_GuidSerialized": "a7e85ed8-39d1-42aa-9756-0b5f8f6b69aa"
     },
     "m_Name": "DualLobeSpecularRatio",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_6BCB6271",
     "m_OverrideReferenceName": "_DualLobeSpecularRatio",
     "m_GeneratePropertyBlock": true,
@@ -10428,6 +10530,8 @@
         "m_GuidSerialized": "4f5d1df2-94aa-487f-84c9-21a0488edf03"
     },
     "m_Name": "Normal",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_31C66286",
     "m_OverrideReferenceName": "_Normal",
     "m_GeneratePropertyBlock": true,
@@ -10581,6 +10685,21 @@
         "e32": 0.0,
         "e33": 1.0
     }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "d2f43b1f7f374e769489950df797d307",
+    "m_Id": 0,
+    "m_DisplayName": "Metallic",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Metallic",
+    "m_StageCapability": 2,
+    "m_Value": 0.0,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
 }
 
 {
@@ -10959,6 +11078,8 @@
         "m_GuidSerialized": "bab88deb-da0c-403f-aedd-5ca4a25e3078"
     },
     "m_Name": "Tiling",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector2_BE198F60",
     "m_OverrideReferenceName": "_Tiling",
     "m_GeneratePropertyBlock": true,
@@ -11057,6 +11178,8 @@
         "m_GuidSerialized": "819f841a-4903-4385-a2c6-f8e3a4ff39ce"
     },
     "m_Name": "Offset",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector2_DDB9A36A",
     "m_OverrideReferenceName": "_Offset",
     "m_GeneratePropertyBlock": true,
@@ -11177,6 +11300,39 @@
     "m_Labels": [
         "X"
     ]
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.BlockNode",
+    "m_ObjectId": "e4c09c34d1a34ccc912990bea7aaf942",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "SurfaceDescription.Metallic",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 0.0,
+            "height": 0.0
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "d2f43b1f7f374e769489950df797d307"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_SerializedDescriptor": "SurfaceDescription.Metallic"
 }
 
 {
@@ -12282,6 +12438,8 @@
         "m_GuidSerialized": "8c6da1c0-aec1-46e5-bdf3-dcc2ae2226f6"
     },
     "m_Name": "Height",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_369F4842",
     "m_OverrideReferenceName": "_Height",
     "m_GeneratePropertyBlock": true,

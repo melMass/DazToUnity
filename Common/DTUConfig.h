@@ -4,6 +4,10 @@
 #include <QMap>
 #include <QVector>
 
+// #include <nlohmann/json.hpp>
+
+// using json = nlohmann::json;
+
 enum DazAssetType
 {
 	SkeletalMesh,
@@ -181,6 +185,17 @@ struct DTUConfig
         return "ErrorType";
     }
   }
+//   DTUConfig from_json(const json& j) {
+//     DTUConfig config;
+
+//     // config.assetId = QString::fromStdString(j.at("Asset ID").get<std::string>());
+//     // config.assetName = QString::fromStdString(j.at("Asset Name").get<std::string>());
+//     // config.FBXFile = QString::fromStdString(j.at("FBX File").get<std::string>());
+//     // config.importFolder = QString::fromStdString(j.at("Import Folder").get<std::string>());
+//     // config.setType(QString::fromStdString(j.at("Asset Type").get<std::string>()));
+
+//     return config;
+// }
   void setType(QString assetTypeString)
   {
     if (assetTypeString == "SkeletalMesh")

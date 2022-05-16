@@ -1,0 +1,15 @@
+[settings]
+os=Macos
+os_build=Macos
+arch=x86_64
+arch_build=x86_64
+cppstd=11
+compiler=apple-clang
+compiler.version=11.0
+compiler.libcxx=libc++
+build_type=Release
+[options]
+[build_requires]
+[env]
+CC=/usr/bin/clang
+CXX=/usr/bin/clang++

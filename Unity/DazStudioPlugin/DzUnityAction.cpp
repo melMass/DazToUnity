@@ -110,7 +110,9 @@ void DzUnityAction::executeAction()
 
 		Export();
 
-		DzFbxUtils::PostExport(config);
+		DEBUG(QString("Skipping Post FBX Conversion (WIP)"));
+
+		//DzFbxUtils::PostExport(config);
 
 		//Rename the textures folder
 		QDir textureDir(DzUtils::appendPath(CharacterFolder, config.assetName + ".images"));

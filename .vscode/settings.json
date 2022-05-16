@@ -72,6 +72,14 @@
     "typeinfo": "cpp",
     "iostream": "cpp"
   },
-  "C_Cpp.errorSquiggles": "Enabled"
+
+  "C_Cpp.errorSquiggles": "Enabled",
+  "cmake.environment": {
+    "CC" : "/usr/local/opt/llvm@11/bin/clang",
+    "CXX" : "/usr/local/opt/llvm@11/bin/clang++",
+    "LDFLAGS"  : "-L/usr/local/opt/llvm@11/lib -Wl,-rpath,/usr/local/opt/llvm@11/lib",
+    "CPPFLAGS": "-I/usr/local/opt/llvm@11/include -I/usr/local/opt/llvm@11/include/c++/v1/"
+  },
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 
 }

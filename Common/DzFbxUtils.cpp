@@ -204,7 +204,7 @@ void DzFbxUtils::PostExport(const DTUConfig config)
 	//  }
 	DEBUG("Starting Custom FBX Modifications");
 	// If there isn't an FBX file, stop
-	QFile fbx_file = QFile(config.FBXFile);
+	QFileInfo fbx_file = QFileInfo(config.FBXFile);
 
 	if (!fbx_file.exists())
 	{

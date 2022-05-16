@@ -23,27 +23,25 @@ if (APPLE)
 	# set(CMAKE_OSX_SYSROOT /Developer/OSX_sdks/MacOSX10.7.sdk)
 endif()
 
-set(CMAKE_OSX_DEPLOYMENT_TARGET 10.10)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# set(CMAKE_CXXFLAGS "${CMAKE_CXXFLAGS} -std=c++0x")
 
 # For IDEs, generate a compile_commands.json file.
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
-if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
-    include(${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
-    conan_basic_setup(TARGETS NO_OUTPUT_DIRS)
-else()
-    execute_process(COMMAND /usr/local/bin/conan install ${CMAKE_CURRENT_SOURCE_DIR} -s build_type=Release
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            )
-    include(${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
-    conan_basic_setup(TARGETS NO_OUTPUT_DIRS)
-endif()
-
-
-
-
+# if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
+#     include(${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
+#     conan_basic_setup(TARGETS NO_OUTPUT_DIRS KEEP_RPATHS)
+# else()
+#     execute_process(COMMAND /usr/local/bin/conan install ${CMAKE_CURRENT_SOURCE_DIR} -s build_type=Release
+#             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+#     )
+#     include(${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
+#     conan_basic_setup(TARGETS NO_OUTPUT_DIRS KEEP_RPATHS)
+# endif()
 
 #- CUSTOM CMAKE MODULES
 include(FetchContent)
@@ -63,11 +61,11 @@ if(NOT mtb-cmake_POPULATED)
 endif()
 
 # include(UninstallRule)
-include(Colors)
+include(SetupMTB)
+include(SetupConan)
+
 
 # include_directories("/usr/local/include")
-
-
 project("DazRunTimePlugins")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -110,7 +108,7 @@ elseif(APPLE)
 		message(FATAL_ERROR "Unknown architecture")
 	endif()
 	set(CMAKE_MACOSX_RPATH TRUE)
-	set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+	# set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 else()
 	message(FATAL_ERROR "Unknown architecture")
 endif(WIN32)
@@ -208,5 +206,6 @@ set(DZSDK_QT_XML_TARGET	Qt4::QtXml)
 list(APPEND CMAKE_AUTOMOC_MOC_OPTIONS -i)
 
 add_subdirectory("Common")
+add_subdirectory("Common/command_line")
 add_subdirectory("Unity")
 # add_subdirectory("Unreal")
